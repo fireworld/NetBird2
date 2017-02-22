@@ -1,13 +1,7 @@
-package cc.colorcat.netbird2.connection;
+package cc.colorcat.netbird2;
 
 import java.io.Closeable;
 import java.io.IOException;
-
-import cc.colorcat.netbird2.Headers;
-import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.RequestBody;
-import cc.colorcat.netbird2.response.ResponseBody;
 
 /**
  * Created by cxx on 17-2-22.
@@ -22,11 +16,9 @@ public interface Connection extends Closeable, Cloneable {
 
     String responseMsg() throws IOException;
 
-    void writeHeaders(Headers request) throws IOException;
+    void writeHeaders(Headers headers) throws IOException;
 
     void writeBody(RequestBody body) throws IOException;
-
-    void flush();
 
     void cancel();
 

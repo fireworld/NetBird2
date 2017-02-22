@@ -2,11 +2,6 @@ package cc.colorcat.netbird2;
 
 import java.io.IOException;
 
-import cc.colorcat.netbird2.connection.Connection;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.response.ResponseBody;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com

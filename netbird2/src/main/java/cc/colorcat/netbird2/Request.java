@@ -1,6 +1,4 @@
-package cc.colorcat.netbird2.request;
-
-import cc.colorcat.netbird2.Headers;
+package cc.colorcat.netbird2;
 
 /**
  * Created by cxx on 17-2-22.
