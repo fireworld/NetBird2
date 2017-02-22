@@ -1,5 +1,7 @@
 package cc.colorcat.netbird2;
 
+import java.io.IOException;
+
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.response.Response;
 
@@ -10,7 +12,15 @@ import cc.colorcat.netbird2.response.Response;
 
 public interface Interceptor {
 
-    Request<?> intercept(Request<?> request);
+    //    Request<?> intercept(Request<?> request);
+//
+//    Response intercept(Response response);
+    Response intercept(Chain chain) throws IOException;
 
-    Response intercept(Response response);
+    interface Chain {
+
+        Request<?> request();
+
+        Response proceed(Request<?> request) throws IOException;
+    }
 }

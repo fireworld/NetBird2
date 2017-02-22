@@ -1,8 +1,5 @@
 package cc.colorcat.netbird2;
 
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.response.Response;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -20,8 +17,8 @@ public class Dispatcher {
     }
 
     private void realExecute(Call call) {
-        Request<?> request = interceptRequest(call.request());
-        Response response = interceptResponse(call.execute());
+//        Request<?> request = interceptRequest(call.request());
+//        Response response = interceptResponse(call.execute());
     }
 
     public void cancelWait(Object tag) {
@@ -32,19 +29,19 @@ public class Dispatcher {
 
     }
 
-    private Request<?> interceptRequest(Request<?> request) {
-        Request<?> result = request;
-        for (Interceptor interceptor : netBird.interceptors) {
-            result = interceptor.intercept(result);
-        }
-        return result;
-    }
-
-    private Response interceptResponse(Response response) {
-        Response result = response;
-        for (Interceptor interceptor : netBird.interceptors) {
-            result = interceptor.intercept(result);
-        }
-        return response;
-    }
+//    private Request<?> interceptRequest(Request<?> request) {
+//        Request<?> result = request;
+//        for (Interceptor interceptor : netBird.interceptors) {
+//            result = interceptor.intercept(result);
+//        }
+//        return result;
+//    }
+//
+//    private Response interceptResponse(Response response) {
+//        Response result = response;
+//        for (Interceptor interceptor : netBird.interceptors) {
+//            result = interceptor.intercept(result);
+//        }
+//        return response;
+//    }
 }

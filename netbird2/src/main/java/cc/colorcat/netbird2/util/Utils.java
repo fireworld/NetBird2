@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +24,10 @@ public class Utils {
             throw new NullPointerException(msg);
         }
         return value;
+    }
+
+    public static <T> T nullElse(T value, T other) {
+        return value != null ? value : other;
     }
 
     public static <T> List<T> immutableList(List<T> list) {

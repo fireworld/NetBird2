@@ -1,6 +1,7 @@
 package cc.colorcat.netbird2;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.response.Response;
@@ -16,7 +17,7 @@ public interface Call extends Closeable {
 
     void enqueue();
 
-    Response execute();
+    Response execute() throws IOException;
 
     void cancel();
 

@@ -9,6 +9,14 @@ import cc.colorcat.netbird2.Headers;
 
 public class Request<T> {
 
+    public String url() {
+        return null;
+    }
+
+    public String path() {
+        return null;
+    }
+
     public Headers headers() {
         return null;
     }
@@ -18,6 +26,10 @@ public class Request<T> {
     }
 
     public Method method() {
+        return null;
+    }
+
+    public String encodedParams() {
         return null;
     }
 
