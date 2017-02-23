@@ -22,7 +22,7 @@ public class RealInterceptorChain implements Interceptor.Chain {
 
     @Override
     public Connection connection() {
-        return null;
+        return connection;
     }
 
     @Override

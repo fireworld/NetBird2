@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import cc.colorcat.netbird.util.Utils;
+import cc.colorcat.netbird2.util.Utils;
 
 
 /**

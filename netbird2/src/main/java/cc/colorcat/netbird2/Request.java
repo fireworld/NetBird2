@@ -312,6 +312,7 @@ public class Request<T> implements Comparable<Request> {
         public Builder(@NonNull Parser<? extends T> parser) {
             this.parser = Utils.nonNull(parser, "parser == null");
             this.params = Parameters.create(8);
+            this.headers = new WritableHeaders(2);
         }
 
         public Builder<T> tag(Object tag) {

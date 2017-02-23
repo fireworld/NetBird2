@@ -72,6 +72,7 @@ public class Dispatcher {
                 request.deliver(data);
             } finally {
                 running.remove(call);
+                notifyNewCall();
             }
         }
     }
