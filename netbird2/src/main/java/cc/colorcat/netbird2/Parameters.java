@@ -9,13 +9,17 @@ import cc.colorcat.netbird2.util.ReadablePair;
  * xx.ch@outlook.com
  */
 
-public class Parameter extends ReadablePair {
+public class Parameters extends ReadablePair {
 
-    protected Parameter(int capacity) {
+    public static Parameters create(int capacity) {
+        return new Parameters(8);
+    }
+
+    protected Parameters(int capacity) {
         super(capacity);
     }
 
-    protected Parameter(List<String> names, List<String> values) {
+    protected Parameters(List<String> names, List<String> values) {
         super(names, values);
     }
 

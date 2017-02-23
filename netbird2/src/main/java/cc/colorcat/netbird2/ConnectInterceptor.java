@@ -6,7 +6,6 @@ import java.io.IOException;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class ConnectInterceptor implements Interceptor {
     private NetBird netBird;
 
@@ -16,21 +15,20 @@ public class ConnectInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
+        Connection conn = chain.connection();
         Request<?> req = chain.request();
-        Connection connection = netBird.connection.clone();
-        connection.connect(netBird, req);
-        connection.writeHeaders(req.headers());
+        conn.connect(netBird, req);
+        conn.writeHeaders(req.headers());
         if (req.method() == Request.Method.POST) {
-            connection.writeBody(req.body());
-            connection.flush();
+            conn.writeBody(req.body());
         }
-        int code = connection.responseCode();
-        String msg = connection.responseMsg();
+        int code = conn.responseCode();
+        String msg = conn.responseMsg();
         Headers headers = null;
         ResponseBody body = null;
         if (code == 200) {
-            headers = connection.responseHeaders();
-            body = connection.responseBody(headers);
+            headers = conn.responseHeaders();
+            body = conn.responseBody(headers);
         }
         return new Response.Builder().code(code).msg(msg).headers(headers).body(body).build();
     }
