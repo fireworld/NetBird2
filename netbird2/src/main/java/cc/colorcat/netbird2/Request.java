@@ -53,12 +53,10 @@ public class Request<T> implements Comparable<Request> {
         return tag;
     }
 
-    @NonNull
     public String url() {
         return url;
     }
 
-    @NonNull
     public String path() {
         return path;
     }
@@ -71,22 +69,18 @@ public class Request<T> implements Comparable<Request> {
         return headers;
     }
 
-    @NonNull
     public List<Pack> packs() {
         return Utils.safeImmutableList(packs);
     }
 
-    @Nullable
     public Response.LoadListener loadListener() {
         return loadListener;
     }
 
-    @Nullable
     public UploadListener uploadListener() {
         return uploadListener;
     }
 
-    @Nullable
     public RequestBody body() {
         if (params.isEmpty() && packs == null) {
             return null;
