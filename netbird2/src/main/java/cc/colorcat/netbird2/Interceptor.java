@@ -15,6 +15,7 @@ public interface Interceptor {
     Response intercept(Chain chain) throws IOException;
 
     interface Chain {
+        Connection connection();
 
         Request<?> request();
 

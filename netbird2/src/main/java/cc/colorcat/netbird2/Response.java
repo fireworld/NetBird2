@@ -48,6 +48,12 @@ public class Response {
         return new Builder(this);
     }
 
+    public interface LoadListener extends ProgressListener {
+
+        @Override
+        void onChanged(long read, long total, int percent);
+    }
+
     public static class Builder {
         private int code;
         private String msg;

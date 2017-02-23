@@ -15,7 +15,7 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 
-public class NetBird {
+public class NetBird implements Call.Factory {
     final List<Interceptor> interceptors;
     final ExecutorService executor;
     final Dispatcher dispatcher;
@@ -62,6 +62,11 @@ public class NetBird {
 
     public int connectTimeOut() {
         return connectTimeOut;
+    }
+
+    @Override
+    public Call newCall(Request<?> request) {
+        return new RealCall(this, request);
     }
 
     private static class CallFactory implements Call.Factory {
@@ -132,6 +137,12 @@ public class NetBird {
             }
             this.connectTimeOut = milliseconds;
             return this;
+        }
+
+        public NetBird build() {
+            if (executor == null) executor = defaultService(6);
+            if (connection == null) connection = new HttpConnection();
+            return new NetBird(this);
         }
 
         private static ExecutorService defaultService(int corePoolSize) {

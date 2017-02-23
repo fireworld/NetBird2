@@ -1,5 +1,7 @@
 package cc.colorcat.netbird2.util;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
@@ -8,19 +10,62 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import cc.colorcat.netbird2.Const;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class Utils {
+    private static final Handler HANDLER = new Handler(Looper.getMainLooper());
+
+    public static void postOnUi(Runnable runnable) {
+        HANDLER.post(runnable);
+    }
+
+    public static boolean isUiThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
+    }
+
+
+    public static String smartEncode(String value) {
+        try {
+            String decodedValue = decode(value);
+            if (!value.equals(decodedValue)) {
+                return value;
+            }
+        } catch (Exception e) {
+            LogUtils.e(e);
+        }
+        return encode(value);
+    }
+
+    private static String encode(String value) {
+        try {
+            return URLEncoder.encode(value, Const.UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String decode(String value) {
+        try {
+            return URLDecoder.decode(value, Const.UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static String checkedHttp(String url) {
         if (!url.startsWith("http")) {
@@ -36,12 +81,31 @@ public class Utils {
         return value;
     }
 
+    public static <T extends CharSequence> T nonEmpty(T txt, String msg) {
+        if (Utils.isEmpty(txt)) {
+            throw new IllegalArgumentException(msg);
+        }
+        return txt;
+    }
+
+    public static boolean isEmpty(CharSequence txt) {
+        return txt == null || txt.length() == 0;
+    }
+
     public static <T> T nullElse(T value, T other) {
         return value != null ? value : other;
     }
 
+    public static <T extends CharSequence> T emptyElse(T txt, T other) {
+        return isEmpty(txt) ? other : txt;
+    }
+
     public static <T> List<T> immutableList(List<T> list) {
         return Collections.unmodifiableList(new ArrayList<>(list));
+    }
+
+    public static <T> List<T> safeImmutableList(List<T> list) {
+        return list != null ? Collections.unmodifiableList(new ArrayList<>(list)) : Collections.<T>emptyList();
     }
 
     public static String formatMsg(String responseMsg, Exception e) {
@@ -132,6 +196,13 @@ public class Utils {
         }
         bos.flush();
         return bos.toByteArray();
+    }
+
+    public static void justDump(InputStream is, OutputStream os) throws IOException {
+        byte[] buffer = new byte[2048];
+        for (int length = is.read(buffer); length != -1; length = is.read(buffer)) {
+            os.write(buffer, 0, length);
+        }
     }
 
     private Utils() {
