@@ -2,14 +2,14 @@ package cc.colorcat.netbird2;
 
 import java.util.List;
 
-import cc.colorcat.netbird2.util.ReadablePair;
+import cc.colorcat.netbird2.util.ReadablePairImpl;
 
 /**
  * Created by cxx on 2017/2/22.
  * xx.ch@outlook.com
  */
 
-public class Parameters extends ReadablePair {
+public class Parameters extends ReadablePairImpl {
 
     public static Parameters create(int capacity) {
         return new Parameters(8);
@@ -32,7 +32,7 @@ public class Parameters extends ReadablePair {
 
     /**
      * 设置一个数据对，如果此前已添加，将移除之前添加的所有与 name 匹配的数据对
-     * Note: name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * Note: name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      */
     public void set(String name, String value) {
         realRemoveAll(name);
@@ -41,7 +41,7 @@ public class Parameters extends ReadablePair {
 
     /**
      * 如果此前没有添加过与 name 匹配的数据对就添加，否则忽略
-     * Note: name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * Note: name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      */
     public void addIfNot(String name, String value) {
         if (!contains(name)) {
@@ -51,7 +51,7 @@ public class Parameters extends ReadablePair {
 
     /**
      * 移除所有与 name 匹配的数据对
-     * Note: name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * Note: name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      */
     public void removeAll(String name) {
         realRemoveAll(name);

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import cc.colorcat.netbird2.util.ReadablePair;
+import cc.colorcat.netbird2.util.ReadablePairImpl;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -13,7 +13,7 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 
-public class Headers extends ReadablePair {
+public class Headers extends ReadablePairImpl {
     private static Headers emptyHeaders;
 
     /**

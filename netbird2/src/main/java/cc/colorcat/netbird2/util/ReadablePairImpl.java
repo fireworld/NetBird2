@@ -19,13 +19,13 @@ import java.util.TreeSet;
  * Note1: 本类允许数据对的 name 和 value 为 {@code null}
  * Note2: 本类非线程安全
  * <p>
- * 方法 {@link ReadablePair#compareName(String, String)} 将决定 name 的匹配方式
- * 你可以覆写 {@link ReadablePair#compareName(String, String)} 来影响 name 的匹配方式，如大小写敏感等
+ * 方法 {@link ReadablePairImpl#compareName(String, String)} 将决定 name 的匹配方式
+ * 你可以覆写 {@link ReadablePairImpl#compareName(String, String)} 来影响 name 的匹配方式，如大小写敏感等
  * <p>
  * Created by cxx on 2017/2/20.
  * xx.ch@outlook.com
  */
-public abstract class ReadablePair {
+public abstract class ReadablePairImpl {
     protected List<String> names;
     protected List<String> values;
 
@@ -33,12 +33,12 @@ public abstract class ReadablePair {
      * @param capacity 初始化容量大小
      * @throws IllegalArgumentException 如果 capacity 为负将抛出此异常
      */
-    protected ReadablePair(int capacity) {
+    protected ReadablePairImpl(int capacity) {
         this.names = new ArrayList<>(capacity);
         this.values = new ArrayList<>(capacity);
     }
 
-    protected ReadablePair(List<String> names, List<String> values) {
+    protected ReadablePairImpl(List<String> names, List<String> values) {
         this.names = names;
         this.values = values;
     }
@@ -68,7 +68,7 @@ public abstract class ReadablePair {
     /**
      * 根据 name 查找数据对，并返回数据对的 value, 如果存在多个则返回最先添加的
      *
-     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      * @return 返回查找到的数据对的 value, 如果不存在就返回 {@code null}
      */
     @Nullable
@@ -84,7 +84,7 @@ public abstract class ReadablePair {
     /**
      * 根据 name 查找数据对，并返回数据对的 value, 如果存在多个则返回最先添加的
      *
-     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      * @return 返回查找到的数据对的 value, 如果不存在就返回 defValue
      */
     public String value(String name, String defValue) {
@@ -94,7 +94,7 @@ public abstract class ReadablePair {
     /**
      * 根据 name 查找数据对，并返回所有匹配的数据对的 value
      *
-     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * @param name 待查找的数据对的 name, name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      * @return 返回不可修改的 {@link List}，如果不存在则返回空 {@link List}
      */
     public List<String> values(String name) {
@@ -109,14 +109,14 @@ public abstract class ReadablePair {
     }
 
     /**
-     * @return 所有已添加的数据对的 name，不可修改，顺序与 {@link ReadablePair#values()} 的返回值一一对应
+     * @return 所有已添加的数据对的 name，不可修改，顺序与 {@link ReadablePairImpl#values()} 的返回值一一对应
      */
     public List<String> names() {
         return Utils.immutableList(names);
     }
 
     /**
-     * @return 所有已添加的数据对的 value，不可修改，顺序与 {@link ReadablePair#names()} 的返回值一一对应
+     * @return 所有已添加的数据对的 value，不可修改，顺序与 {@link ReadablePairImpl#names()} 的返回值一一对应
      */
     public List<String> values() {
         return Utils.immutableList(values);
@@ -124,7 +124,7 @@ public abstract class ReadablePair {
 
     /**
      * @return 所有已添加的数据对的 name 集合，不可修改
-     * Note: name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * Note: name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      */
     public Set<String> nameSet() {
         Set<String> result;
@@ -148,7 +148,7 @@ public abstract class ReadablePair {
 
     /**
      * @return name 为结果的键, value 的列表为结果的值
-     * Note: name 匹配方式取决于 {@link ReadablePair#compareName(String, String)}
+     * Note: name 匹配方式取决于 {@link ReadablePairImpl#compareName(String, String)}
      */
     public Map<String, List<String>> toMap() {
         Map<String, List<String>> result = new HashMap<>();
@@ -177,7 +177,7 @@ public abstract class ReadablePair {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ReadablePair pair = (ReadablePair) o;
+        ReadablePairImpl pair = (ReadablePairImpl) o;
 
         if (!names.equals(pair.names)) return false;
         return values.equals(pair.values);
