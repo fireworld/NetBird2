@@ -96,6 +96,10 @@ public class Utils {
         return value != null ? value : other;
     }
 
+    public static <T extends CharSequence> T emptyElse(T txt, T other) {
+        return isEmpty(txt) ? other : txt;
+    }
+
     public static <T> List<T> immutableList(List<T> list) {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
