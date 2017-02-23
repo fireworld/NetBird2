@@ -8,7 +8,7 @@ import java.util.List;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class RealCall implements Call {
+public class RealCall implements Call, Comparable<RealCall> {
     private NetBird netBird;
     private Request<?> request;
     private Connection connection;
@@ -45,5 +45,33 @@ public class RealCall implements Call {
     @Override
     public void close() throws IOException {
         connection.close();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RealCall)) return false;
+
+        RealCall realCall = (RealCall) o;
+
+        return request.equals(realCall.request);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return request.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "RealCall{" +
+                "request=" + request +
+                '}';
+    }
+
+    @Override
+    public int compareTo(RealCall o) {
+        return request.compareTo(o.request);
     }
 }

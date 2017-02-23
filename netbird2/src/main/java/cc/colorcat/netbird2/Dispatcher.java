@@ -1,5 +1,10 @@
 package cc.colorcat.netbird2;
 
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -7,12 +12,20 @@ package cc.colorcat.netbird2;
 
 public class Dispatcher {
     private NetBird netBird;
+    private final Set<Call> running = new CopyOnWriteArraySet<>();
+    private final Queue<Call> waiting = new ConcurrentLinkedQueue<>();
 
     public Dispatcher(NetBird netBird) {
         this.netBird = netBird;
     }
 
     public void execute(Call call) {
+        if (!waiting.contains(call)) {
+            if (waiting.offer(call)) notifyNewCall();
+        }
+    }
+
+    private void notifyNewCall() {
 
     }
 
