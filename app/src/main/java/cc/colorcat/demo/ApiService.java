@@ -1,6 +1,9 @@
 package cc.colorcat.demo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,6 +13,7 @@ import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
 import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.SimpleCallback;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -52,6 +56,23 @@ public class ApiService {
 
     public static void cancelAllWait() {
 //        bird.cancelAllWait();
+    }
+
+    public static Object display(final ImageView view, String url) {
+        Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
+                .url(url)
+                .callback(new SimpleCallback<Bitmap>() {
+                    @Override
+                    public void onSuccess(@NonNull Bitmap result) {
+                        view.setImageBitmap(result);
+                    }
+
+                    @Override
+                    public void onFailure(int code, @NonNull String msg) {
+                        LogUtils.e("NetBird", code + " : " + msg);
+                    }
+                }).build();
+        return call(req);
     }
 
     private static class TestInterceptorA implements Interceptor {

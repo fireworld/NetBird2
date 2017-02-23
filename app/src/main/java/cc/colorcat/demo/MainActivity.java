@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
                         .setText(R.id.tv_description, courseBean.getDescription());
 
                 final ImageView imageView = holder.getView(R.id.iv_icon);
-//                ApiService.display(imageView, courseBean.getPicBig());
+                ApiService.display(imageView, courseBean.getPicBig());
             }
         };
         listView.setAdapter(mAdapter);
