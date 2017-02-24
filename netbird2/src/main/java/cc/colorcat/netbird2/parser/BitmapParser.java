@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
-import cc.colorcat.netbird2.NetworkData;
+import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.Parser;
-import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.response.Response;
 
 /**
  * Created by cxx on 17-2-23.

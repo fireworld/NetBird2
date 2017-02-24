@@ -71,6 +71,10 @@ public class NetBird implements Call.Factory {
         return new RealCall(this, request);
     }
 
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
+
     private static class CallFactory implements Call.Factory {
         @Override
         public Call newCall(Request<?> request) {
@@ -79,8 +83,8 @@ public class NetBird implements Call.Factory {
     }
 
     public static class Builder {
-        private List<Interceptor> headInterceptors = new ArrayList<>(2);
-        private List<Interceptor> tailInterceptors = new ArrayList<>(2);
+        private List<Interceptor> headInterceptors;
+        private List<Interceptor> tailInterceptors;
         private ExecutorService executor;
         private Connection connection;
         private String baseUrl;
@@ -92,6 +96,21 @@ public class NetBird implements Call.Factory {
 
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
+            this.headInterceptors = new ArrayList<>(2);
+            this.tailInterceptors = new ArrayList<>(2);
+        }
+
+        private Builder(NetBird netBird) {
+            this.baseUrl = netBird.baseUrl;
+            this.headInterceptors = new ArrayList<>(netBird.headInterceptors);
+            this.tailInterceptors = new ArrayList<>(netBird.tailInterceptors);
+            this.executor = netBird.executor;
+            this.connection = netBird.connection;
+            this.cacheSize = netBird.cacheSize;
+            this.cachePath = netBird.cachePath;
+            this.maxRunning = netBird.maxRunning;
+            this.readTimeOut = netBird.readTimeOut;
+            this.connectTimeOut = netBird.connectTimeOut;
         }
 
         public Builder executor(ExecutorService executor) {

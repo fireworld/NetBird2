@@ -6,9 +6,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import cc.colorcat.netbird2.NetworkData;
+import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.Parser;
-import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 
 /**

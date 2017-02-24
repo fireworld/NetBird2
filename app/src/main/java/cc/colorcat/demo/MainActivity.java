@@ -66,8 +66,8 @@ public class MainActivity extends Activity {
                 .url(HOST)
                 .path("/teacher")
                 .method(Method.GET)
-                .add("type", 4)
-                .add("num", 30)
+                .add("type", Integer.toString(4))
+                .add("num", Integer.toString(30))
                 .callback(new SimpleCallback<Result<List<Course>>>() {
                     @Override
                     public void onSuccess(@NonNull Result<List<Course>> result) {

@@ -13,6 +13,8 @@ import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.RequestBody;
+import cc.colorcat.netbird2.response.RealResponseBody;
+import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -109,7 +111,7 @@ public class HttpConnection implements Connection {
         if (is == null) {
             is = conn.getInputStream();
         }
-        return ResponseBody.create(headers, is);
+        return RealResponseBody.create(is, headers);
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")

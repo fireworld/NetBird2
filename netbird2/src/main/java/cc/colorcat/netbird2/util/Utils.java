@@ -141,16 +141,7 @@ public class Utils {
     }
 
     @Nullable
-    public static Charset charset(String charset) {
-        try {
-            return Charset.forName(charset);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Nullable
-    public static String parseCharset(String contentType) {
+    public static Charset parseCharset(String contentType) {
         if (contentType != null) {
             String[] params = contentType.split(";");
             final int length = params.length;
@@ -158,7 +149,11 @@ public class Utils {
                 String[] pair = params[i].trim().split("=");
                 if (pair.length == 2) {
                     if (pair[0].equalsIgnoreCase("charset")) {
-                        return pair[1];
+                        try {
+                            return Charset.forName(pair[1]);
+                        } catch (Exception ignore) {
+                            return null;
+                        }
                     }
                 }
             }

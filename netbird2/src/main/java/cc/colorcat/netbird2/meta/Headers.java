@@ -1,5 +1,6 @@
 package cc.colorcat.netbird2.meta;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,10 @@ public class Headers {
     public long contentLength() {
         String contentLength = pair.value(CONTENT_LENGTH);
         return Utils.quiteParse(contentLength, -1L);
+    }
+
+    public Charset charset() {
+        return Utils.parseCharset(contentType());
     }
 
     public Set<String> nameSet() {

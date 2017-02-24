@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.response.NetworkData;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 

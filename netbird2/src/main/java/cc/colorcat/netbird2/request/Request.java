@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cc.colorcat.netbird2.Callback;
-import cc.colorcat.netbird2.NetworkData;
+import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.Parser;
 import cc.colorcat.netbird2.ProgressListener;
-import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.meta.WritableHeaders;
@@ -387,49 +387,6 @@ public class Request<T> implements Comparable<Request> {
         }
 
         /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, int value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, long value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         */
-        public Builder<T> add(String name, float value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, double value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
          * 设置请求参数
          * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
          *
@@ -445,46 +402,6 @@ public class Request<T> implements Comparable<Request> {
         }
 
         /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, int value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, long value) {
-            return set(name, String.valueOf(value));
-        }
-
-        public Builder<T> set(String name, float value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, double value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
          * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
          *
          * @param name  请求参数的名称
@@ -496,50 +413,6 @@ public class Request<T> implements Comparable<Request> {
             Utils.nonEmpty(value, "value is null/empty");
             params.addIfNot(name, value);
             return this;
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, int value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, long value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, float value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, double value) {
-            return addIfNot(name, String.valueOf(value));
         }
 
         /**

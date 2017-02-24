@@ -6,6 +6,7 @@ import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.RequestBody;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
