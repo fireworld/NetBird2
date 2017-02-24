@@ -32,9 +32,9 @@ public class ApiService {
 
     public static void init(Context ctx) {
         bird = new NetBird.Builder(baseUrl)
-                .addInterceptor(new TestInterceptorA())
-                .addInterceptor(new TestInterceptorB())
-                .addInterceptor(new LogInterceptor())
+                .addHeadInterceptor(new TestInterceptorA())
+                .addHeadInterceptor(new TestInterceptorB())
+                .addTailInterceptor(new LogInterceptor())
                 .build();
     }
 
@@ -111,7 +111,7 @@ public class ApiService {
             if (LogUtils.isDebug) {
                 Method m = req.method();
                 LogUtils.ii(TAG, "---------------------------------------- " + m.name() + " -----------------------------------------");
-                String url = url(req);
+                String url = req.url();
                 if (m == Method.GET) {
                     String params = req.encodedParams();
                     if (!Utils.isEmpty(params)) {
@@ -154,14 +154,5 @@ public class ApiService {
             Request.Pack pack = packs.get(i);
             LogUtils.dd(TAG, "req pack --> " + pack.name + "--" + pack.contentType + "--" + pack.file.getAbsolutePath());
         }
-    }
-
-    private static String url(Request<?> req) {
-        String url = Utils.emptyElse(req.url(), baseUrl);
-        String path = req.path();
-        if (!Utils.isEmpty(path)) {
-            url += path;
-        }
-        return url;
     }
 }

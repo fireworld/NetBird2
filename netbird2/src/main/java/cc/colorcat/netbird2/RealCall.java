@@ -11,15 +11,16 @@ import cc.colorcat.netbird2.request.Request;
  * xx.ch@outlook.com
  */
 public class RealCall implements Call, Comparable<RealCall> {
-    private Interceptor requestProcess = new RequestProcessInterceptor();
-    private NetBird netBird;
-    private Request<?> request;
-    private Connection connection;
+    private final NetBird netBird;
+    private final Request<?> request;
+    private final Connection connection;
+    private final Interceptor requestProcess;
 
     public RealCall(NetBird netBird, Request<?> originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection.clone();
+        this.requestProcess = new RequestProcessInterceptor(netBird);
     }
 
     @Override
@@ -34,9 +35,11 @@ public class RealCall implements Call, Comparable<RealCall> {
 
     @Override
     public Response execute() throws IOException {
-        List<Interceptor> interceptors = new ArrayList<>(netBird.interceptors.size() + 2);
-        interceptors.addAll(netBird.interceptors);
+        int size = netBird.headInterceptors.size() + netBird.tailInterceptors.size();
+        List<Interceptor> interceptors = new ArrayList<>(size + 2);
+        interceptors.addAll(netBird.headInterceptors);
         interceptors.add(requestProcess);
+        interceptors.addAll(netBird.tailInterceptors);
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
         return chain.proceed(request);
@@ -60,7 +63,6 @@ public class RealCall implements Call, Comparable<RealCall> {
         RealCall realCall = (RealCall) o;
 
         return request.equals(realCall.request);
-
     }
 
     @Override

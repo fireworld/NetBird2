@@ -36,11 +36,7 @@ public class HttpConnection implements Connection {
     @Override
     public void connect(NetBird netBird, Request<?> request) throws IOException {
         enableCache(netBird.cachePath(), netBird.cacheSize());
-        String url = Utils.nullElse(request.url(), netBird.baseUrl());
-        String path = request.path();
-        if (path != null) {
-            url += path;
-        }
+        String url = request.url();
         Method method = request.method();
         if (method == Method.GET) {
             String params = request.encodedParams();

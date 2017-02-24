@@ -16,7 +16,8 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 public class NetBird implements Call.Factory {
-    final List<Interceptor> interceptors;
+    final List<Interceptor> headInterceptors;
+    final List<Interceptor> tailInterceptors;
     final ExecutorService executor;
     final Dispatcher dispatcher;
     final Connection connection;
@@ -28,7 +29,8 @@ public class NetBird implements Call.Factory {
     final int connectTimeOut;
 
     private NetBird(Builder builder) {
-        this.interceptors = Utils.immutableList(builder.interceptors);
+        this.headInterceptors = Utils.immutableList(builder.headInterceptors);
+        this.tailInterceptors = Utils.immutableList(builder.tailInterceptors);
         this.executor = builder.executor;
         this.dispatcher = new Dispatcher(this);
         this.connection = builder.connection;
@@ -77,7 +79,8 @@ public class NetBird implements Call.Factory {
     }
 
     public static class Builder {
-        private List<Interceptor> interceptors = new ArrayList<>(4);
+        private List<Interceptor> headInterceptors = new ArrayList<>(2);
+        private List<Interceptor> tailInterceptors = new ArrayList<>(2);
         private ExecutorService executor;
         private Connection connection;
         private String baseUrl;
@@ -101,8 +104,13 @@ public class NetBird implements Call.Factory {
             return this;
         }
 
-        public Builder addInterceptor(Interceptor interceptor) {
-            this.interceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
+        public Builder addHeadInterceptor(Interceptor interceptor) {
+            headInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
+            return this;
+        }
+
+        public Builder addTailInterceptor(Interceptor interceptor) {
+            tailInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
             return this;
         }
 
@@ -140,7 +148,7 @@ public class NetBird implements Call.Factory {
         }
 
         public NetBird build() {
-            if (executor == null) executor = defaultService(6);
+            if (executor == null) executor = defaultService(maxRunning);
             if (connection == null) connection = new HttpConnection();
             return new NetBird(this);
         }
