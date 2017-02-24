@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.RequestBody;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -38,8 +41,8 @@ public class HttpConnection implements Connection {
         if (path != null) {
             url += path;
         }
-        Request.Method method = request.method();
-        if (method == Request.Method.GET) {
+        Method method = request.method();
+        if (method == Method.GET) {
             String params = request.encodedParams();
             if (params != null) {
                 url = url + '?' + params;
@@ -50,7 +53,7 @@ public class HttpConnection implements Connection {
         conn.setReadTimeout(netBird.readTimeOut());
         conn.setDoInput(true);
         conn.setRequestMethod(method.name());
-        if (method == Request.Method.POST) {
+        if (method == Method.POST) {
             conn.setDoOutput(true);
         }
         conn.setUseCaches(enableCache);

@@ -10,10 +10,11 @@ import java.util.List;
 
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.Response;
 import cc.colorcat.netbird2.SimpleCallback;
 import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -108,10 +109,10 @@ public class ApiService {
         public Response intercept(Chain chain) throws IOException {
             Request<?> req = chain.request();
             if (LogUtils.isDebug) {
-                Request.Method m = req.method();
+                Method m = req.method();
                 LogUtils.ii(TAG, "---------------------------------------- " + m.name() + " -----------------------------------------");
                 String url = url(req);
-                if (m == Request.Method.GET) {
+                if (m == Method.GET) {
                     String params = req.encodedParams();
                     if (!Utils.isEmpty(params)) {
                         url = url + '?' + params;

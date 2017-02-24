@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 

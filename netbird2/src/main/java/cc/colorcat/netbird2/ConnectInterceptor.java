@@ -3,6 +3,8 @@ package cc.colorcat.netbird2;
 import java.io.IOException;
 
 import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
 
 /**
  * Created by cxx on 17-2-22.
@@ -21,7 +23,7 @@ final class ConnectInterceptor implements Interceptor {
         Request<?> req = chain.request();
         conn.connect(netBird, req);
         conn.writeHeaders(req.headers());
-        if (req.method() == Request.Method.POST) {
+        if (req.method() == Method.POST) {
             conn.writeBody(req.body());
         }
         int code = conn.responseCode();

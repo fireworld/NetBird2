@@ -4,6 +4,8 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.RequestBody;
 
 /**
  * Created by cxx on 17-2-22.

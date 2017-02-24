@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import android.support.annotation.Nullable;
 
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.util.Utils;
 
 /**

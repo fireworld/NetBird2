@@ -3,6 +3,8 @@ package cc.colorcat.netbird2;
 import java.io.IOException;
 import java.util.List;
 
+import cc.colorcat.netbird2.request.Request;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com

@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -8,6 +8,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.colorcat.netbird2.Callback;
+import cc.colorcat.netbird2.NetworkData;
+import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.ProgressListener;
+import cc.colorcat.netbird2.Response;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.meta.WritableHeaders;
@@ -271,16 +276,12 @@ public class Request<T> implements Comparable<Request> {
         }
     }
 
-    public enum Method {
-        GET, POST
-    }
-
     public static class Builder<T> {
         private WritableParameters params;
         private WritableHeaders headers;
         private String url;
         private String path;
-        private Request.Method method = Method.GET;
+        private Method method = Method.GET;
         private Parser<? extends T> parser;
         private List<Pack> packs;
         private Callback<? super T> callback;

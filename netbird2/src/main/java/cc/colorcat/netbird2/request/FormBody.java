@@ -1,9 +1,10 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cc.colorcat.netbird2.ByteOutputStream;
 import cc.colorcat.netbird2.meta.Parameters;
 
 /**

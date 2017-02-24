@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
