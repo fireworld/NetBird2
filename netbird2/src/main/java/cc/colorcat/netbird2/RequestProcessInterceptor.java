@@ -23,7 +23,7 @@ final class RequestProcessInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request<?> request = chain.request();
-        String url = Utils.nullElse(request.url(), bird.baseUrl);
+        String url = Utils.nullElse(request.url(), bird.baseUrl());
         String path = request.path();
         if (path != null) {
             url += path;

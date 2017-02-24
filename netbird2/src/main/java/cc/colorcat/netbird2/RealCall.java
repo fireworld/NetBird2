@@ -1,5 +1,7 @@
 package cc.colorcat.netbird2;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +83,7 @@ public class RealCall implements Call, Comparable<RealCall> {
     }
 
     @Override
-    public int compareTo(RealCall o) {
+    public int compareTo(@NonNull RealCall o) {
         return request.compareTo(o.request);
     }
 }

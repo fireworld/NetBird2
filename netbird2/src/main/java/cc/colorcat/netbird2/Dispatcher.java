@@ -1,6 +1,7 @@
 package cc.colorcat.netbird2;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,7 +18,7 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 public class Dispatcher {
-    private NetBird netBird;
+    private final NetBird netBird;
     private final Set<Call> running = new CopyOnWriteArraySet<>();
     private final Queue<Call> waiting = new ConcurrentLinkedQueue<>();
 
@@ -32,26 +33,38 @@ public class Dispatcher {
     }
 
     private void notifyNewCall() {
-        if (running.size() < netBird.maxRunning && !waiting.isEmpty()) {
+        if (running.size() < netBird.maxRunning() && !waiting.isEmpty()) {
             Call call = waiting.poll();
             if (running.add(call)) {
-                netBird.executor.execute(new Task(call));
+                netBird.executor().execute(new Task(Dispatcher.this, call));
             }
         }
     }
 
     public void cancelWait(Object tag) {
-
+        Iterator<Call> iterator = waiting.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().request().tag().equals(tag)) {
+                iterator.remove();
+            }
+        }
     }
 
     public void cancelRunning(Object tag) {
-
+        for (Call call : running) {
+            if (call.request().tag().equals(tag)) {
+                running.remove(call);
+                call.cancel();
+            }
+        }
     }
 
-    private class Task implements Runnable {
+    private static class Task implements Runnable {
+        private Dispatcher dispatcher;
         private Call call;
 
-        private Task(Call call) {
+        private Task(Dispatcher dispatcher, Call call) {
+            this.dispatcher = dispatcher;
             this.call = call;
         }
 
@@ -61,20 +74,20 @@ public class Dispatcher {
             Request<?> request = call.request();
             try {
                 Response response = call.execute();
+                NetworkData data;
                 if (response.code() == 200 && response.body() != null) {
-                    NetworkData data = request.parse(response);
-                    request.deliver(data);
+                    data = request.parse(response);
                 } else {
-                    NetworkData data = NetworkData.newFailure(response.code(), response.msg());
-                    request.deliver(data);
+                    data = NetworkData.newFailure(response.code(), response.msg());
                 }
+                request.deliver(data);
             } catch (IOException e) {
                 LogUtils.e(e);
                 NetworkData data = NetworkData.newFailure(Const.CODE_UNKNOWN, Utils.emptyElse(e.getMessage(), Const.MSG_UNKNOWN));
                 request.deliver(data);
             } finally {
-                running.remove(call);
-                notifyNewCall();
+                dispatcher.running.remove(call);
+                dispatcher.notifyNewCall();
             }
         }
     }

@@ -50,6 +50,10 @@ public final class NetBird implements Call.Factory {
         return tailInterceptors;
     }
 
+    public ExecutorService executor() {
+        return executor;
+    }
+
     public Dispatcher dispatcher() {
         return dispatcher;
     }
