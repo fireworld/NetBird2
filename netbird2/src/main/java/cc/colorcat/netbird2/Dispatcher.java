@@ -13,7 +13,6 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class Dispatcher {
     private NetBird netBird;
     private final Set<Call> running = new CopyOnWriteArraySet<>();

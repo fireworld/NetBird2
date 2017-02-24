@@ -8,6 +8,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.meta.Parameters;
+import cc.colorcat.netbird2.meta.WritableHeaders;
+import cc.colorcat.netbird2.meta.WritableParameters;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -272,7 +276,7 @@ public class Request<T> implements Comparable<Request> {
     }
 
     public static class Builder<T> {
-        private Parameters params;
+        private WritableParameters params;
         private WritableHeaders headers;
         private String url;
         private String path;
@@ -287,7 +291,7 @@ public class Request<T> implements Comparable<Request> {
         private Object tag;
 
         protected Builder(Request<T> req) {
-            this.params = req.params;
+            this.params = req.params.newWritableParameters();
             this.headers = req.headers.newWritableHeaders();
             this.url = req.url;
             this.path = req.path;
@@ -305,8 +309,8 @@ public class Request<T> implements Comparable<Request> {
          */
         public Builder(@NonNull Parser<? extends T> parser) {
             this.parser = Utils.nonNull(parser, "parser == null");
-            this.params = Parameters.create(8);
-            this.headers = new WritableHeaders(2);
+            this.params = WritableParameters.create(8);
+            this.headers = WritableHeaders.create(2);
         }
 
         public Builder<T> tag(Object tag) {
@@ -574,16 +578,6 @@ public class Request<T> implements Comparable<Request> {
         }
 
         /**
-         * @return 返回所有添加的与 name 对应的 value
-         * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
-         */
-        @NonNull
-        public List<String> values(String name) {
-            Utils.nonEmpty(name, "name is null/empty");
-            return params.values(name);
-        }
-
-        /**
          * 清除所有已添加的请求参数
          */
         public Builder<T> clear() {
@@ -721,7 +715,7 @@ public class Request<T> implements Comparable<Request> {
         }
 
         private static WritableHeaders createHeader() {
-            return new WritableHeaders(4);
+            return WritableHeaders.create(4);
         }
 
         @CallSuper

@@ -2,14 +2,16 @@ package cc.colorcat.netbird2;
 
 import java.io.IOException;
 
+import cc.colorcat.netbird2.meta.Headers;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class ConnectInterceptor implements Interceptor {
+final class ConnectInterceptor implements Interceptor {
     private NetBird netBird;
 
-    public ConnectInterceptor(NetBird netBird) {
+    ConnectInterceptor(NetBird netBird) {
         this.netBird = netBird;
     }
 

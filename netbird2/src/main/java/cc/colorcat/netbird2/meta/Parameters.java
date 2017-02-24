@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.util;
+package cc.colorcat.netbird2.meta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,8 @@ import java.util.List;
 public class Parameters {
     final Pair pair;
 
-    protected Parameters(List<String> names, List<String> values) {
-        pair = new Pair(Pair.NULL_INSENSITIVE, new ArrayList<>(names), new ArrayList<>(values));
+    Parameters(List<String> names, List<String> values) {
+        pair = new Pair(Pair.NULL_CASE_SENSITIVE, names, values);
     }
 
     public String name(int index) {
@@ -47,7 +47,7 @@ public class Parameters {
     }
 
     public WritableParameters newWritableParameters() {
-        return new WritableParameters(pair.names, pair.values);
+        return new WritableParameters(new ArrayList<>(pair.names), new ArrayList<>(pair.values));
     }
 
     @Override
@@ -58,7 +58,6 @@ public class Parameters {
         Parameters that = (Parameters) o;
 
         return pair.equals(that.pair);
-
     }
 
     @Override

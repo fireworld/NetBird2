@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.util;
+package cc.colorcat.netbird2.meta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +10,48 @@ import java.util.Set;
  * xx.ch@outlook.com
  */
 public class Headers {
-    private static Headers emptyHeaders;
+    private static transient Headers emptyHeaders;
 
     public static Headers emptyHeaders() {
         if (emptyHeaders == null) {
-            emptyHeaders = new Headers(Pair.EMPTY_PAIR);
+            synchronized (Headers.class) {
+                if (emptyHeaders == null) {
+                    emptyHeaders = new Headers(Pair.EMPTY_PAIR);
+                }
+            }
         }
         return emptyHeaders;
+    }
+
+    public static Headers create(Map<String, List<String>> namesAndValues) {
+        if (namesAndValues == null) {
+            throw new NullPointerException("namesAndValues == null");
+        }
+        int size = namesAndValues.size();
+        List<String> names = new ArrayList<>(size);
+        List<String> values = new ArrayList<>(size);
+        for (Map.Entry<String, List<String>> entry : namesAndValues.entrySet()) {
+            String k = entry.getKey();
+            List<String> vs = entry.getValue();
+            for (int i = 0, s = vs.size(); i < s; i++) {
+                names.add(k);
+                values.add(vs.get(i));
+            }
+        }
+        return new Headers(names, values);
+    }
+
+    public static Headers create(List<String> names, List<String> values) {
+        if (names == null) {
+            throw new NullPointerException("names == null");
+        }
+        if (values == null) {
+            throw new NullPointerException("values == null");
+        }
+        if (names.size() != values.size()) {
+            throw new IllegalArgumentException("names.size() != values.size()");
+        }
+        return new Headers(new ArrayList<>(names), new ArrayList<>(values));
     }
 
     final Pair pair;
@@ -25,8 +60,8 @@ public class Headers {
         this.pair = pair;
     }
 
-    protected Headers(List<String> names, List<String> values) {
-        pair = new Pair(Pair.NULL_CASE_INSENSITIVE, new ArrayList<>(names), new ArrayList<>(values));
+    Headers(List<String> names, List<String> values) {
+        pair = new Pair(Pair.NULL_BUT_CASE_SENSITIVE, names, values);
     }
 
     public String name(int index) {
@@ -78,7 +113,7 @@ public class Headers {
     }
 
     public WritableHeaders newWritableHeaders() {
-        return new WritableHeaders(pair.names, pair.values);
+        return new WritableHeaders(new ArrayList<>(pair.names), new ArrayList<>(pair.values));
     }
 
     @Override
@@ -89,7 +124,6 @@ public class Headers {
         Headers headers = (Headers) o;
 
         return pair.equals(headers.pair);
-
     }
 
     @Override

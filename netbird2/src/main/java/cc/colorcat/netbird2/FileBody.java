@@ -14,7 +14,6 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-
 final class FileBody extends RequestBody {
     private String name;
     private File file;

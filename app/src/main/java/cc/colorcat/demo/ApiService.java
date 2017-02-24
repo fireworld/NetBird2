@@ -8,12 +8,12 @@ import android.widget.ImageView;
 import java.io.IOException;
 import java.util.List;
 
-import cc.colorcat.netbird2.Headers;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
 import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.Response;
 import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 

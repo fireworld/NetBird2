@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -16,7 +17,6 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class HttpConnection implements Connection {
     private boolean enableCache = false;
     private HttpURLConnection conn;

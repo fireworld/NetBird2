@@ -31,7 +31,8 @@ public class RealCall implements Call, Comparable<RealCall> {
 
     @Override
     public Response execute() throws IOException {
-        List<Interceptor> interceptors = new ArrayList<>(netBird.interceptors);
+        List<Interceptor> interceptors = new ArrayList<>(netBird.interceptors.size() + 1);
+        interceptors.addAll(netBird.interceptors);
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
         return chain.proceed(request);

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -65,9 +66,7 @@ public class ResponseBody implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         Utils.close(is);
     }
-
-
 }

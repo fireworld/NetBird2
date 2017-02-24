@@ -9,7 +9,6 @@ import java.util.List;
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-
 class MixBody extends RequestBody {
     private static final String MIX = "multipart/form-data; boundary=";
     private static final byte[] CRLF = {'\r', '\n'};

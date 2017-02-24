@@ -4,6 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cc.colorcat.netbird2.meta.Parameters;
+
+/**
+ * Created by cxx on 16-12-15.
+ * xx.ch@outlook.com
+ */
 final class FormBody extends RequestBody {
     private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 //    private static final String CONTENT_TYPE = "text/plain; charset=UTF-8";

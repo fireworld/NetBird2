@@ -14,7 +14,6 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class NetBird implements Call.Factory {
     final List<Interceptor> interceptors;
     final ExecutorService executor;
