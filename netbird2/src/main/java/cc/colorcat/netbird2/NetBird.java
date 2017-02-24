@@ -15,18 +15,18 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class NetBird implements Call.Factory {
-    final List<Interceptor> headInterceptors;
-    final List<Interceptor> tailInterceptors;
-    final ExecutorService executor;
-    final Dispatcher dispatcher;
-    final Connection connection;
-    final String baseUrl;
-    final long cacheSize;
-    final File cachePath;
-    final int maxRunning;
-    final int readTimeOut;
-    final int connectTimeOut;
+public final class NetBird implements Call.Factory {
+    private final List<Interceptor> headInterceptors;
+    private final List<Interceptor> tailInterceptors;
+    private final ExecutorService executor;
+    private final Dispatcher dispatcher;
+    private final Connection connection;
+    private final String baseUrl;
+    private final long cacheSize;
+    private final File cachePath;
+    private final int maxRunning;
+    private final int readTimeOut;
+    private final int connectTimeOut;
 
     private NetBird(Builder builder) {
         this.headInterceptors = Utils.immutableList(builder.headInterceptors);
@@ -40,6 +40,22 @@ public class NetBird implements Call.Factory {
         this.maxRunning = builder.maxRunning;
         this.readTimeOut = builder.readTimeOut;
         this.connectTimeOut = builder.connectTimeOut;
+    }
+
+    public List<Interceptor> headInterceptors() {
+        return headInterceptors;
+    }
+
+    public List<Interceptor> tailInterceptors() {
+        return tailInterceptors;
+    }
+
+    public Dispatcher dispatcher() {
+        return dispatcher;
+    }
+
+    public Connection connection() {
+        return connection;
     }
 
     public String baseUrl() {
@@ -82,7 +98,7 @@ public class NetBird implements Call.Factory {
         }
     }
 
-    public static class Builder {
+    public static final class Builder {
         private List<Interceptor> headInterceptors;
         private List<Interceptor> tailInterceptors;
         private ExecutorService executor;

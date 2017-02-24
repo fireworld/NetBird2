@@ -20,7 +20,7 @@ public class RealCall implements Call, Comparable<RealCall> {
     public RealCall(NetBird netBird, Request<?> originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
-        this.connection = netBird.connection.clone();
+        this.connection = netBird.connection().clone();
         this.requestProcess = new RequestProcessInterceptor(netBird);
     }
 
@@ -31,16 +31,18 @@ public class RealCall implements Call, Comparable<RealCall> {
 
     @Override
     public void enqueue() {
-        netBird.dispatcher.execute(this);
+        netBird.dispatcher().execute(this);
     }
 
     @Override
     public Response execute() throws IOException {
-        int size = netBird.headInterceptors.size() + netBird.tailInterceptors.size();
+        List<Interceptor> head = netBird.headInterceptors();
+        List<Interceptor> tail = netBird.tailInterceptors();
+        int size = head.size() + tail.size();
         List<Interceptor> interceptors = new ArrayList<>(size + 2);
-        interceptors.addAll(netBird.headInterceptors);
+        interceptors.addAll(head);
         interceptors.add(requestProcess);
-        interceptors.addAll(netBird.tailInterceptors);
+        interceptors.addAll(tail);
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
         return chain.proceed(request);
