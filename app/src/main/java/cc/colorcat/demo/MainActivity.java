@@ -14,6 +14,7 @@ import java.util.List;
 
 import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.SimpleCallback;
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -32,6 +33,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        new OkHttpClient();
         initListView();
         initData();
     }

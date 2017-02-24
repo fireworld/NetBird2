@@ -38,7 +38,6 @@ public class Utils {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 
-
     public static String smartEncode(String value) {
         try {
             String decodedValue = decode(value);
