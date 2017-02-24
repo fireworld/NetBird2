@@ -11,6 +11,7 @@ import cc.colorcat.netbird2.request.Request;
  * xx.ch@outlook.com
  */
 public class RealCall implements Call, Comparable<RealCall> {
+    private Interceptor requestProcess = new RequestProcessInterceptor();
     private NetBird netBird;
     private Request<?> request;
     private Connection connection;
@@ -33,8 +34,9 @@ public class RealCall implements Call, Comparable<RealCall> {
 
     @Override
     public Response execute() throws IOException {
-        List<Interceptor> interceptors = new ArrayList<>(netBird.interceptors.size() + 1);
+        List<Interceptor> interceptors = new ArrayList<>(netBird.interceptors.size() + 2);
         interceptors.addAll(netBird.interceptors);
+        interceptors.add(requestProcess);
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
         return chain.proceed(request);

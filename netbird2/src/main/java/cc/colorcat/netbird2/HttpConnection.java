@@ -85,7 +85,6 @@ public class HttpConnection implements Connection {
         if (body != null) {
             long contentLength = body.contentLength();
             if (contentLength > 0) {
-                conn.setRequestProperty("Content-Type", body.contentType());
                 OutputStream os = null;
                 try {
                     os = conn.getOutputStream();

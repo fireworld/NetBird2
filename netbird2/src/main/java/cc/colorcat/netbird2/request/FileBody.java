@@ -20,7 +20,7 @@ final class FileBody extends RequestBody {
     private File file;
     private String type;
     private Request.UploadListener listener;
-    private long contentLength = -1;
+    private long contentLength = -1L;
 
     static FileBody create(Request.Pack pack, @Nullable Request.UploadListener listener) {
         return new FileBody(pack.name, pack.file, pack.contentType, listener);
@@ -40,10 +40,11 @@ final class FileBody extends RequestBody {
 
     @Override
     public long contentLength() throws IOException {
-        if (contentLength != -1) return contentLength;
-        long size = file.length();
-        if (size > 0) {
-            contentLength = size;
+        if (contentLength == -1L) {
+            long length = file.length();
+            if (length > 0L) {
+                contentLength = length;
+            }
         }
         return contentLength;
     }

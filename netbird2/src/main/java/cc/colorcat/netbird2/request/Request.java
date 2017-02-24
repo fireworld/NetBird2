@@ -671,6 +671,11 @@ public class Request<T> implements Comparable<Request> {
             return this;
         }
 
+        public Builder<T> removeHeader(String name) {
+            headers.removeAll(name);
+            return this;
+        }
+
         /**
          * @return 返回所有已添加的 Header 的名称，顺序与 {@link Builder#headerValues()} 一一对应
          */

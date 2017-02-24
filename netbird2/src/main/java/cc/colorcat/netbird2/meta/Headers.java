@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cc.colorcat.netbird2.util.Utils;
+
 /**
  * Created by cxx on 2017/2/23.
  * xx.ch@outlook.com
  */
 public class Headers {
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
     private static transient Headers emptyHeaders;
 
     public static Headers emptyHeaders() {
@@ -90,6 +94,15 @@ public class Headers {
 
     public List<String> values(String name) {
         return pair.values(name);
+    }
+
+    public String contentType() {
+        return pair.value(CONTENT_TYPE);
+    }
+
+    public long contentLength() {
+        String contentLength = pair.value(CONTENT_LENGTH);
+        return Utils.quiteParse(contentLength, -1L);
     }
 
     public Set<String> nameSet() {

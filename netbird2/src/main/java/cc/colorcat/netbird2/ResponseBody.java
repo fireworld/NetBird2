@@ -16,7 +16,6 @@ import cc.colorcat.netbird2.util.Utils;
  */
 
 public class ResponseBody implements Closeable {
-    private static final String CONTENT_TYPE = "Content-Type";
     private Headers headers;
     private InputStream is;
 
@@ -31,15 +30,15 @@ public class ResponseBody implements Closeable {
     }
 
     public long contentLength() {
-        return Utils.quiteParse(headers.value("Content-Length"), -1L);
+        return headers.contentLength();
     }
 
     public String contentType() {
-        return headers.value(CONTENT_TYPE);
+        return headers.contentType();
     }
 
     public Charset charset() {
-        String charset = Utils.parseCharset(headers.value(CONTENT_TYPE));
+        String charset = Utils.parseCharset(headers.value(Headers.CONTENT_TYPE));
         if (charset == null) return null;
         try {
             return Charset.forName(charset);
