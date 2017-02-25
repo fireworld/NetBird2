@@ -42,7 +42,7 @@ public class HttpConnection implements Connection {
         Method method = request.method();
         if (method == Method.GET) {
             String params = request.encodedParams();
-            if (params != null) {
+            if (!Utils.isEmpty(params)) {
                 url = url + '?' + params;
             }
         }
@@ -69,12 +69,10 @@ public class HttpConnection implements Connection {
 
     @Override
     public void writeHeaders(Headers headers) throws IOException {
-        if (headers != null && !headers.isEmpty()) {
-            for (int i = 0, size = headers.size(); i < size; i++) {
-                String name = headers.name(i);
-                String value = headers.value(i);
-                conn.addRequestProperty(name, value);
-            }
+        for (int i = 0, size = headers.size(); i < size; i++) {
+            String name = headers.name(i);
+            String value = headers.value(i);
+            conn.addRequestProperty(name, value);
         }
     }
 
