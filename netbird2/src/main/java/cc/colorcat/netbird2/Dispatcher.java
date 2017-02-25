@@ -77,7 +77,7 @@ public class Dispatcher {
         }
     }
 
-    private void removeRunning(Call call) {
+    private void finished(Call call) {
         running.remove(call);
     }
 
@@ -108,7 +108,7 @@ public class Dispatcher {
                 LogUtils.e(e);
                 msg = Utils.formatMsg(msg, e);
             } finally {
-                dispatcher.removeRunning(call);
+                dispatcher.finished(call);
                 dispatcher.notifyNewCall();
                 Utils.close(call);
             }
