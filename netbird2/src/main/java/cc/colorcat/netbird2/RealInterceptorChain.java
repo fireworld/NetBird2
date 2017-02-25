@@ -10,7 +10,7 @@ import cc.colorcat.netbird2.response.Response;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class RealInterceptorChain implements Interceptor.Chain {
+public final class RealInterceptorChain implements Interceptor.Chain {
     private final List<Interceptor> interceptors;
     private final int index;
     private final Request<?> request;
