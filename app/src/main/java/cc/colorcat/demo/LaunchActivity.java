@@ -18,9 +18,10 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.Request;
-import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.util.LogUtils;
 
 
@@ -127,7 +128,7 @@ public class LaunchActivity extends AppCompatActivity {
         File path = new File(getExternalCacheDir(), "test.apk");
         Request<File> req = new Request.Builder<>(FileParser.create(path))
                 .url("http://dldir1.qq.com/weixin/android/weixin653android980.apk")
-                .method(Request.Method.GET)
+                .method(Method.GET)
                 .loadListener(new Response.LoadListener() {
                     @Override
                     public void onChanged(long read, long total, int percent) {
@@ -163,7 +164,7 @@ public class LaunchActivity extends AppCompatActivity {
                         showToast(code + " : " + msg);
                     }
                 }).url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
-                .addHeader("get_Header1", "HeaderValue1").addHeader("get_Header2", "HeaderValue2").method(Request.Method.GET).build();
+                .addHeader("get_Header1", "HeaderValue1").addHeader("get_Header2", "HeaderValue2").method(Method.GET).build();
         ApiService.call(req);
     }
 
@@ -183,7 +184,7 @@ public class LaunchActivity extends AppCompatActivity {
                 })
                 .url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
                 .addHeader("post_Header1", "HeaderValue1").addHeader("post_Header2", "HeaderValue2")
-                .method(Request.Method.POST).build();
+                .method(Method.POST).build();
         ApiService.call(req);
     }
 
@@ -208,7 +209,7 @@ public class LaunchActivity extends AppCompatActivity {
                     }
                 })
                 .url(UPLOAD_URL).path(UPLOAD_PATH).add("r", UPLOAD_R).add("sign", UPLOAD_SIGN)
-                .addPack("userHeardImg", "image/jpeg", userHeardImg).method(Request.Method.POST).build();
+                .addPack("userHeardImg", "image/jpeg", userHeardImg).method(Method.POST).build();
         ApiService.call(req);
     }
 

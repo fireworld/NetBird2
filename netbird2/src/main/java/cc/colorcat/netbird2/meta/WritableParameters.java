@@ -1,5 +1,6 @@
-package cc.colorcat.netbird2.util;
+package cc.colorcat.netbird2.meta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,7 +9,11 @@ import java.util.List;
  */
 public class WritableParameters extends Parameters {
 
-    protected WritableParameters(List<String> names, List<String> values) {
+    public static WritableParameters create(int capacity) {
+        return new WritableParameters(new ArrayList<String>(capacity), new ArrayList<String>(capacity));
+    }
+
+    WritableParameters(List<String> names, List<String> values) {
         super(names, values);
     }
 
@@ -33,6 +38,6 @@ public class WritableParameters extends Parameters {
     }
 
     public Parameters newReadableParameters() {
-        return new Parameters(pair.names, pair.values);
+        return new Parameters(new ArrayList<>(pair.names), new ArrayList<>(pair.values));
     }
 }

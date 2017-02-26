@@ -3,11 +3,14 @@ package cc.colorcat.netbird2;
 import java.io.IOException;
 import java.util.List;
 
+import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.response.Response;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class RealInterceptorChain implements Interceptor.Chain {
+public final class RealInterceptorChain implements Interceptor.Chain {
     private final List<Interceptor> interceptors;
     private final int index;
     private final Request<?> request;

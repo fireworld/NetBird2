@@ -6,14 +6,19 @@ import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
-import cc.colorcat.netbird2.Headers;
+import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.Request;
-import cc.colorcat.netbird2.Response;
 import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.response.Response;
+import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -28,17 +33,36 @@ public class ApiService {
 
     private static NetBird bird;
     private static final String baseUrl = "http://www.imooc.com/api";
+    private static final Interceptor progressListener;
+
+    static {
+        progressListener = new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                ResponseBody body = response.body();
+                if (body != null) {
+                    response = response.newBuilder().body(new FakeResponseBody(body, chain.request().loadListener())).build();
+                }
+                return response;
+            }
+        };
+    }
 
     public static void init(Context ctx) {
         bird = new NetBird.Builder(baseUrl)
-                .addInterceptor(new TestInterceptorA())
-                .addInterceptor(new TestInterceptorB())
-                .addInterceptor(new LogInterceptor())
+                .addHeadInterceptor(new TestInterceptorA())
+                .addHeadInterceptor(new TestInterceptorB())
+                .addTailInterceptor(new LogInterceptor())
                 .build();
     }
 
     public static Object call(Request<?> req) {
-        bird.newCall(req).enqueue();
+        if (req.loadListener() == null) {
+            bird.newCall(req).enqueue();
+        } else {
+            bird.newBuilder().addTailInterceptor(progressListener).build().newCall(req).enqueue();
+        }
         return req.tag();
     }
 
@@ -108,10 +132,10 @@ public class ApiService {
         public Response intercept(Chain chain) throws IOException {
             Request<?> req = chain.request();
             if (LogUtils.isDebug) {
-                Request.Method m = req.method();
+                Method m = req.method();
                 LogUtils.ii(TAG, "---------------------------------------- " + m.name() + " -----------------------------------------");
-                String url = url(req);
-                if (m == Request.Method.GET) {
+                String url = req.url();
+                if (m == Method.GET) {
                     String params = req.encodedParams();
                     if (!Utils.isEmpty(params)) {
                         url = url + '?' + params;
@@ -155,12 +179,36 @@ public class ApiService {
         }
     }
 
-    private static String url(Request<?> req) {
-        String url = Utils.emptyElse(req.url(), baseUrl);
-        String path = req.path();
-        if (!Utils.isEmpty(path)) {
-            url += path;
+    private static class FakeResponseBody extends ResponseBody {
+        private ResponseBody body;
+
+        public FakeResponseBody(ResponseBody body, Response.LoadListener listener) {
+            InputStream is = body.stream();
+            long contentLength = body.contentLength();
+            if (contentLength != -1L) {
+                is = InputWrapper.create(is, contentLength, listener);
+            }
+            this.body = ResponseBody.create(is, contentLength, body.contentType(), body.charset());
         }
-        return url;
+
+        @Override
+        public long contentLength() {
+            return body.contentLength();
+        }
+
+        @Override
+        public String contentType() {
+            return body.contentType();
+        }
+
+        @Override
+        public Charset charset() {
+            return body.charset();
+        }
+
+        @Override
+        public InputStream stream() {
+            return body.stream();
+        }
     }
 }

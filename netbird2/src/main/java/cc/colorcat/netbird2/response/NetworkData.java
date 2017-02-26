@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.response;
 
 import cc.colorcat.netbird2.util.Utils;
 

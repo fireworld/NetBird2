@@ -1,5 +1,11 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.response;
 
+import java.io.Closeable;
+
+import cc.colorcat.netbird2.Const;
+import cc.colorcat.netbird2.ProgressListener;
+import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.meta.WritableHeaders;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -7,7 +13,7 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 
-public class Response {
+public class Response implements Closeable {
     private final int code;
     private final String msg;
     private final Headers headers;
@@ -48,6 +54,13 @@ public class Response {
         return new Builder(this);
     }
 
+    @Override
+    public void close() {
+        if (body != null) {
+            body.close();
+        }
+    }
+
     public interface LoadListener extends ProgressListener {
 
         @Override
@@ -61,7 +74,7 @@ public class Response {
         private ResponseBody body;
 
         public Builder() {
-            headers = new WritableHeaders(16);
+            headers = WritableHeaders.create(16);
             code = Const.CODE_CONNECT_ERROR;
             msg = Const.MSG_CONNECT_ERROR;
         }

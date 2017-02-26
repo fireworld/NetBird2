@@ -8,27 +8,29 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
-public class NetBird implements Call.Factory {
-    final List<Interceptor> interceptors;
-    final ExecutorService executor;
-    final Dispatcher dispatcher;
-    final Connection connection;
-    final String baseUrl;
-    final long cacheSize;
-    final File cachePath;
-    final int maxRunning;
-    final int readTimeOut;
-    final int connectTimeOut;
+public final class NetBird implements Call.Factory {
+    private final List<Interceptor> headInterceptors;
+    private final List<Interceptor> tailInterceptors;
+    private final ExecutorService executor;
+    private final Dispatcher dispatcher;
+    private final Connection connection;
+    private final String baseUrl;
+    private final long cacheSize;
+    private final File cachePath;
+    private final int maxRunning;
+    private final int readTimeOut;
+    private final int connectTimeOut;
 
     private NetBird(Builder builder) {
-        this.interceptors = Utils.immutableList(builder.interceptors);
+        this.headInterceptors = Utils.immutableList(builder.headInterceptors);
+        this.tailInterceptors = Utils.immutableList(builder.tailInterceptors);
         this.executor = builder.executor;
         this.dispatcher = new Dispatcher(this);
         this.connection = builder.connection;
@@ -38,6 +40,26 @@ public class NetBird implements Call.Factory {
         this.maxRunning = builder.maxRunning;
         this.readTimeOut = builder.readTimeOut;
         this.connectTimeOut = builder.connectTimeOut;
+    }
+
+    public List<Interceptor> headInterceptors() {
+        return headInterceptors;
+    }
+
+    public List<Interceptor> tailInterceptors() {
+        return tailInterceptors;
+    }
+
+    public ExecutorService executor() {
+        return executor;
+    }
+
+    public Dispatcher dispatcher() {
+        return dispatcher;
+    }
+
+    public Connection connection() {
+        return connection;
     }
 
     public String baseUrl() {
@@ -69,6 +91,10 @@ public class NetBird implements Call.Factory {
         return new RealCall(this, request);
     }
 
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
+
     private static class CallFactory implements Call.Factory {
         @Override
         public Call newCall(Request<?> request) {
@@ -76,8 +102,9 @@ public class NetBird implements Call.Factory {
         }
     }
 
-    public static class Builder {
-        private List<Interceptor> interceptors = new ArrayList<>(4);
+    public static final class Builder {
+        private List<Interceptor> headInterceptors;
+        private List<Interceptor> tailInterceptors;
         private ExecutorService executor;
         private Connection connection;
         private String baseUrl;
@@ -89,6 +116,21 @@ public class NetBird implements Call.Factory {
 
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
+            this.headInterceptors = new ArrayList<>(2);
+            this.tailInterceptors = new ArrayList<>(2);
+        }
+
+        private Builder(NetBird netBird) {
+            this.baseUrl = netBird.baseUrl;
+            this.headInterceptors = new ArrayList<>(netBird.headInterceptors);
+            this.tailInterceptors = new ArrayList<>(netBird.tailInterceptors);
+            this.executor = netBird.executor;
+            this.connection = netBird.connection;
+            this.cacheSize = netBird.cacheSize;
+            this.cachePath = netBird.cachePath;
+            this.maxRunning = netBird.maxRunning;
+            this.readTimeOut = netBird.readTimeOut;
+            this.connectTimeOut = netBird.connectTimeOut;
         }
 
         public Builder executor(ExecutorService executor) {
@@ -101,8 +143,13 @@ public class NetBird implements Call.Factory {
             return this;
         }
 
-        public Builder addInterceptor(Interceptor interceptor) {
-            this.interceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
+        public Builder addHeadInterceptor(Interceptor interceptor) {
+            headInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
+            return this;
+        }
+
+        public Builder addTailInterceptor(Interceptor interceptor) {
+            tailInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
             return this;
         }
 
@@ -140,7 +187,7 @@ public class NetBird implements Call.Factory {
         }
 
         public NetBird build() {
-            if (executor == null) executor = defaultService(6);
+            if (executor == null) executor = defaultService(maxRunning);
             if (connection == null) connection = new HttpConnection();
             return new NetBird(this);
         }

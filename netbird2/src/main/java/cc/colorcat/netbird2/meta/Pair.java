@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.util;
+package cc.colorcat.netbird2.meta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,17 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import cc.colorcat.netbird2.util.Utils;
+
 /**
  * Created by cxx on 2017/2/23.
  * xx.ch@outlook.com
  */
-public final class Pair {
-    static final Comparator<String> NULL_INSENSITIVE;
-    static final Comparator<String> NULL_CASE_INSENSITIVE;
+final class Pair {
+    static final Comparator<String> NULL_CASE_SENSITIVE;
+    static final Comparator<String> NULL_BUT_CASE_SENSITIVE;
     static final Pair EMPTY_PAIR;
 
     static {
-        NULL_INSENSITIVE = new Comparator<String>() {
+        NULL_CASE_SENSITIVE = new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 if (o1 == o2) return 0;
@@ -31,7 +33,7 @@ public final class Pair {
             }
         };
 
-        NULL_CASE_INSENSITIVE = new Comparator<String>() {
+        NULL_BUT_CASE_SENSITIVE = new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 if (o1 == o2) return 0;
@@ -41,36 +43,36 @@ public final class Pair {
             }
         };
 
-        EMPTY_PAIR = new Pair(NULL_INSENSITIVE, Collections.<String>emptyList(), Collections.<String>emptyList());
+        EMPTY_PAIR = new Pair(NULL_CASE_SENSITIVE, Collections.<String>emptyList(), Collections.<String>emptyList());
     }
 
-    final Comparator<String> comparator;
+    private final Comparator<String> comparator;
     final List<String> names;
     final List<String> values;
 
-    protected Pair(Comparator<String> comparator, List<String> names, List<String> values) {
+    Pair(Comparator<String> comparator, List<String> names, List<String> values) {
         this.comparator = comparator;
         this.names = names;
         this.values = values;
     }
 
-    public String name(int index) {
+    String name(int index) {
         return names.get(index);
     }
 
-    public String value(int index) {
+    String value(int index) {
         return values.get(index);
     }
 
-    public List<String> names() {
+    List<String> names() {
         return Utils.immutableList(names);
     }
 
-    public List<String> values() {
+    List<String> values() {
         return Utils.immutableList(values);
     }
 
-    public String value(String name) {
+    String value(String name) {
         for (int i = 0, size = names.size(); i < size; i++) {
             if (comparator.compare(name, names.get(i)) == 0) {
                 return values.get(i);
@@ -79,11 +81,11 @@ public final class Pair {
         return null;
     }
 
-    public String value(String name, String defaultValue) {
+    String value(String name, String defaultValue) {
         return Utils.nullElse(value(name), defaultValue);
     }
 
-    public List<String> values(String name) {
+    List<String> values(String name) {
         List<String> result = null;
         for (int i = 0, size = names.size(); i < size; i++) {
             if (comparator.compare(name, names.get(i)) == 0) {
@@ -94,23 +96,28 @@ public final class Pair {
         return result != null ? Collections.unmodifiableList(result) : Collections.<String>emptyList();
     }
 
-    public void add(String name, String value) {
+    void add(String name, String value) {
         names.add(name);
         values.add(value);
     }
 
-    public void set(String name, String value) {
+    void addAll(List<String> names, List<String> values) {
+        this.names.addAll(names);
+        this.values.addAll(values);
+    }
+
+    void set(String name, String value) {
         removeAll(name);
         add(name, value);
     }
 
-    public void addIfNot(String name, String value) {
+    void addIfNot(String name, String value) {
         if (!contains(name)) {
             add(name, value);
         }
     }
 
-    public boolean contains(String name) {
+    boolean contains(String name) {
         for (int i = 0, size = names.size(); i < size; i++) {
             if (comparator.compare(name, names.get(i)) == 0) {
                 return true;
@@ -119,7 +126,7 @@ public final class Pair {
         return false;
     }
 
-    public void removeAll(String name) {
+    void removeAll(String name) {
         for (int i = names.size() - 1; i >= 0; i--) {
             if (comparator.compare(name, names.get(i)) == 0) {
                 names.remove(i);
@@ -128,12 +135,12 @@ public final class Pair {
         }
     }
 
-    public void clear() {
+    void clear() {
         names.clear();
         values.clear();
     }
 
-    public Set<String> nameSet() {
+    Set<String> nameSet() {
         if (names.isEmpty()) return Collections.emptySet();
         Set<String> result = new TreeSet<>(comparator);
         List<String> ns = new ArrayList<>(names);
@@ -149,7 +156,7 @@ public final class Pair {
         return Collections.unmodifiableSet(result);
     }
 
-    public Map<String, List<String>> toMultimap() {
+    Map<String, List<String>> toMultimap() {
         if (names.isEmpty()) return Collections.emptyMap();
         Map<String, List<String>> result = new HashMap<>();
         for (String name : nameSet()) {
@@ -158,11 +165,11 @@ public final class Pair {
         return Collections.unmodifiableMap(result);
     }
 
-    public int size() {
+    int size() {
         return names.size();
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return names.isEmpty();
     }
 
@@ -175,7 +182,6 @@ public final class Pair {
 
         if (!names.equals(pair.names)) return false;
         return values.equals(pair.values);
-
     }
 
     @Override

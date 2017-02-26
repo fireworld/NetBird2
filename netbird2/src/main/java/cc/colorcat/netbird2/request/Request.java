@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -8,6 +8,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.colorcat.netbird2.Callback;
+import cc.colorcat.netbird2.response.NetworkData;
+import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.ProgressListener;
+import cc.colorcat.netbird2.response.Response;
+import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.meta.Parameters;
+import cc.colorcat.netbird2.meta.WritableHeaders;
+import cc.colorcat.netbird2.meta.WritableParameters;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -267,16 +276,12 @@ public class Request<T> implements Comparable<Request> {
         }
     }
 
-    public enum Method {
-        GET, POST
-    }
-
     public static class Builder<T> {
-        private Parameters params;
+        private WritableParameters params;
         private WritableHeaders headers;
         private String url;
         private String path;
-        private Request.Method method = Method.GET;
+        private Method method = Method.GET;
         private Parser<? extends T> parser;
         private List<Pack> packs;
         private Callback<? super T> callback;
@@ -287,7 +292,7 @@ public class Request<T> implements Comparable<Request> {
         private Object tag;
 
         protected Builder(Request<T> req) {
-            this.params = req.params;
+            this.params = req.params.newWritableParameters();
             this.headers = req.headers.newWritableHeaders();
             this.url = req.url;
             this.path = req.path;
@@ -305,8 +310,8 @@ public class Request<T> implements Comparable<Request> {
          */
         public Builder(@NonNull Parser<? extends T> parser) {
             this.parser = Utils.nonNull(parser, "parser == null");
-            this.params = Parameters.create(8);
-            this.headers = new WritableHeaders(2);
+            this.params = WritableParameters.create(8);
+            this.headers = WritableHeaders.create(2);
         }
 
         public Builder<T> tag(Object tag) {
@@ -382,49 +387,6 @@ public class Request<T> implements Comparable<Request> {
         }
 
         /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, int value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, long value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         */
-        public Builder<T> add(String name, float value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
-         * 添加请求参数
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> add(String name, double value) {
-            return add(name, String.valueOf(value));
-        }
-
-        /**
          * 设置请求参数
          * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
          *
@@ -440,46 +402,6 @@ public class Request<T> implements Comparable<Request> {
         }
 
         /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, int value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, long value) {
-            return set(name, String.valueOf(value));
-        }
-
-        public Builder<T> set(String name, float value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
-         * 设置请求参数
-         * 此操作将清除已添加的所有名称为 name 的参数对，然后添加所提供的参数对。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> set(String name, double value) {
-            return set(name, String.valueOf(value));
-        }
-
-        /**
          * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
          *
          * @param name  请求参数的名称
@@ -491,50 +413,6 @@ public class Request<T> implements Comparable<Request> {
             Utils.nonEmpty(value, "value is null/empty");
             params.addIfNot(name, value);
             return this;
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, int value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, long value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, float value) {
-            return addIfNot(name, String.valueOf(value));
-        }
-
-        /**
-         * 如果不存在名称为 name 的参数对则添加所提供的参数对，否则忽略之。
-         *
-         * @param name  请求参数的名称
-         * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
-         */
-        public Builder<T> addIfNot(String name, double value) {
-            return addIfNot(name, String.valueOf(value));
         }
 
         /**
@@ -571,16 +449,6 @@ public class Request<T> implements Comparable<Request> {
         public String value(String name) {
             Utils.nonEmpty(name, "name is null/empty");
             return params.value(name);
-        }
-
-        /**
-         * @return 返回所有添加的与 name 对应的 value
-         * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
-         */
-        @NonNull
-        public List<String> values(String name) {
-            Utils.nonEmpty(name, "name is null/empty");
-            return params.values(name);
         }
 
         /**
@@ -676,6 +544,11 @@ public class Request<T> implements Comparable<Request> {
             return this;
         }
 
+        public Builder<T> removeHeader(String name) {
+            headers.removeAll(name);
+            return this;
+        }
+
         /**
          * @return 返回所有已添加的 Header 的名称，顺序与 {@link Builder#headerValues()} 一一对应
          */
@@ -721,7 +594,7 @@ public class Request<T> implements Comparable<Request> {
         }
 
         private static WritableHeaders createHeader() {
-            return new WritableHeaders(4);
+            return WritableHeaders.create(4);
         }
 
         @CallSuper

@@ -9,6 +9,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.request.Method;
+import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.RequestBody;
+import cc.colorcat.netbird2.response.RealResponseBody;
+import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -16,7 +22,6 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class HttpConnection implements Connection {
     private boolean enableCache = false;
     private HttpURLConnection conn;
@@ -33,15 +38,11 @@ public class HttpConnection implements Connection {
     @Override
     public void connect(NetBird netBird, Request<?> request) throws IOException {
         enableCache(netBird.cachePath(), netBird.cacheSize());
-        String url = Utils.nullElse(request.url(), netBird.baseUrl());
-        String path = request.path();
-        if (path != null) {
-            url += path;
-        }
-        Request.Method method = request.method();
-        if (method == Request.Method.GET) {
+        String url = request.url();
+        Method method = request.method();
+        if (method == Method.GET) {
             String params = request.encodedParams();
-            if (params != null) {
+            if (!Utils.isEmpty(params)) {
                 url = url + '?' + params;
             }
         }
@@ -50,7 +51,7 @@ public class HttpConnection implements Connection {
         conn.setReadTimeout(netBird.readTimeOut());
         conn.setDoInput(true);
         conn.setRequestMethod(method.name());
-        if (method == Request.Method.POST) {
+        if (method == Method.POST) {
             conn.setDoOutput(true);
         }
         conn.setUseCaches(enableCache);
@@ -68,12 +69,10 @@ public class HttpConnection implements Connection {
 
     @Override
     public void writeHeaders(Headers headers) throws IOException {
-        if (headers != null && !headers.isEmpty()) {
-            for (int i = 0, size = headers.size(); i < size; i++) {
-                String name = headers.name(i);
-                String value = headers.value(i);
-                conn.addRequestProperty(name, value);
-            }
+        for (int i = 0, size = headers.size(); i < size; i++) {
+            String name = headers.name(i);
+            String value = headers.value(i);
+            conn.addRequestProperty(name, value);
         }
     }
 
@@ -82,7 +81,6 @@ public class HttpConnection implements Connection {
         if (body != null) {
             long contentLength = body.contentLength();
             if (contentLength > 0) {
-                conn.setRequestProperty("Content-Type", body.contentType());
                 OutputStream os = null;
                 try {
                     os = conn.getOutputStream();
@@ -111,7 +109,7 @@ public class HttpConnection implements Connection {
         if (is == null) {
             is = conn.getInputStream();
         }
-        return ResponseBody.create(headers, is);
+        return RealResponseBody.create(is, headers);
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")

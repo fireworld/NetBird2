@@ -1,18 +1,26 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import cc.colorcat.netbird2.ByteOutputStream;
+import cc.colorcat.netbird2.meta.Parameters;
+
+/**
+ * Created by cxx on 16-12-15.
+ * xx.ch@outlook.com
+ */
 final class FormBody extends RequestBody {
     private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 //    private static final String CONTENT_TYPE = "text/plain; charset=UTF-8";
 
-    private final Parameters namesAndValues;
-
     public static FormBody create(Parameters namesAndValues) {
         return new FormBody(namesAndValues);
     }
+
+    private final Parameters namesAndValues;
+    private long contentLength = -1L;
 
     private FormBody(Parameters namesAndValues) {
         this.namesAndValues = namesAndValues;
@@ -37,7 +45,13 @@ final class FormBody extends RequestBody {
 
     @Override
     public long contentLength() throws IOException {
-        return writeOrCountBytes(null, true);
+        if (contentLength == -1L) {
+            long length = writeOrCountBytes(null, true);
+            if (length > 0L) {
+                contentLength = length;
+            }
+        }
+        return contentLength;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package cc.colorcat.demo;
+package cc.colorcat.netbird2.parser;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

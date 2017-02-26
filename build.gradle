@@ -21,3 +21,20 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+def sdkVersion = 23
+def sdkVersionName = "23.0.1"
+
+rootProject.ext {
+    compileSdkVersion = sdkVersion
+    buildToolsVersion = sdkVersionName
+    minSdkVersion = 17
+    targetSdkVersion = sdkVersion
+    versionCode = 1
+    versionName = "1.0"
+
+    supportAppcompat = "com.android.support:appcompat-v7:${sdkVersionName}"
+    junit = 'junit:junit:4.12'
+    okhttp = 'com.squareup.okhttp3:okhttp:3.6.0'
+    gson = 'com.google.code.gson:gson:2.8.0'
+}

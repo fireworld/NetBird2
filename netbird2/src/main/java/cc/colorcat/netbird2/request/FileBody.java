@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import android.support.annotation.Nullable;
 
@@ -8,19 +8,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-
 final class FileBody extends RequestBody {
     private String name;
     private File file;
     private String type;
     private Request.UploadListener listener;
-    private long contentLength = -1;
+    private long contentLength = -1L;
 
     static FileBody create(Request.Pack pack, @Nullable Request.UploadListener listener) {
         return new FileBody(pack.name, pack.file, pack.contentType, listener);
@@ -40,10 +40,11 @@ final class FileBody extends RequestBody {
 
     @Override
     public long contentLength() throws IOException {
-        if (contentLength != -1) return contentLength;
-        long size = file.length();
-        if (size > 0) {
-            contentLength = size;
+        if (contentLength == -1L) {
+            long length = file.length();
+            if (length > 0L) {
+                contentLength = length;
+            }
         }
         return contentLength;
     }

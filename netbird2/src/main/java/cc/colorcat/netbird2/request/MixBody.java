@@ -1,15 +1,16 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import cc.colorcat.netbird2.ByteOutputStream;
+
 /**
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-
 class MixBody extends RequestBody {
     private static final String MIX = "multipart/form-data; boundary=";
     private static final byte[] CRLF = {'\r', '\n'};
@@ -18,7 +19,7 @@ class MixBody extends RequestBody {
     private final String boundary = "===" + System.currentTimeMillis() + "===";
     private FormBody formBody;
     private List<FileBody> fileBodies;
-    private long contentLength = -1;
+    private long contentLength = -1L;
 
     public static MixBody create(FormBody formBody, List<FileBody> fileBodies) {
         return new MixBody(formBody, fileBodies);
@@ -36,10 +37,10 @@ class MixBody extends RequestBody {
 
     @Override
     public long contentLength() throws IOException {
-        if (contentLength == -1) {
-            long size = writeOrCountBytes(null, true);
-            if (size > 0) {
-                contentLength = size;
+        if (contentLength == -1L) {
+            long length = writeOrCountBytes(null, true);
+            if (length > 0L) {
+                contentLength = length;
             }
         }
         return contentLength;

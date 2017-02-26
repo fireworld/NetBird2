@@ -1,4 +1,4 @@
-package cc.colorcat.demo;
+package cc.colorcat.netbird2.parser;
 
 import android.support.annotation.NonNull;
 
@@ -41,10 +41,12 @@ public class FileParser implements Parser<File> {
     public NetworkData<? extends File> parse(@NonNull Response data) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            IoUtils.dumpAndClose(data.body().stream(), fos);
+            Utils.justDump(data.body().stream(), fos);
             return NetworkData.newSuccess(file);
         } catch (IOException e) {
             return NetworkData.newFailure(data.code(), Utils.formatMsg(data.msg(), e));
+        } finally {
+            data.body().close();
         }
     }
 }
