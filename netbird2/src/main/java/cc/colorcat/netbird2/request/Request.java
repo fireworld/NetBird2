@@ -9,21 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cc.colorcat.netbird2.Callback;
-import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.Parser;
-import cc.colorcat.netbird2.ProgressListener;
-import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.meta.WritableHeaders;
 import cc.colorcat.netbird2.meta.WritableParameters;
+import cc.colorcat.netbird2.response.LoadListener;
+import cc.colorcat.netbird2.response.NetworkData;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 @SuppressWarnings("unused")
 public class Request<T> implements Comparable<Request> {
     private Parameters params;
@@ -35,7 +34,7 @@ public class Request<T> implements Comparable<Request> {
     private List<Pack> packs;
     private Callback<? super T> callback;
 
-    private Response.LoadListener loadListener;
+    private LoadListener loadListener;
     private UploadListener uploadListener;
 
     private Object tag;
@@ -82,7 +81,7 @@ public class Request<T> implements Comparable<Request> {
         return Utils.safeImmutableList(packs);
     }
 
-    public Response.LoadListener loadListener() {
+    public LoadListener loadListener() {
         return loadListener;
     }
 
@@ -215,12 +214,6 @@ public class Request<T> implements Comparable<Request> {
         return this.hashCode() - o.hashCode();
     }
 
-    public interface UploadListener extends ProgressListener {
-
-        @Override
-        void onChanged(long written, long total, int percent);
-    }
-
     public static class Pack implements Comparable<Pack> {
         public final String name;
         public final String contentType;
@@ -286,7 +279,7 @@ public class Request<T> implements Comparable<Request> {
         private List<Pack> packs;
         private Callback<? super T> callback;
 
-        private Response.LoadListener loadListener;
+        private LoadListener loadListener;
         private UploadListener uploadListener;
 
         private Object tag;
@@ -359,7 +352,7 @@ public class Request<T> implements Comparable<Request> {
         /**
          * @param listener 下载进度监听器，服务器必须返回数据的长度才有效
          */
-        public Builder<T> loadListener(Response.LoadListener listener) {
+        public Builder<T> loadListener(LoadListener listener) {
             loadListener = listener;
             return this;
         }

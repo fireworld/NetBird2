@@ -19,14 +19,14 @@ final class FileBody extends RequestBody {
     private String name;
     private File file;
     private String type;
-    private Request.UploadListener listener;
+    private UploadListener listener;
     private long contentLength = -1L;
 
-    static FileBody create(Request.Pack pack, @Nullable Request.UploadListener listener) {
+    static FileBody create(Request.Pack pack, @Nullable UploadListener listener) {
         return new FileBody(pack.name, pack.file, pack.contentType, listener);
     }
 
-    private FileBody(String name, File file, String type, Request.UploadListener listener) {
+    private FileBody(String name, File file, String type, UploadListener listener) {
         this.name = name;
         this.file = file;
         this.type = type;

@@ -17,6 +17,7 @@ import cc.colorcat.netbird2.SimpleCallback;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
@@ -182,7 +183,7 @@ public class ApiService {
     private static class FakeResponseBody extends ResponseBody {
         private ResponseBody body;
 
-        public FakeResponseBody(ResponseBody body, Response.LoadListener listener) {
+        public FakeResponseBody(ResponseBody body, LoadListener listener) {
             InputStream is = body.stream();
             long contentLength = body.contentLength();
             if (contentLength != -1L) {
