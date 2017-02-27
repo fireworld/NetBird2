@@ -18,10 +18,11 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.SimpleCallback;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.UploadListener;
+import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.util.LogUtils;
 
 
@@ -129,7 +130,7 @@ public class LaunchActivity extends AppCompatActivity {
         Request<File> req = new Request.Builder<>(FileParser.create(path))
                 .url("http://dldir1.qq.com/weixin/android/weixin653android980.apk")
                 .method(Method.GET)
-                .loadListener(new Response.LoadListener() {
+                .loadListener(new LoadListener() {
                     @Override
                     public void onChanged(long read, long total, int percent) {
                         LogUtils.e("Download_WeChat", read + " : " + total + " : " + percent);
@@ -202,7 +203,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.i("Upload", code + " : " + msg);
                     }
                 })
-                .uploadListener(new Request.UploadListener() {
+                .uploadListener(new UploadListener() {
                     @Override
                     public void onChanged(long written, long total, int percent) {
                         LogUtils.e("Upload", written + "/" + total + " " + written * 100 / total + "%" + " percent: " + percent);
@@ -230,7 +231,7 @@ public class LaunchActivity extends AppCompatActivity {
                 showToast("download failure, " + code + " : " + msg);
                 LogUtils.i("Download_Firefox", "download failure, " + code + " : " + msg);
             }
-        }).loadListener(new Response.LoadListener() {
+        }).loadListener(new LoadListener() {
             @Override
             public void onChanged(long read, long total, int percent) {
                 LogUtils.e("Download_Firefox", read + "/" + total + " " + read * 100 / total + "%" + " percent: " + percent);

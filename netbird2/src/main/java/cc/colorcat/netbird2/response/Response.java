@@ -3,7 +3,6 @@ package cc.colorcat.netbird2.response;
 import java.io.Closeable;
 
 import cc.colorcat.netbird2.Const;
-import cc.colorcat.netbird2.ProgressListener;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.WritableHeaders;
 import cc.colorcat.netbird2.util.Utils;
@@ -59,12 +58,6 @@ public class Response implements Closeable {
         if (body != null) {
             body.close();
         }
-    }
-
-    public interface LoadListener extends ProgressListener {
-
-        @Override
-        void onChanged(long read, long total, int percent);
     }
 
     public static class Builder {
