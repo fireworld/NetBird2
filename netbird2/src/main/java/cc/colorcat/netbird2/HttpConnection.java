@@ -39,21 +39,13 @@ public class HttpConnection implements Connection {
     public void connect(NetBird netBird, Request<?> request) throws IOException {
         enableCache(netBird.cachePath(), netBird.cacheSize());
         String url = request.url();
-        Method method = request.method();
-        if (method == Method.GET) {
-            String params = request.encodedParams();
-            if (!Utils.isEmpty(params)) {
-                url = url + '?' + params;
-            }
-        }
         conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setConnectTimeout(netBird.connectTimeOut());
         conn.setReadTimeout(netBird.readTimeOut());
         conn.setDoInput(true);
+        Method method = request.method();
         conn.setRequestMethod(method.name());
-        if (method == Method.POST) {
-            conn.setDoOutput(true);
-        }
+        conn.setDoOutput(method == Method.POST);
         conn.setUseCaches(enableCache);
     }
 

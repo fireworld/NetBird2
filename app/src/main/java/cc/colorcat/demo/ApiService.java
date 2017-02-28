@@ -13,7 +13,7 @@ import java.util.List;
 import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleCallback;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;

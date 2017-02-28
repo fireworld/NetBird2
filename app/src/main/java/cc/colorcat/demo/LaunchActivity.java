@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleCallback;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.UploadListener;

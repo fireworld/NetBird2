@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.colorcat.netbird2.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleCallback;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import okhttp3.OkHttpClient;

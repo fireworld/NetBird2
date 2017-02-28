@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.parser.Parser;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 

@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
 import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.parser.Parser;
 import cc.colorcat.netbird2.response.Response;
 
 /**

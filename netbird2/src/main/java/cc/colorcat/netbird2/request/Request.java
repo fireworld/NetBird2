@@ -8,8 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.colorcat.netbird2.Callback;
-import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.parser.Parser;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.meta.WritableHeaders;
@@ -40,7 +39,7 @@ public class Request<T> {
     private Object tag;
 
     protected Request(Builder<T> builder) {
-        this.params = builder.params;
+        this.params = builder.params.newReadableParameters();
         this.headers = builder.headers.newReadableHeaders();
         this.url = builder.url;
         this.path = builder.path;
@@ -75,6 +74,10 @@ public class Request<T> {
 
     public Headers headers() {
         return headers;
+    }
+
+    public Parameters parameters() {
+        return params;
     }
 
     public List<Pack> packs() {
@@ -207,7 +210,7 @@ public class Request<T> {
         return result;
     }
 
-    public static class Pack implements Comparable<Pack> {
+    public static class Pack {
         public final String name;
         public final String contentType;
         public final File file;
@@ -247,19 +250,6 @@ public class Request<T> {
             result = 31 * result + file.getAbsolutePath().hashCode();
             return result;
         }
-
-        @Override
-        public int compareTo(@NonNull Pack o) {
-            int n = name.compareTo(o.name);
-            if (n != 0) {
-                return n;
-            }
-            int c = contentType.compareTo(o.contentType);
-            if (c != 0) {
-                return c;
-            }
-            return file.getAbsolutePath().compareTo(file.getAbsolutePath());
-        }
     }
 
     public static class Builder<T> {
@@ -296,7 +286,7 @@ public class Request<T> {
          */
         public Builder(@NonNull Parser<? extends T> parser) {
             this.parser = Utils.nonNull(parser, "parser == null");
-            this.params = WritableParameters.create(8);
+            this.params = WritableParameters.create(4);
             this.headers = WritableHeaders.create(2);
         }
 
