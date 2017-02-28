@@ -13,10 +13,10 @@ import java.util.List;
 import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.response.ResponseBody;
@@ -59,28 +59,23 @@ public class ApiService {
     }
 
     public static Object call(Request<?> req) {
-        if (req.loadListener() == null) {
-            bird.sendRequest(req);
-        } else {
-            bird.newBuilder().addTailInterceptor(progressListener).build().sendRequest(req);
+        NetBird netBird = bird;
+        if (req.loadListener() != null) {
+            netBird = netBird.newBuilder().addTailInterceptor(progressListener).build();
         }
-        return req.tag();
+        return netBird.sendRequest(req);
     }
 
     public static void cancel(Object tag) {
-//        bird.cancel(tag);
+        bird.cancelAll(tag);
     }
 
     public static void cancelAll() {
-//        bird.cancelAll();
+        bird.cancelAll();
     }
 
     public static void cancelWait(Object tag) {
-//        bird.cancelWait(tag);
-    }
-
-    public static void cancelAllWait() {
-//        bird.cancelAllWait();
+        bird.cancelWaiting(tag);
     }
 
     public static Object display(final ImageView view, String url) {
