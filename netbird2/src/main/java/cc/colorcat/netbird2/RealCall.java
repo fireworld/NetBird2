@@ -36,6 +36,10 @@ public class RealCall implements Call {
 
     @Override
     public Response execute() throws IOException {
+        return getResponseWithInterceptorChain();
+    }
+
+    private Response getResponseWithInterceptorChain() throws IOException {
         request.onStart();
         List<Interceptor> head = netBird.headInterceptors();
         List<Interceptor> tail = netBird.tailInterceptors();
