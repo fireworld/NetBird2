@@ -34,7 +34,7 @@ public class StringParser implements Parser<String> {
 
     @NonNull
     @Override
-    public NetworkData<? extends String> parse(@NonNull Response data) {
+    public NetworkData<? extends String> parse(@NonNull Response data) throws IOException {
         try {
             String value = data.body().string();
             return NetworkData.newSuccess(value);

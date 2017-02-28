@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.colorcat.netbird2.request.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import okhttp3.OkHttpClient;
@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
                 .method(Method.GET)
                 .add("type", Integer.toString(4))
                 .add("num", Integer.toString(30))
-                .callback(new SimpleCallback<Result<List<Course>>>() {
+                .listener(new SimpleRequestListener<Result<List<Course>>>() {
                     @Override
                     public void onSuccess(@NonNull Result<List<Course>> result) {
                         mList.clear();

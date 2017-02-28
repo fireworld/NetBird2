@@ -13,7 +13,7 @@ import java.util.List;
 import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.request.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
@@ -60,9 +60,9 @@ public class ApiService {
 
     public static Object call(Request<?> req) {
         if (req.loadListener() == null) {
-            bird.newCall(req).enqueue();
+            bird.sendRequest(req);
         } else {
-            bird.newBuilder().addTailInterceptor(progressListener).build().newCall(req).enqueue();
+            bird.newBuilder().addTailInterceptor(progressListener).build().sendRequest(req);
         }
         return req.tag();
     }
@@ -86,7 +86,7 @@ public class ApiService {
     public static Object display(final ImageView view, String url) {
         Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
                 .url(url)
-                .callback(new SimpleCallback<Bitmap>() {
+                .listener(new SimpleRequestListener<Bitmap>() {
                     @Override
                     public void onSuccess(@NonNull Bitmap result) {
                         view.setImageBitmap(result);

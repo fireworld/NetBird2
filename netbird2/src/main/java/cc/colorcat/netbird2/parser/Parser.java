@@ -2,6 +2,8 @@ package cc.colorcat.netbird2.parser;
 
 import android.support.annotation.NonNull;
 
+import java.io.IOException;
+
 import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.response.Response;
 
@@ -18,5 +20,5 @@ public interface Parser<T> {
      * @see cc.colorcat.netbird2.parser.StringParser
      */
     @NonNull
-    NetworkData<? extends T> parse(@NonNull Response data);
+    NetworkData<? extends T> parse(@NonNull Response data) throws IOException;
 }

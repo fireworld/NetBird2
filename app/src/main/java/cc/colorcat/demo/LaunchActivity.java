@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.request.SimpleCallback;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.UploadListener;
@@ -136,7 +136,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.e("Download_WeChat", read + " : " + total + " : " + percent);
                     }
                 })
-                .callback(new SimpleCallback<File>() {
+                .listener(new SimpleRequestListener<File>() {
                     @Override
                     public void onSuccess(@NonNull File result) {
                         showToast(result.getAbsolutePath());
@@ -154,7 +154,7 @@ public class LaunchActivity extends AppCompatActivity {
     private void doGet() {
         showToast("to doGet");
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .callback(new SimpleCallback<String>() {
+                .listener(new SimpleRequestListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -172,7 +172,7 @@ public class LaunchActivity extends AppCompatActivity {
     private void doPost() {
         showToast("to doPost");
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .callback(new SimpleCallback<String>() {
+                .listener(new SimpleRequestListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -191,7 +191,7 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void uploadImage() {
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .callback(new SimpleCallback<String>() {
+                .listener(new SimpleRequestListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         LogUtils.i("Upload", CryptoTool.decryptByDefault(result));
@@ -218,7 +218,7 @@ public class LaunchActivity extends AppCompatActivity {
         mTag = "DownloadFirefox";
         File down = getExternalCacheDir();
         File mFile = new File(down, "firefox.apk");
-        Request rq = new Request.Builder<>(FileParser.create(mFile)).tag(mTag).callback(new SimpleCallback<File>() {
+        Request rq = new Request.Builder<>(FileParser.create(mFile)).tag(mTag).listener(new SimpleRequestListener<File>() {
             @Override
             public void onSuccess(@NonNull File result) {
                 String path = result.getAbsolutePath();

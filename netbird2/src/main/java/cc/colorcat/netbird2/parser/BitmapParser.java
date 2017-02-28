@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
+import java.io.IOException;
+
 import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.response.Response;
 
@@ -27,7 +29,7 @@ public class BitmapParser implements Parser<Bitmap> {
 
     @NonNull
     @Override
-    public NetworkData<? extends Bitmap> parse(@NonNull Response data) {
+    public NetworkData<? extends Bitmap> parse(@NonNull Response data) throws IOException {
         Bitmap bitmap = BitmapFactory.decodeStream(data.body().stream());
         if (bitmap != null) {
             return NetworkData.newSuccess(bitmap);

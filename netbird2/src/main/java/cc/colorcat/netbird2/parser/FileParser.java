@@ -37,7 +37,7 @@ public class FileParser implements Parser<File> {
 
     @NonNull
     @Override
-    public NetworkData<? extends File> parse(@NonNull Response data) {
+    public NetworkData<? extends File> parse(@NonNull Response data) throws IOException {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             Utils.justDump(data.body().stream(), fos);

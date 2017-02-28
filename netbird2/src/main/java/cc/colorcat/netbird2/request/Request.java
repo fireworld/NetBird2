@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Request<T> {
     private Method method;
     private Parser<? extends T> parser;
     private List<Pack> packs;
-    private Callback<? super T> callback;
+    private RequestListener<? super T> requestListener;
 
     private LoadListener loadListener;
     private UploadListener uploadListener;
@@ -46,7 +47,7 @@ public class Request<T> {
         this.method = builder.method;
         this.parser = builder.parser;
         this.packs = builder.packs;
-        this.callback = builder.callback;
+        this.requestListener = builder.requestListener;
         this.loadListener = builder.loadListener;
         this.uploadListener = builder.uploadListener;
         this.tag = builder.tag;
@@ -141,21 +142,21 @@ public class Request<T> {
     }
 
     public void onStart() {
-        if (callback != null) {
+        if (requestListener != null) {
             if (Utils.isUiThread()) {
-                callback.onStart();
+                requestListener.onStart();
             } else {
                 Utils.postOnUi(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onStart();
+                        requestListener.onStart();
                     }
                 });
             }
         }
     }
 
-    public NetworkData<? extends T> parse(@NonNull Response response) {
+    public NetworkData<? extends T> parse(@NonNull Response response) throws IOException {
         return parser.parse(response);
     }
 
@@ -173,13 +174,13 @@ public class Request<T> {
     }
 
     private void realDeliver(final NetworkData<? extends T> data) {
-        if (callback != null) {
+        if (requestListener != null) {
             if (data.isSuccess) {
-                callback.onSuccess(data.data);
+                requestListener.onSuccess(data.data);
             } else {
-                callback.onFailure(data.code, data.msg);
+                requestListener.onFailure(data.code, data.msg);
             }
-            callback.onFinish();
+            requestListener.onFinish();
         }
     }
 
@@ -260,7 +261,7 @@ public class Request<T> {
         private Method method = Method.GET;
         private Parser<? extends T> parser;
         private List<Pack> packs;
-        private Callback<? super T> callback;
+        private RequestListener<? super T> requestListener;
 
         private LoadListener loadListener;
         private UploadListener uploadListener;
@@ -275,7 +276,7 @@ public class Request<T> {
             this.method = req.method;
             this.parser = req.parser;
             this.packs = req.packs;
-            this.callback = req.callback;
+            this.requestListener = req.requestListener;
             this.loadListener = req.loadListener;
             this.uploadListener = req.uploadListener;
             this.tag = req.tag;
@@ -325,10 +326,10 @@ public class Request<T> {
         }
 
         /**
-         * @param callback 请求结果的回调，{@link Callback} 中的方法均在主线程执行
+         * @param listener 请求结果的回调，{@link RequestListener} 中的方法均在主线程执行
          */
-        public Builder<T> callback(Callback<? super T> callback) {
-            this.callback = callback;
+        public Builder<T> listener(RequestListener<? super T> listener) {
+            this.requestListener = listener;
             return this;
         }
 

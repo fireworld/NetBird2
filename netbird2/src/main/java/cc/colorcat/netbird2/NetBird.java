@@ -1,6 +1,7 @@
 package cc.colorcat.netbird2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +10,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.response.NetworkData;
+import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 
 /**
@@ -91,14 +94,57 @@ public final class NetBird implements Call.Factory {
         return new RealCall(this, request);
     }
 
+    public <T> Object sendRequest(Request<T> request) {
+        newCall(request).enqueue(new RequestCallback());
+        return request.tag();
+    }
+
     public Builder newBuilder() {
         return new Builder(this);
     }
 
-    private static class CallFactory implements Call.Factory {
+    private static class RequestCallback implements Callback {
+        private static final NetworkData DATA_WAITING;
+        private static final NetworkData DATA_EXECUTING;
+
+        static {
+            DATA_WAITING = NetworkData.newFailure(Const.CODE_WAITING, Const.MSG_WAITING);
+            DATA_EXECUTING = NetworkData.newFailure(Const.CODE_EXECUTING, Const.MSG_EXECUTING);
+        }
+
+        @SuppressWarnings("unchecked")
         @Override
-        public Call newCall(Request<?> request) {
-            return null;
+        public void onResponse(Call call, Response response) {
+            Request<?> request = call.request();
+            NetworkData data = null;
+            int code = response.code();
+            String msg = response.msg();
+            if (code == 200 && response.body() != null) {
+                try {
+                    data = request.parse(response);
+                } catch (IOException e) {
+                    msg = Utils.formatMsg(msg, e);
+                    data = NetworkData.newFailure(code, msg);
+                } finally {
+                    response.close();
+                }
+            } else if (code == Const.CODE_WAITING) {
+                data = DATA_WAITING;
+            } else if (code == Const.CODE_EXECUTING) {
+                data = DATA_EXECUTING;
+            } else {
+                data = NetworkData.newFailure(code, msg);
+            }
+            request.deliver(data);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void onFailure(Call call, IOException e) {
+            Request<?> request = call.request();
+            String msg = Utils.nullElse(e.getMessage(), Const.MSG_UNKNOWN);
+            NetworkData data = NetworkData.newFailure(Const.CODE_UNKNOWN, msg);
+            request.deliver(data);
         }
     }
 

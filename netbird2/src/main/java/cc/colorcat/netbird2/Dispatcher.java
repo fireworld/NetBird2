@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import cc.colorcat.netbird2.RealCall.AsyncCall;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.response.Response;
@@ -16,40 +17,52 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 public class Dispatcher {
-    private static final NetworkData DATA_WAITING;
-    private static final NetworkData DATA_EXECUTING;
-
-    static {
-        DATA_WAITING = NetworkData.newFailure(Const.CODE_WAITING, Const.MSG_WAITING);
-        DATA_EXECUTING = NetworkData.newFailure(Const.CODE_EXECUTING, Const.MSG_EXECUTING);
-    }
-
     private final NetBird netBird;
-    private final Queue<Call> running = new ConcurrentLinkedQueue<>();
-    private final Queue<Call> waiting = new ConcurrentLinkedQueue<>();
+    private final Queue<AsyncCall> waitingAsyncCalls = new ConcurrentLinkedQueue<>();
+    private final Queue<AsyncCall> runningAsyncCalls = new ConcurrentLinkedQueue<>();
+    private final Queue<RealCall> runningSyncCalls = new ConcurrentLinkedQueue<>();
 
     public Dispatcher(NetBird netBird) {
         this.netBird = netBird;
     }
 
     @SuppressWarnings("unchecked")
-    public void execute(Call call) {
-        if (!waiting.contains(call) && waiting.offer(call)) {
-            notifyNewCall();
+    public boolean executed(RealCall call) {
+        return !runningSyncCalls.contains(call) && runningSyncCalls.add(call);
+//        if (!waiting.contains(call) && waiting.offer(call)) {
+//            promoteCalls();
+//        } else {
+//            call.request().deliver(DATA_WAITING);
+//        }
+    }
+
+    public void enqueue(AsyncCall call) {
+        if (!waitingAsyncCalls.contains(call) && waitingAsyncCalls.offer(call)) {
+            promoteCalls();
         } else {
-            call.request().deliver(DATA_WAITING);
+            responseAsyncCall(call, RealCall.RESPONSE_WAITING);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void notifyNewCall() {
-        if (running.size() < netBird.maxRunning() && !waiting.isEmpty()) {
-            Call call = waiting.poll();
-            if (!running.contains(call) && running.add(call)) {
-                netBird.executor().execute(new Task(Dispatcher.this, call));
+    private void promoteCalls() {
+        if (runningAsyncCalls.size() >= netBird.maxRunning()) return;
+        if (waitingAsyncCalls.isEmpty()) return;
+
+        while (!waitingAsyncCalls.isEmpty()) {
+            AsyncCall call = waitingAsyncCalls.poll();
+            if (!runningAsyncCalls.contains(call) && runningAsyncCalls.add(call)) {
+                netBird.executor().execute(call);
+                if (runningAsyncCalls.size() >= netBird.maxRunning()) return;
             } else {
-                call.request().deliver(DATA_EXECUTING);
+                responseAsyncCall(call, RealCall.RESPONSE_EXECUTING);
             }
+        }
+    }
+
+    private void responseAsyncCall(AsyncCall call, Response response) {
+        Callback callback = call.callback();
+        if (callback != null) {
+            callback.onResponse(call.get(), response);
         }
     }
 
@@ -59,7 +72,7 @@ public class Dispatcher {
     }
 
     public void cancelWait(Object tag) {
-        Iterator<Call> iterator = waiting.iterator();
+        Iterator<AsyncCall> iterator = waitingAsyncCalls.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().request().tag().equals(tag)) {
                 iterator.remove();
@@ -68,22 +81,45 @@ public class Dispatcher {
     }
 
     public void cancelRunning(Object tag) {
-        for (Call call : running) {
+        for (AsyncCall call : runningAsyncCalls) {
+            if (call.request().tag().equals(tag)) {
+                call.get().cancel();
+            }
+        }
+        for (RealCall call : runningSyncCalls) {
             if (call.request().tag().equals(tag)) {
                 call.cancel();
             }
         }
     }
 
-    private void finished(Call call) {
-        running.remove(call);
+    public void cancelAll() {
+        Iterator<AsyncCall> iterator = waitingAsyncCalls.iterator();
+        while (iterator.hasNext()) {
+            iterator.remove();
+        }
+        for (AsyncCall call : runningAsyncCalls) {
+            call.get().cancel();
+        }
+        for (RealCall call : runningSyncCalls) {
+            call.cancel();
+        }
+    }
+
+    void finished(RealCall call) {
+        runningSyncCalls.remove(call);
+    }
+
+    void finished(AsyncCall call) {
+        runningAsyncCalls.remove(call);
+        promoteCalls();
     }
 
     private static class Task implements Runnable {
         private Dispatcher dispatcher;
-        private Call call;
+        private RealCall call;
 
-        private Task(Dispatcher dispatcher, Call call) {
+        private Task(Dispatcher dispatcher, RealCall call) {
             this.dispatcher = dispatcher;
             this.call = call;
         }
@@ -107,7 +143,7 @@ public class Dispatcher {
                 msg = Utils.formatMsg(msg, e);
             } finally {
                 dispatcher.finished(call);
-                dispatcher.notifyNewCall();
+                dispatcher.promoteCalls();
                 Utils.close(call);
             }
             if (data == null) {

@@ -13,7 +13,7 @@ import cc.colorcat.netbird2.response.Response;
 public interface Call extends Closeable {
     Request<?> request();
 
-    void enqueue();
+    void enqueue(Callback callback);
 
     Response execute() throws IOException;
 

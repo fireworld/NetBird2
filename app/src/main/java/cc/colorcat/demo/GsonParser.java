@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.io.Reader;
 
 import cc.colorcat.netbird2.response.NetworkData;
@@ -34,7 +35,7 @@ public class GsonParser<T> implements Parser<T> {
 
     @NonNull
     @Override
-    public NetworkData<? extends T> parse(@NonNull Response data) {
+    public NetworkData<? extends T> parse(@NonNull Response data) throws IOException {
         Reader reader = null;
         try {
             reader = data.body().reader();
