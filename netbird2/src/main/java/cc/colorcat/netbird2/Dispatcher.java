@@ -3,9 +3,7 @@ package cc.colorcat.netbird2;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.response.NetworkData;
@@ -27,7 +25,7 @@ public class Dispatcher {
     }
 
     private final NetBird netBird;
-    private final Set<Call> running = new CopyOnWriteArraySet<>();
+    private final Queue<Call> running = new ConcurrentLinkedQueue<>();
     private final Queue<Call> waiting = new ConcurrentLinkedQueue<>();
 
     public Dispatcher(NetBird netBird) {
@@ -47,7 +45,7 @@ public class Dispatcher {
     private void notifyNewCall() {
         if (running.size() < netBird.maxRunning() && !waiting.isEmpty()) {
             Call call = waiting.poll();
-            if (running.add(call)) {
+            if (!running.contains(call) && running.add(call)) {
                 netBird.executor().execute(new Task(Dispatcher.this, call));
             } else {
                 call.request().deliver(DATA_EXECUTING);
