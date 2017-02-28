@@ -24,7 +24,7 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 @SuppressWarnings("unused")
-public class Request<T> implements Comparable<Request> {
+public class Request<T> {
     private Parameters params;
     private Headers headers;
     private String url;
@@ -191,7 +191,8 @@ public class Request<T> implements Comparable<Request> {
         if (path != null ? !path.equals(request.path) : request.path != null) return false;
         if (method != request.method) return false;
         if (!params.equals(request.params)) return false;
-        if (headers != null ? !headers.equals(request.headers) : request.headers != null) return false;
+        if (headers != null ? !headers.equals(request.headers) : request.headers != null)
+            return false;
         return packs != null ? packs.equals(request.packs) : request.packs == null;
     }
 
@@ -204,14 +205,6 @@ public class Request<T> implements Comparable<Request> {
         result = 31 * result + method.hashCode();
         result = 31 * result + (packs != null ? packs.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public int compareTo(@NonNull Request o) {
-        if (this.equals(o)) {
-            return 0;
-        }
-        return this.hashCode() - o.hashCode();
     }
 
     public static class Pack implements Comparable<Pack> {

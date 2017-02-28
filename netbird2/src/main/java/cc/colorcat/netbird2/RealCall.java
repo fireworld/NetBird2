@@ -1,7 +1,5 @@
 package cc.colorcat.netbird2;
 
-import android.support.annotation.NonNull;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,7 @@ import cc.colorcat.netbird2.response.Response;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class RealCall implements Call, Comparable<RealCall> {
+public class RealCall implements Call {
     private final NetBird netBird;
     private final Request<?> request;
     private final Connection connection;
@@ -80,10 +78,5 @@ public class RealCall implements Call, Comparable<RealCall> {
         return "RealCall{" +
                 "request=" + request +
                 '}';
-    }
-
-    @Override
-    public int compareTo(@NonNull RealCall o) {
-        return request.compareTo(o.request);
     }
 }
