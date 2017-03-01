@@ -1,7 +1,5 @@
 package cc.colorcat.netbird2.request;
 
-import android.support.annotation.Nullable;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,27 +13,33 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-final class FileBody extends RequestBody {
-    private String name;
-    private File file;
-    private String type;
-    private UploadListener listener;
-    private long contentLength = -1L;
+public final class FileBody extends RequestBody {
 
-    static FileBody create(Request.Pack pack, @Nullable UploadListener listener) {
-        return new FileBody(pack.name, pack.file, pack.contentType, listener);
+    static FileBody create(String name, String contentType, File file, UploadListener listener) {
+        if (file == null || !file.exists()) {
+            throw new IllegalArgumentException("file is not exists");
+        }
+        Utils.nonEmpty(name, "name is empty");
+        Utils.nonEmpty(contentType, "contentType is empty");
+        return new FileBody(name, contentType, file, listener);
     }
 
-    private FileBody(String name, File file, String type, UploadListener listener) {
+    public final String name;
+    public final File file;
+    public final String contentType;
+    private final UploadListener listener;
+    private long contentLength = -1L;
+
+    private FileBody(String name, String contentType, File file, UploadListener listener) {
         this.name = name;
         this.file = file;
-        this.type = type;
+        this.contentType = contentType;
         this.listener = listener;
     }
 
     @Override
     public String contentType() {
-        return type;
+        return contentType;
     }
 
     @Override
@@ -66,11 +70,32 @@ final class FileBody extends RequestBody {
         }
     }
 
-    String name() {
-        return name;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileBody fileBody = (FileBody) o;
+
+        if (!name.equals(fileBody.name)) return false;
+        if (!contentType.equals(fileBody.contentType)) return false;
+        return file.getAbsolutePath().equals(fileBody.file.getAbsolutePath());
     }
 
-    String fileName() {
-        return file.getName();
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + contentType.hashCode();
+        result = 31 * result + file.getAbsolutePath().hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "FileBody{" +
+                "name='" + name + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", file=" + file +
+                '}';
     }
 }

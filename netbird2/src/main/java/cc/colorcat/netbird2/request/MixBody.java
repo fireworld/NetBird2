@@ -85,7 +85,7 @@ class MixBody extends RequestBody {
                 bos.writeUtf8(boundary);
                 bos.write(CRLF);
 
-                bos.writeUtf8("Content-Disposition: form-data; name=\"" + body.name() + "\"; filename=\"" + body.fileName() + "\"");
+                bos.writeUtf8("Content-Disposition: form-data; name=\"" + body.name + "\"; filename=\"" + body.file.getName() + "\"");
                 bos.write(CRLF);
 
                 bos.writeUtf8("Content-Type: " + body.contentType());

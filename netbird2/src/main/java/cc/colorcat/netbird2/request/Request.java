@@ -7,13 +7,14 @@ import android.support.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import cc.colorcat.netbird2.parser.Parser;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.meta.WritableHeaders;
 import cc.colorcat.netbird2.meta.WritableParameters;
+import cc.colorcat.netbird2.parser.Parser;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.NetworkData;
 import cc.colorcat.netbird2.response.Response;
@@ -31,12 +32,9 @@ public class Request<T> {
     private String path;
     private Method method;
     private Parser<? extends T> parser;
-    private List<Pack> packs;
+    private List<FileBody> fileBodies;
     private RequestListener<? super T> requestListener;
-
     private LoadListener loadListener;
-    private UploadListener uploadListener;
-
     private Object tag;
 
     protected Request(Builder<T> builder) {
@@ -46,19 +44,14 @@ public class Request<T> {
         this.path = builder.path;
         this.method = builder.method;
         this.parser = builder.parser;
-        this.packs = builder.packs;
+        this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
         this.requestListener = builder.requestListener;
         this.loadListener = builder.loadListener;
-        this.uploadListener = builder.uploadListener;
         this.tag = builder.tag;
     }
 
     public Builder<T> newBuilder() {
         return new Builder<>(this);
-    }
-
-    public Object tag() {
-        return tag;
     }
 
     public String url() {
@@ -73,72 +66,37 @@ public class Request<T> {
         return method;
     }
 
-    public Headers headers() {
-        return headers;
-    }
-
     public Parameters parameters() {
         return params;
     }
 
-    public List<Pack> packs() {
-        return Utils.safeImmutableList(packs);
+    public Headers headers() {
+        return headers;
+    }
+
+    public List<FileBody> files() {
+        return Utils.nullElse(fileBodies, Collections.<FileBody>emptyList());
     }
 
     public LoadListener loadListener() {
         return loadListener;
     }
 
-    public UploadListener uploadListener() {
-        return uploadListener;
-    }
-
     public RequestBody body() {
-        if (params.isEmpty() && packs == null) {
+        if (params.isEmpty() && fileBodies == null) {
             return null;
         }
-        if (params.isEmpty() && packs != null && packs.size() == 1) {
-            return FileBody.create(packs.get(0), uploadListener);
+        if (params.isEmpty() && fileBodies != null && fileBodies.size() == 1) {
+            return fileBodies.get(0);
         }
-        if (!params.isEmpty() && packs == null) {
+        if (!params.isEmpty() && fileBodies == null) {
             return FormBody.create(params);
         }
-        int size = packs.size();
-        List<FileBody> files = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            FileBody body = FileBody.create(packs.get(i), uploadListener);
-            files.add(body);
-        }
-        return MixBody.create(FormBody.create(params), files);
+        return MixBody.create(FormBody.create(params), fileBodies);
     }
 
-    @NonNull
-    public List<String> paramNames() {
-        return params.names();
-    }
-
-    @NonNull
-    public List<String> paramValues() {
-        return params.values();
-    }
-
-    @NonNull
-    public List<String> headerNames() {
-        return Utils.nullElse(headers, Headers.emptyHeaders()).names();
-    }
-
-    @NonNull
-    public List<String> headerValues() {
-        return Utils.nullElse(headers, Headers.emptyHeaders()).values();
-    }
-
-    public String encodedParams() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0, size = params.size(); i < size; i++) {
-            if (i > 0) sb.append('&');
-            sb.append(Utils.smartEncode(params.name(i))).append('=').append(Utils.smartEncode(params.value(i)));
-        }
-        return sb.toString();
+    public Object tag() {
+        return tag;
     }
 
     public void onStart() {
@@ -195,62 +153,36 @@ public class Request<T> {
         if (path != null ? !path.equals(request.path) : request.path != null) return false;
         if (method != request.method) return false;
         if (!params.equals(request.params)) return false;
-        if (headers != null ? !headers.equals(request.headers) : request.headers != null)
-            return false;
-        return packs != null ? packs.equals(request.packs) : request.packs == null;
+        if (!headers.equals(request.headers)) return false;
+        return fileBodies != null ? fileBodies.equals(request.fileBodies) : request.fileBodies == null;
+
     }
 
     @Override
     public int hashCode() {
-        int result = params.hashCode();
-        result = 31 * result + (headers != null ? headers.hashCode() : 0);
-        result = 31 * result + (url != null ? url.hashCode() : 0);
+        int result = url != null ? url.hashCode() : 0;
         result = 31 * result + (path != null ? path.hashCode() : 0);
         result = 31 * result + method.hashCode();
-        result = 31 * result + (packs != null ? packs.hashCode() : 0);
+        result = 31 * result + params.hashCode();
+        result = 31 * result + headers.hashCode();
+        result = 31 * result + (fileBodies != null ? fileBodies.hashCode() : 0);
         return result;
     }
 
-    public static class Pack {
-        public final String name;
-        public final String contentType;
-        public final File file;
-
-        static Pack create(String name, String contentType, File file) {
-            if (file == null || !file.exists()) {
-                throw new IllegalArgumentException("file is not exists");
-            }
-            Utils.nonEmpty(name, "name is empty");
-            Utils.nonEmpty(contentType, "contentType is empty");
-            return new Pack(name, contentType, file);
-        }
-
-        private Pack(String name, String contentType, File file) {
-            this.name = name;
-            this.contentType = contentType;
-            this.file = file;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Pack)) return false;
-
-            Pack pack = (Pack) o;
-
-            if (!name.equals(pack.name)) return false;
-            if (!contentType.equals(pack.contentType)) return false;
-            return file.getAbsolutePath().equals(pack.file.getAbsolutePath());
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name.hashCode();
-            result = 31 * result + contentType.hashCode();
-            result = 31 * result + file.getAbsolutePath().hashCode();
-            return result;
-        }
+    @Override
+    public String toString() {
+        return "Request{" +
+                "url='" + url + '\'' +
+                ", path='" + path + '\'' +
+                ", method=" + method +
+                ", params=" + params +
+                ", headers=" + headers +
+                ", fileBodies=" + fileBodies +
+                ", parser=" + parser +
+                ", loadListener=" + loadListener +
+                ", requestListener=" + requestListener +
+                ", tag=" + tag +
+                '}';
     }
 
     public static class Builder<T> {
@@ -260,11 +192,10 @@ public class Request<T> {
         private String path;
         private Method method = Method.GET;
         private Parser<? extends T> parser;
-        private List<Pack> packs;
+        private List<FileBody> fileBodies;
         private RequestListener<? super T> requestListener;
 
         private LoadListener loadListener;
-        private UploadListener uploadListener;
 
         private Object tag;
 
@@ -275,10 +206,9 @@ public class Request<T> {
             this.path = req.path;
             this.method = req.method;
             this.parser = req.parser;
-            this.packs = req.packs;
+            this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
             this.requestListener = req.requestListener;
             this.loadListener = req.loadListener;
-            this.uploadListener = req.uploadListener;
             this.tag = req.tag;
         }
 
@@ -338,14 +268,6 @@ public class Request<T> {
          */
         public Builder<T> loadListener(LoadListener listener) {
             loadListener = listener;
-            return this;
-        }
-
-        /**
-         * @param listener 上传进度监听器
-         */
-        public Builder<T> uploadListener(UploadListener listener) {
-            uploadListener = listener;
             return this;
         }
 
@@ -436,36 +358,29 @@ public class Request<T> {
             return this;
         }
 
+        public Builder<T> addFile(String name, String contentType, File file) {
+            return addFile(name, contentType, file, null);
+        }
+
         /**
          * 添加需要上传的文件
-         * name, mediaType, file 最终会被打包为 {@link Pack} 之后再添加
          *
-         * @param name      参数名
-         * @param mediaType 文件类型，如 image/png
-         * @param file      文件全路径
-         * @throws IllegalArgumentException 如果 name/mediaType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
+         * @param name        参数名
+         * @param contentType 文件类型，如 image/png
+         * @param file        文件全路径
+         * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
          */
-        public Builder<T> addPack(String name, String mediaType, File file) {
-            if (packs == null) {
-                packs = new ArrayList<>();
+        public Builder<T> addFile(String name, String contentType, File file, UploadListener listener) {
+            if (fileBodies == null) {
+                fileBodies = new ArrayList<>(2);
             }
-            packs.add(Pack.create(name, mediaType, file));
+            fileBodies.add(FileBody.create(name, contentType, file, listener));
             return this;
         }
 
-        /**
-         * @return 返回所有已添加准备上传的文件
-         */
-        public List<Pack> packs() {
-            return Utils.safeImmutableList(packs);
-        }
-
-        /**
-         * 清除所有已添加并准备上传的文件——仅是不上传，并非从磁盘删除
-         */
-        public Builder<T> clearPacks() {
-            if (packs != null) {
-                packs.clear();
+        public Builder<T> clearFile() {
+            if (fileBodies != null) {
+                fileBodies.clear();
             }
             return this;
         }
@@ -480,9 +395,6 @@ public class Request<T> {
          */
         public Builder<T> addHeader(String name, String value) {
             Utils.checkHeader(name, value);
-            if (headers == null) {
-                headers = createHeader();
-            }
             headers.add(name, value);
             return this;
         }
@@ -497,9 +409,6 @@ public class Request<T> {
          */
         public Builder<T> setHeader(String name, String value) {
             Utils.checkHeader(name, value);
-            if (headers == null) {
-                headers = createHeader();
-            }
             headers.set(name, value);
             return this;
         }
@@ -514,9 +423,6 @@ public class Request<T> {
          */
         public Builder<T> addHeaderIfNot(String name, String value) {
             Utils.checkHeader(name, value);
-            if (headers == null) {
-                headers = createHeader();
-            }
             headers.addIfNot(name, value);
             return this;
         }
@@ -530,14 +436,14 @@ public class Request<T> {
          * @return 返回所有已添加的 Header 的名称，顺序与 {@link Builder#headerValues()} 一一对应
          */
         public List<String> headerNames() {
-            return Utils.nullElse(headers, Headers.emptyHeaders()).names();
+            return headers.names();
         }
 
         /**
          * @return 返回所有已添加的 Header 的值，顺序与 {@link Builder#headerNames()} 一一对应
          */
         public List<String> headerValues() {
-            return Utils.nullElse(headers, Headers.emptyHeaders()).values();
+            return headers.values();
         }
 
         /**
@@ -547,7 +453,7 @@ public class Request<T> {
         @Nullable
         public String headerValue(String name) {
             Utils.nonEmpty(name, "name is null/empty");
-            return Utils.nullElse(headers, Headers.emptyHeaders()).value(name);
+            return headers.value(name);
         }
 
         /**
@@ -557,26 +463,20 @@ public class Request<T> {
         @NonNull
         public List<String> headerValues(String name) {
             Utils.nonEmpty(name, "name is null/empty");
-            return Utils.nullElse(headers, Headers.emptyHeaders()).values(name);
+            return headers.values(name);
         }
 
         /**
          * 清除所有已添加的 Header 参数
          */
         public Builder<T> clearHeaders() {
-            if (headers != null) {
-                headers.clear();
-            }
+            headers.clear();
             return this;
-        }
-
-        private static WritableHeaders createHeader() {
-            return WritableHeaders.create(4);
         }
 
         @CallSuper
         public Request<T> build() {
-            if (packs != null && !packs.isEmpty()) method = Method.POST;
+            if (fileBodies != null) method = Method.POST;
             if (tag == null) tag = System.currentTimeMillis();
             return new Request<>(this);
         }

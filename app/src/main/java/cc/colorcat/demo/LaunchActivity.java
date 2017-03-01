@@ -18,9 +18,9 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.UploadListener;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.util.LogUtils;
@@ -203,14 +203,13 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.i("Upload", code + " : " + msg);
                     }
                 })
-                .uploadListener(new UploadListener() {
+                .url(UPLOAD_URL).path(UPLOAD_PATH).add("r", UPLOAD_R).add("sign", UPLOAD_SIGN)
+                .addFile("userHeardImg", "image/jpeg", userHeardImg, new UploadListener() {
                     @Override
                     public void onChanged(long written, long total, int percent) {
                         LogUtils.e("Upload", written + "/" + total + " " + written * 100 / total + "%" + " percent: " + percent);
                     }
-                })
-                .url(UPLOAD_URL).path(UPLOAD_PATH).add("r", UPLOAD_R).add("sign", UPLOAD_SIGN)
-                .addPack("userHeardImg", "image/jpeg", userHeardImg).method(Method.POST).build();
+                }).method(Method.POST).build();
         ApiService.call(req);
     }
 
