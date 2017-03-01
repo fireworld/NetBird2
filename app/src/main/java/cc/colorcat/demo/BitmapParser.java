@@ -15,7 +15,7 @@ import cc.colorcat.netbird2.response.Response;
  * xx.ch@outlook.com
  */
 public class BitmapParser implements Parser<Bitmap> {
-    private static BitmapParser parser;
+    private static transient BitmapParser parser;
 
     public static BitmapParser getParser() {
         if (parser == null) {
