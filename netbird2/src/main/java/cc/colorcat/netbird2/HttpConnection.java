@@ -87,7 +87,9 @@ public class HttpConnection implements Connection {
 
     @Override
     public void cancel() {
-        conn.disconnect();
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
 
     @Override
@@ -113,7 +115,9 @@ public class HttpConnection implements Connection {
     @Override
     public void close() throws IOException {
         Utils.close(is);
-        conn.disconnect();
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
 
     private void enableCache(File path, long cacheSize) {

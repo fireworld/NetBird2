@@ -88,11 +88,20 @@ public final class NetBird implements Call.Factory {
         return connectTimeOut;
     }
 
+    /**
+     * @throws NullPointerException 如果 request 为空会抛出此异常
+     */
     @Override
     public Call newCall(Request<?> request) {
         return new RealCall(this, request);
     }
 
+    /**
+     * @return 返回 request 的 tag, 可用此 tag 取消请求
+     * @throws NullPointerException 如果 request 为空会抛出此异常
+     * @see NetBird#cancelWaiting(Object)
+     * @see NetBird#cancelAll(Object)
+     */
     public <T> Object sendRequest(Request<T> request) {
         newCall(request).enqueue(new RequestCallback());
         return request.tag();

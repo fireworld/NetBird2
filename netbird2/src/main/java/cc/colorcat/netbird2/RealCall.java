@@ -19,6 +19,7 @@ public final class RealCall implements Call {
     private final Connection connection;
     private final Interceptor requestProcess;
     private final AtomicBoolean executed;
+    private boolean canceled = false;
 
     public RealCall(NetBird netBird, Request<?> originalRequest) {
         this.netBird = netBird;
@@ -69,7 +70,13 @@ public final class RealCall implements Call {
 
     @Override
     public void cancel() {
+        canceled = true;
         connection.cancel();
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return canceled;
     }
 
     @Override
@@ -124,8 +131,12 @@ public final class RealCall implements Call {
         @Override
         public void run() {
             try {
-                Response response = getResponseWithInterceptorChain();
-                callback.onResponse(RealCall.this, response);
+                if (RealCall.this.canceled) {
+                    callback.onFailure(RealCall.this, new StateIOException(Const.MSG_CANCELED, Const.CODE_CANCELED));
+                } else {
+                    Response response = getResponseWithInterceptorChain();
+                    callback.onResponse(RealCall.this, response);
+                }
             } catch (IOException e) {
                 callback.onFailure(RealCall.this, e);
             } finally {
