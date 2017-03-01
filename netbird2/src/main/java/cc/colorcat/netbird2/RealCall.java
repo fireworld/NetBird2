@@ -19,12 +19,13 @@ public final class RealCall implements Call {
     private final Connection connection;
     private final Interceptor requestProcess;
     private final AtomicBoolean executed;
+    private boolean canceled = false;
 
     public RealCall(NetBird netBird, Request<?> originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
-        this.requestProcess = new RequestProcessInterceptor(netBird);
+        this.requestProcess = new RequestProcessInterceptor(netBird.baseUrl());
         this.executed = new AtomicBoolean(false);
     }
 
@@ -36,11 +37,11 @@ public final class RealCall implements Call {
     @Override
     public Response execute() throws IOException {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
+        if (!netBird.dispatcher().executed(this)) {
+            throw new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST);
+        }
         try {
-            if (netBird.dispatcher().executed(this)) {
-                return getResponseWithInterceptorChain();
-            }
-            throw new IOException(Const.MSG_DUPLICATE_REQUEST);
+            return getResponseWithInterceptorChain();
         } finally {
             netBird.dispatcher().finished(this);
             Utils.close(connection);
@@ -69,13 +70,19 @@ public final class RealCall implements Call {
 
     @Override
     public void cancel() {
+        canceled = true;
         connection.cancel();
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return canceled;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RealCall)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         RealCall realCall = (RealCall) o;
 
@@ -84,7 +91,7 @@ public final class RealCall implements Call {
 
     @Override
     public int hashCode() {
-        return request.hashCode();
+        return 17 * request.hashCode();
     }
 
     @Override
@@ -122,11 +129,24 @@ public final class RealCall implements Call {
 
         @Override
         public void run() {
+            int code = Const.CODE_CONNECT_ERROR;
+            String msg = null;
             try {
-                Response response = getResponseWithInterceptorChain();
-                callback.onResponse(RealCall.this, response);
+                if (RealCall.this.canceled) {
+                    callback.onFailure(RealCall.this, new StateIOException(Const.MSG_CANCELED, Const.CODE_CANCELED));
+                } else {
+                    Response response = getResponseWithInterceptorChain();
+                    code = response.code();
+                    msg = response.msg();
+                    callback.onResponse(RealCall.this, response);
+                }
             } catch (IOException e) {
-                callback.onFailure(RealCall.this, e);
+                if (msg == null) {
+                    msg = Utils.nullElse(e.getMessage(), Const.MSG_CONNECT_ERROR);
+                } else {
+                    msg = Utils.formatMsg(msg, e);
+                }
+                callback.onFailure(RealCall.this, new StateIOException(msg, e, code));
             } finally {
                 netBird.dispatcher().finished(this);
                 Utils.close(RealCall.this.connection);
@@ -141,12 +161,19 @@ public final class RealCall implements Call {
             AsyncCall asyncCall = (AsyncCall) o;
 
             return RealCall.this.request.equals(asyncCall.request());
-
         }
 
         @Override
         public int hashCode() {
             return 31 * RealCall.this.request.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "AsyncCall{" +
+                    "request=" + RealCall.this.request +
+                    ", executed=" + RealCall.this.executed +
+                    '}';
         }
     }
 }

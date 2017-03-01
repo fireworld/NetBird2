@@ -15,26 +15,29 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 final class RequestProcessInterceptor implements Interceptor {
-    private final NetBird bird;
+    private final String baseUrl;
 
-    RequestProcessInterceptor(NetBird bird) {
-        this.bird = bird;
+    RequestProcessInterceptor(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request<?> request = chain.request();
-        String url = Utils.nullElse(request.url(), bird.baseUrl());
+        String url = Utils.nullElse(request.url(), baseUrl);
         String path = request.path();
         if (path != null) {
             url += path;
         }
-        String parameters = concatParameters(request.parameters());
-        if (parameters != null) {
-            url = url + '?' + parameters;
+        Method method = request.method();
+        if (method == Method.GET) {
+            String parameters = concatParameters(request.parameters());
+            if (parameters != null) {
+                url = url + '?' + parameters;
+            }
         }
         Request.Builder<?> builder = request.newBuilder().url(url).path(null);
-        if (request.method() == Method.POST) {
+        if (method == Method.POST) {
             RequestBody body = request.body();
             if (body != null) {
                 String contentType = body.contentType();

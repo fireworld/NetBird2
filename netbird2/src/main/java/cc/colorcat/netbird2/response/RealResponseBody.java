@@ -3,6 +3,7 @@ package cc.colorcat.netbird2.response;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.meta.Headers;
 
 /**
@@ -13,6 +14,18 @@ public class RealResponseBody extends ResponseBody {
 
     public static RealResponseBody create(InputStream is, Headers headers) {
         return is != null ? new RealResponseBody(is, headers) : null;
+    }
+
+    public static RealResponseBody create(InputStream is, Headers headers, LoadListener listener) {
+        if (is == null) return null;
+        InputStream data = is;
+        if (listener != null) {
+            long contentLength = headers.contentLength();
+            if (contentLength > 0) {
+                data = InputWrapper.create(data, contentLength, listener);
+            }
+        }
+        return new RealResponseBody(data, headers);
     }
 
     private final InputStream is;

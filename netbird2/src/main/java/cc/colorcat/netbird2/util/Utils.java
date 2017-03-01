@@ -95,10 +95,6 @@ public class Utils {
         return value != null ? value : other;
     }
 
-    public static <T extends CharSequence> T emptyElse(T txt, T other) {
-        return isEmpty(txt) ? other : txt;
-    }
-
     public static <T> List<T> immutableList(List<T> list) {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
@@ -108,7 +104,7 @@ public class Utils {
     }
 
     public static String formatMsg(String responseMsg, Exception e) {
-        return String.format(Locale.getDefault(), "Response Msg: %s%nException Detail: %s", responseMsg, e);
+        return String.format(Locale.getDefault(), "Response Msg = %s, Exception Detail = %s", responseMsg, e);
     }
 
     public static void checkHeader(String name, String value) {

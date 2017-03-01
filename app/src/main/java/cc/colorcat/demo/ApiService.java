@@ -14,6 +14,8 @@ import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.NetBird;
 import cc.colorcat.netbird2.meta.Headers;
+import cc.colorcat.netbird2.meta.Parameters;
+import cc.colorcat.netbird2.request.FileBody;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.SimpleRequestListener;
@@ -21,7 +23,6 @@ import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
-import cc.colorcat.netbird2.util.Utils;
 
 
 /**
@@ -52,17 +53,17 @@ public class ApiService {
 
     public static void init(Context ctx) {
         bird = new NetBird.Builder(baseUrl)
-                .addHeadInterceptor(new TestInterceptorA())
-                .addHeadInterceptor(new TestInterceptorB())
+//                .addHeadInterceptor(new TestInterceptorA())
+//                .addHeadInterceptor(new TestInterceptorB())
                 .addTailInterceptor(new LogInterceptor())
                 .build();
     }
 
     public static Object call(Request<?> req) {
         NetBird netBird = bird;
-        if (req.loadListener() != null) {
-            netBird = netBird.newBuilder().addTailInterceptor(progressListener).build();
-        }
+//        if (req.loadListener() != null) {
+//            netBird = netBird.newBuilder().addTailInterceptor(progressListener).build();
+//        }
         return netBird.sendRequest(req);
     }
 
@@ -78,18 +79,30 @@ public class ApiService {
         bird.cancelWaiting(tag);
     }
 
-    public static Object display(final ImageView view, String url) {
+    public static Object display(final ImageView view, final String url) {
         Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
                 .url(url)
                 .listener(new SimpleRequestListener<Bitmap>() {
                     @Override
+                    public void onStart() {
+//                        LogUtils.i("NetBirdImage_start", view.toString() + " = " + url);
+                    }
+
+                    @Override
                     public void onSuccess(@NonNull Bitmap result) {
+//                        LogUtils.i("NetBirdImage_success", view.toString() + " = " + url);
                         view.setImageBitmap(result);
                     }
 
                     @Override
                     public void onFailure(int code, @NonNull String msg) {
-                        LogUtils.e("NetBird", code + " : " + msg);
+//                        LogUtils.i("NetBirdImage_fail", view.toString() + " = " + url);
+                        LogUtils.e("NetBirdImage", code + ", " + msg);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        LogUtils.i("NetBirdImage_finish", view.toString() + " = " + url);
                     }
                 }).build();
         return call(req);
@@ -132,17 +145,15 @@ public class ApiService {
                 LogUtils.ii(TAG, "---------------------------------------- " + m.name() + " -----------------------------------------");
                 String url = req.url();
                 if (m == Method.GET) {
-                    String params = req.encodedParams();
-                    if (!Utils.isEmpty(params)) {
-                        url = url + '?' + params;
-                    }
                     LogUtils.dd(TAG, "req url --> " + url);
                 } else {
                     LogUtils.dd(TAG, "req url --> " + url);
-                    logPairs(req.paramNames(), req.paramValues(), "parameter");
-                    logPacks(req);
+                    Parameters parameters = req.parameters();
+                    logPairs(parameters.names(), parameters.values(), "parameter");
+                    logFiles(req);
                 }
-                logPairs(req.headerNames(), req.headerValues(), "header");
+                Headers headers = req.headers();
+                logPairs(headers.names(), headers.values(), "header");
                 LogUtils.ii(TAG, "--------------------------------------------------------------------------------------");
             }
             Response response = chain.proceed(req);
@@ -167,10 +178,10 @@ public class ApiService {
         }
     }
 
-    private static void logPacks(Request<?> req) {
-        List<Request.Pack> packs = req.packs();
-        for (int i = 0, size = packs.size(); i < size; i++) {
-            Request.Pack pack = packs.get(i);
+    private static void logFiles(Request<?> req) {
+        List<FileBody> fileBodies = req.files();
+        for (int i = 0, size = fileBodies.size(); i < size; i++) {
+            FileBody pack = fileBodies.get(i);
             LogUtils.dd(TAG, "req pack --> " + pack.name + "--" + pack.contentType + "--" + pack.file.getAbsolutePath());
         }
     }

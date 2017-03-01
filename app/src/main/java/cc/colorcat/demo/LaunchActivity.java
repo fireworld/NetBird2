@@ -18,9 +18,9 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.UploadListener;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.util.LogUtils;
@@ -32,7 +32,7 @@ import cc.colorcat.netbird2.util.LogUtils;
  */
 public class LaunchActivity extends AppCompatActivity {
     public static final String DOWNLOAD_TEST = "https://70.miiditest.com/aw/mac.woa?param=Ku3%2BTEeywSRzwzqMa5yfBGvVcaNcEHh66B%2Be%2B1PXMvYxE7v7EhGWnYMwHep%2B2%2BkqbHxvxZgcIIb3c4%2FBfdAcYZHgGp1E%2BQ3ejSReVRf8D%2BK9H8%2FyYnDpnh7rT5rR2iyOGI%2B0sceGJS2IfDJ86B5vRF6bkx8hH9DRzXx%2B0lfTO9zI0VLU7EiUc1XAfM1zwQlpA8Df4u2i57o861c%2FSZ6jPFrPJtIyeng6vKPpTFzDkV8%2F6ae1Ee78T1MpjkZ2WlrOmP35bCpeiyQmkAP6HkcP1W9agPc0hvSFVj18AWtb0ml%2F90qDrT%2FAOjR2Ad0KvXNPq4U4yTLKI16pqXsqaxqDVFcxzThTxYnbtCOTjOOSiUDiCyN4LfgQnf%2Foog0QooWvqxKdDZ749fqJi%2BPBuk7A3%2BUwxZQIUnyxgR7NC%2B4a8cY%2FRy2dVhTLmtmkaOyiIdhidUrZGaYKWpLKDVJc6jBuC8q9qLuWHvKrHrhNO5u7q4Arxp%2FfZrqaqW0yp3sAk0TOTr5f0r9pGea7x6vBhXnbTOOO921vZsQ2yMFGI73ZEAdUw6mXRqmb1XJ7nX8tbiwRigygzQ505DMCVGqVpL7xj9ygI2FecCfaE%2FYkWcZt4MiSdJ7r384ca2qbstVdIkhCpRrZbHXRApQeaeDKJWA0Xd4jgUsdhb%2BTPLxZY5KvBakPnaxI3j4quF5XGF8WQ1nr";
-    public static final File userHeardImg = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "test.png");
+    public static final File userHeardImg = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "test.jpg");
     public static final String FIREFOX = "http://download.firefox.com.cn/releases/mobile/45.0/zh-CN/Firefox-Android-45.0.apk";
 
     public static final String HOST_LOCAL = "http://192.168.0.23:8080";
@@ -203,14 +203,13 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.i("Upload", code + " : " + msg);
                     }
                 })
-                .uploadListener(new UploadListener() {
+                .url(UPLOAD_URL).path(UPLOAD_PATH).add("r", UPLOAD_R).add("sign", UPLOAD_SIGN)
+                .addFile("userHeardImg", "image/jpeg", userHeardImg, new UploadListener() {
                     @Override
                     public void onChanged(long written, long total, int percent) {
                         LogUtils.e("Upload", written + "/" + total + " " + written * 100 / total + "%" + " percent: " + percent);
                     }
-                })
-                .url(UPLOAD_URL).path(UPLOAD_PATH).add("r", UPLOAD_R).add("sign", UPLOAD_SIGN)
-                .addPack("userHeardImg", "image/jpeg", userHeardImg).method(Method.POST).build();
+                }).method(Method.POST).build();
         ApiService.call(req);
     }
 

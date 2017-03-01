@@ -13,6 +13,7 @@ import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.request.RequestBody;
+import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.RealResponseBody;
 import cc.colorcat.netbird2.response.ResponseBody;
 import cc.colorcat.netbird2.util.LogUtils;
@@ -26,6 +27,7 @@ public class HttpConnection implements Connection {
     private boolean enableCache = false;
     private HttpURLConnection conn;
     private InputStream is;
+    private LoadListener listener;
 
     public HttpConnection() {
 
@@ -37,6 +39,7 @@ public class HttpConnection implements Connection {
 
     @Override
     public void connect(NetBird netBird, Request<?> request) throws IOException {
+        listener = request.loadListener();
         enableCache(netBird.cachePath(), netBird.cacheSize());
         String url = request.url();
         conn = (HttpURLConnection) new URL(url).openConnection();
@@ -87,7 +90,9 @@ public class HttpConnection implements Connection {
 
     @Override
     public void cancel() {
-        conn.disconnect();
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
 
     @Override
@@ -101,7 +106,7 @@ public class HttpConnection implements Connection {
         if (is == null) {
             is = conn.getInputStream();
         }
-        return RealResponseBody.create(is, headers);
+        return RealResponseBody.create(is, headers, listener);
     }
 
     @SuppressWarnings("CloneDoesntCallSuperClone")
@@ -113,7 +118,9 @@ public class HttpConnection implements Connection {
     @Override
     public void close() throws IOException {
         Utils.close(is);
-        conn.disconnect();
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
 
     private void enableCache(File path, long cacheSize) {

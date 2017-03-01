@@ -1,9 +1,11 @@
 package cc.colorcat.netbird2;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
 
 import cc.colorcat.netbird2.RealCall.AsyncCall;
 import cc.colorcat.netbird2.util.LogUtils;
@@ -12,46 +14,56 @@ import cc.colorcat.netbird2.util.LogUtils;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class Dispatcher {
+final class Dispatcher {
     private static final String TAG = "DispatcherTAG";
-    private final NetBird netBird;
+    private ExecutorService executor;
+    private int maxRunning;
     private final Queue<AsyncCall> waitingAsyncCalls = new ConcurrentLinkedQueue<>();
-    private final Queue<AsyncCall> runningAsyncCalls = new ConcurrentLinkedQueue<>();
-    private final Queue<RealCall> runningSyncCalls = new ConcurrentLinkedQueue<>();
+    private final Set<AsyncCall> runningAsyncCalls = new CopyOnWriteArraySet<>();
+    private final Set<RealCall> runningSyncCalls = new CopyOnWriteArraySet<>();
 
-    public Dispatcher(NetBird netBird) {
-        this.netBird = netBird;
+    Dispatcher() {
     }
 
-    public boolean executed(RealCall call) {
-        return !runningSyncCalls.contains(call) && runningSyncCalls.add(call);
+    synchronized void setExecutor(ExecutorService executor) {
+        this.executor = executor;
     }
 
-    public void enqueue(AsyncCall call) {
+    synchronized void setMaxRunning(int maxRunning) {
+        this.maxRunning = maxRunning;
+    }
+
+    boolean executed(RealCall call) {
+        return !runningSyncCalls.add(call);
+    }
+
+    void enqueue(AsyncCall call) {
         if (!waitingAsyncCalls.contains(call) && waitingAsyncCalls.offer(call)) {
             promoteCalls();
         } else {
-            call.callback().onFailure(call.get(), new IOException(Const.MSG_DUPLICATE_REQUEST));
+            onDuplicateRequest(call);
         }
         logSize(2, "enqueue");
     }
 
     private synchronized void promoteCalls() {
-        if (runningAsyncCalls.size() >= netBird.maxRunning()) return;
-
-        while (!waitingAsyncCalls.isEmpty()) {
-            AsyncCall call = waitingAsyncCalls.poll();
-            if (!runningAsyncCalls.contains(call) && runningAsyncCalls.add(call)) {
-                netBird.executor().execute(call);
-                if (runningAsyncCalls.size() >= netBird.maxRunning()) return;
+        if (runningAsyncCalls.size() >= maxRunning) return;
+        for (AsyncCall call = waitingAsyncCalls.poll(); call != null; call = waitingAsyncCalls.poll()) {
+            if (runningAsyncCalls.add(call)) {
+                executor.execute(call);
+                if (runningAsyncCalls.size() >= maxRunning) return;
             } else {
-                call.callback().onFailure(call.get(), new IOException(Const.MSG_DUPLICATE_REQUEST));
+                onDuplicateRequest(call);
             }
         }
-//        logSize(2, "promoteCalls");
     }
 
-    public void cancelWaiting(Object tag) {
+    private static void onDuplicateRequest(AsyncCall call) {
+        call.callback().onFailure(call.get(),
+                new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST));
+    }
+
+    void cancelWaiting(Object tag) {
         Iterator<AsyncCall> iterator = waitingAsyncCalls.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().request().tag().equals(tag)) {
@@ -60,7 +72,7 @@ public class Dispatcher {
         }
     }
 
-    public void cancelAll(Object tag) {
+    void cancelAll(Object tag) {
         cancelWaiting(tag);
         for (AsyncCall call : runningAsyncCalls) {
             if (call.request().tag().equals(tag)) {
@@ -75,11 +87,8 @@ public class Dispatcher {
     }
 
 
-    public void cancelAll() {
-        Iterator<AsyncCall> iterator = waitingAsyncCalls.iterator();
-        while (iterator.hasNext()) {
-            iterator.remove();
-        }
+    void cancelAll() {
+        waitingAsyncCalls.clear();
         for (AsyncCall call : runningAsyncCalls) {
             call.get().cancel();
         }
@@ -90,7 +99,7 @@ public class Dispatcher {
 
     void finished(RealCall call) {
         runningSyncCalls.remove(call);
-        logSize(3, "finished Realcall");
+        logSize(3, "finished RealCall");
     }
 
     void finished(AsyncCall call) {

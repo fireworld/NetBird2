@@ -32,7 +32,6 @@ public final class NetBird implements Call.Factory {
         this.headInterceptors = Utils.immutableList(builder.headInterceptors);
         this.tailInterceptors = Utils.immutableList(builder.tailInterceptors);
         this.executor = builder.executor;
-        this.dispatcher = new Dispatcher(this);
         this.connection = builder.connection;
         this.baseUrl = builder.baseUrl;
         this.cacheSize = builder.cacheSize;
@@ -40,6 +39,9 @@ public final class NetBird implements Call.Factory {
         this.maxRunning = builder.maxRunning;
         this.readTimeOut = builder.readTimeOut;
         this.connectTimeOut = builder.connectTimeOut;
+        this.dispatcher = builder.dispatcher != null ? builder.dispatcher : new Dispatcher();
+        this.dispatcher.setExecutor(executor);
+        this.dispatcher.setMaxRunning(maxRunning);
     }
 
     public List<Interceptor> headInterceptors() {
@@ -86,11 +88,20 @@ public final class NetBird implements Call.Factory {
         return connectTimeOut;
     }
 
+    /**
+     * @throws NullPointerException 如果 request 为空会抛出此异常
+     */
     @Override
     public Call newCall(Request<?> request) {
         return new RealCall(this, request);
     }
 
+    /**
+     * @return 返回 request 的 tag, 可用此 tag 取消请求
+     * @throws NullPointerException 如果 request 为空会抛出此异常
+     * @see NetBird#cancelWaiting(Object)
+     * @see NetBird#cancelAll(Object)
+     */
     public <T> Object sendRequest(Request<T> request) {
         newCall(request).enqueue(new RequestCallback());
         return request.tag();
@@ -120,6 +131,7 @@ public final class NetBird implements Call.Factory {
         private List<Interceptor> headInterceptors;
         private List<Interceptor> tailInterceptors;
         private ExecutorService executor;
+        private Dispatcher dispatcher;
         private Connection connection;
         private String baseUrl;
         private long cacheSize;
@@ -139,6 +151,7 @@ public final class NetBird implements Call.Factory {
             this.headInterceptors = new ArrayList<>(netBird.headInterceptors);
             this.tailInterceptors = new ArrayList<>(netBird.tailInterceptors);
             this.executor = netBird.executor;
+            this.dispatcher = netBird.dispatcher;
             this.connection = netBird.connection;
             this.cacheSize = netBird.cacheSize;
             this.cachePath = netBird.cachePath;
@@ -177,8 +190,8 @@ public final class NetBird implements Call.Factory {
         }
 
         public Builder maxRunning(int maxRunning) {
-            if (maxRunning <= 0) {
-                throw new IllegalArgumentException("maxRunning <= 0");
+            if (maxRunning < 1) {
+                throw new IllegalArgumentException("maxRunning < 1");
             }
             this.maxRunning = maxRunning;
             return this;
