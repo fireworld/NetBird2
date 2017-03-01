@@ -89,7 +89,7 @@ public class ApiService {
 
                     @Override
                     public void onFailure(int code, @NonNull String msg) {
-                        LogUtils.e("NetBird", code + " : " + msg);
+                        LogUtils.e("NetBirdImage", code + " : " + msg);
                     }
                 }).build();
         return call(req);

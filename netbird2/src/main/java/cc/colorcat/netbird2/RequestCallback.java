@@ -12,6 +12,13 @@ import cc.colorcat.netbird2.util.Utils;
  * xx.ch@outlook.com
  */
 final class RequestCallback implements Callback {
+    private static final NetworkData DATA_IO_ERROR;
+
+    static {
+        DATA_IO_ERROR = NetworkData.newFailure(Const.CODE_IO_ERROR, Const.MSG_IO_ERROR);
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onResponse(Call call, Response response) {
         Request<?> request = call.request();
@@ -30,21 +37,19 @@ final class RequestCallback implements Callback {
         if (data == null) {
             data = NetworkData.newFailure(code, msg);
         }
-        deliver(request, data);
-    }
-
-    @Override
-    public void onFailure(Call call, IOException e) {
-        int code = Const.CODE_IO_ERROR;
-        String msg = Utils.emptyElse(e.getMessage(), Const.MSG_IO_ERROR);
-        if (Const.MSG_DUPLICATE_REQUEST.equals(msg)) {
-            code = Const.CODE_DUPLICATE_REQUEST;
-        }
-        deliver(call.request(), NetworkData.newFailure(code, msg));
+        request.deliver(data);
     }
 
     @SuppressWarnings("unchecked")
-    private static void deliver(Request<?> request, NetworkData data) {
+    @Override
+    public void onFailure(Call call, IOException e) {
+        Request<?> request = call.request();
+        NetworkData data;
+        if (e instanceof StateIOException) {
+            data = NetworkData.newFailure(((StateIOException) e).getState(), e.getMessage());
+        } else {
+            data = DATA_IO_ERROR;
+        }
         request.deliver(data);
     }
 }

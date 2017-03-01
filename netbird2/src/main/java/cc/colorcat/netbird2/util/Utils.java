@@ -108,7 +108,7 @@ public class Utils {
     }
 
     public static String formatMsg(String responseMsg, Exception e) {
-        return String.format(Locale.getDefault(), "Response Msg: %s%nException Detail: %s", responseMsg, e);
+        return String.format(Locale.getDefault(), "Response Msg = %s, Exception Detail = %s", responseMsg, e);
     }
 
     public static void checkHeader(String name, String value) {

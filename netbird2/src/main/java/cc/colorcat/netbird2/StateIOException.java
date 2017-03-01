@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 
 public class StateIOException extends IOException {
-    private int state;
+    private final int state;
 
     public StateIOException(String detailMessage, int state) {
         super(detailMessage);
@@ -23,5 +23,9 @@ public class StateIOException extends IOException {
     public StateIOException(Throwable cause, int state) {
         super(cause);
         this.state = state;
+    }
+
+    public int getState() {
+        return state;
     }
 }
