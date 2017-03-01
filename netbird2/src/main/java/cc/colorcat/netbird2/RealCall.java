@@ -24,7 +24,7 @@ public final class RealCall implements Call {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
-        this.requestProcess = new RequestProcessInterceptor(netBird);
+        this.requestProcess = new RequestProcessInterceptor(netBird.baseUrl());
         this.executed = new AtomicBoolean(false);
     }
 
@@ -36,11 +36,11 @@ public final class RealCall implements Call {
     @Override
     public Response execute() throws IOException {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
+        if (!netBird.dispatcher().executed(this)) {
+            throw new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST);
+        }
         try {
-            if (netBird.dispatcher().executed(this)) {
-                return getResponseWithInterceptorChain();
-            }
-            throw new IOException(Const.MSG_DUPLICATE_REQUEST);
+            return getResponseWithInterceptorChain();
         } finally {
             netBird.dispatcher().finished(this);
             Utils.close(connection);
@@ -75,16 +75,17 @@ public final class RealCall implements Call {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RealCall)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         RealCall realCall = (RealCall) o;
 
         return request.equals(realCall.request);
+
     }
 
     @Override
     public int hashCode() {
-        return request.hashCode();
+        return 17 * request.hashCode();
     }
 
     @Override

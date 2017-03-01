@@ -24,14 +24,17 @@ public class Dispatcher {
     }
 
     public boolean executed(RealCall call) {
-        return !runningSyncCalls.contains(call) && runningSyncCalls.add(call);
+        synchronized (runningSyncCalls) {
+            return !runningSyncCalls.contains(call) && runningSyncCalls.add(call);
+        }
     }
 
     public void enqueue(AsyncCall call) {
         if (!waitingAsyncCalls.contains(call) && waitingAsyncCalls.offer(call)) {
             promoteCalls();
         } else {
-            call.callback().onFailure(call.get(), new IOException(Const.MSG_DUPLICATE_REQUEST));
+            call.callback().onFailure(call.get(),
+                    new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST));
         }
         logSize(2, "enqueue");
     }
