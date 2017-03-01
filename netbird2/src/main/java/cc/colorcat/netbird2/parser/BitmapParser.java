@@ -13,18 +13,14 @@ import cc.colorcat.netbird2.response.Response;
  * Created by cxx on 17-2-23.
  * xx.ch@outlook.com
  */
-public class BitmapParser implements Parser<Bitmap> {
-    private static BitmapParser parser;
+public final class BitmapParser implements Parser<Bitmap> {
+    private static final BitmapParser PARSER = new BitmapParser();
 
-    public static BitmapParser getParser() {
-        if (parser == null) {
-            parser = new BitmapParser();
-        }
-        return parser;
+    public static BitmapParser get() {
+        return PARSER;
     }
 
     private BitmapParser() {
-
     }
 
     @NonNull
