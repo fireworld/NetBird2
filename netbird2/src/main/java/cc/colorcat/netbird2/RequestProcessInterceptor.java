@@ -43,7 +43,7 @@ final class RequestProcessInterceptor implements Interceptor {
                 }
                 long contentLength = body.contentLength();
                 if (contentLength != -1L) {
-                    builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength));
+//                    builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength));
                     builder.removeHeader("Transfer-Encoding");
                 } else {
                     builder.setHeader("Transfer-Encoding", "chunked");

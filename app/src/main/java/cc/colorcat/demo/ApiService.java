@@ -53,8 +53,8 @@ public class ApiService {
 
     public static void init(Context ctx) {
         bird = new NetBird.Builder(baseUrl)
-                .addHeadInterceptor(new TestInterceptorA())
-                .addHeadInterceptor(new TestInterceptorB())
+//                .addHeadInterceptor(new TestInterceptorA())
+//                .addHeadInterceptor(new TestInterceptorB())
                 .addTailInterceptor(new LogInterceptor())
                 .build();
     }
