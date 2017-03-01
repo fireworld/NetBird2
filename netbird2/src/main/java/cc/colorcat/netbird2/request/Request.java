@@ -33,6 +33,7 @@ public class Request<T> {
     private Method method;
     private Parser<? extends T> parser;
     private List<FileBody> fileBodies;
+    private String boundary;
     private RequestListener<? super T> requestListener;
     private LoadListener loadListener;
     private Object tag;
@@ -45,6 +46,7 @@ public class Request<T> {
         this.method = builder.method;
         this.parser = builder.parser;
         this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
+        this.boundary = builder.boundary;
         this.requestListener = builder.requestListener;
         this.loadListener = builder.loadListener;
         this.tag = builder.tag;
@@ -92,7 +94,7 @@ public class Request<T> {
         if (!params.isEmpty() && fileBodies == null) {
             return FormBody.create(params);
         }
-        return MultipartBody.create(FormBody.create(params), fileBodies);
+        return MultipartBody.create(FormBody.create(params), fileBodies, boundary);
     }
 
     public Object tag() {
@@ -190,9 +192,10 @@ public class Request<T> {
         private WritableHeaders headers;
         private String url;
         private String path;
-        private Method method = Method.GET;
+        private Method method;
         private Parser<? extends T> parser;
         private List<FileBody> fileBodies;
+        private String boundary;
         private RequestListener<? super T> requestListener;
 
         private LoadListener loadListener;
@@ -207,6 +210,7 @@ public class Request<T> {
             this.method = req.method;
             this.parser = req.parser;
             this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
+            this.boundary = req.boundary;
             this.requestListener = req.requestListener;
             this.loadListener = req.loadListener;
             this.tag = req.tag;
@@ -219,18 +223,12 @@ public class Request<T> {
             this.parser = Utils.nonNull(parser, "parser == null");
             this.params = WritableParameters.create(4);
             this.headers = WritableHeaders.create(2);
+            this.method = Method.GET;
+            this.boundary = "==" + System.currentTimeMillis() + "==";
         }
 
         public Builder<T> tag(Object tag) {
             this.tag = tag;
-            return this;
-        }
-
-        /**
-         * @param parser 数据解析，将 {@link Response} 解析为目标数据
-         */
-        public Builder<T> parser(@NonNull Parser<? extends T> parser) {
-            this.parser = Utils.nonNull(parser, "parser == null");
             return this;
         }
 
@@ -477,7 +475,7 @@ public class Request<T> {
         @CallSuper
         public Request<T> build() {
             if (fileBodies != null) method = Method.POST;
-            if (tag == null) tag = System.currentTimeMillis();
+            if (tag == null) tag = boundary;
             return new Request<>(this);
         }
     }

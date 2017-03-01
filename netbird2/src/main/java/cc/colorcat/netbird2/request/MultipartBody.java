@@ -16,18 +16,19 @@ final class MultipartBody extends RequestBody {
     private static final byte[] CRLF = {'\r', '\n'};
     private static final byte[] DASHDASH = {'-', '-'};
 
-    private final String boundary = "===" + System.currentTimeMillis() + "===";
+    private final String boundary;
     private FormBody formBody;
     private List<FileBody> fileBodies;
     private long contentLength = -1L;
 
-    public static MultipartBody create(FormBody formBody, List<FileBody> fileBodies) {
-        return new MultipartBody(formBody, fileBodies);
+    public static MultipartBody create(FormBody formBody, List<FileBody> fileBodies, String boundary) {
+        return new MultipartBody(formBody, fileBodies, boundary);
     }
 
-    private MultipartBody(FormBody formBody, List<FileBody> fileBody) {
+    private MultipartBody(FormBody formBody, List<FileBody> fileBody, String boundary) {
         this.formBody = formBody;
         this.fileBodies = fileBody;
+        this.boundary = boundary;
     }
 
     @Override

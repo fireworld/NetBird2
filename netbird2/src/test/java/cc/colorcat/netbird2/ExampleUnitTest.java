@@ -2,6 +2,10 @@ package cc.colorcat.netbird2;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -17,6 +21,11 @@ public class ExampleUnitTest {
 
     @Test
     public void genericTest() {
-
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < 100000; i++) {
+            String s = UUID.randomUUID().toString();
+            System.out.println(s);
+            assertEquals(set.add(s), true);
+        }
     }
 }

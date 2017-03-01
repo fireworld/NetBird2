@@ -17,7 +17,6 @@ public final class RealCall implements Call {
     private final NetBird netBird;
     private final Request<?> request;
     private final Connection connection;
-    private final Interceptor requestProcess;
     private final AtomicBoolean executed;
     private boolean canceled = false;
 
@@ -25,7 +24,6 @@ public final class RealCall implements Call {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
-        this.requestProcess = new RequestProcessInterceptor(netBird.baseUrl());
         this.executed = new AtomicBoolean(false);
     }
 
@@ -58,10 +56,10 @@ public final class RealCall implements Call {
     private Response getResponseWithInterceptorChain() throws IOException {
         List<Interceptor> head = netBird.headInterceptors();
         List<Interceptor> tail = netBird.tailInterceptors();
-        int size = head.size() + tail.size();
-        List<Interceptor> interceptors = new ArrayList<>(size + 2);
+        int size = head.size() + tail.size() + 2;
+        List<Interceptor> interceptors = new ArrayList<>(size);
         interceptors.addAll(head);
-        interceptors.add(requestProcess);
+        interceptors.add(new BridgeInterceptor(netBird.baseUrl()));
         interceptors.addAll(tail);
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
