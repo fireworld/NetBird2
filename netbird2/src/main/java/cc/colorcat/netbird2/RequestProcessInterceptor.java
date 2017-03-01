@@ -29,12 +29,15 @@ final class RequestProcessInterceptor implements Interceptor {
         if (path != null) {
             url += path;
         }
-        String parameters = concatParameters(request.parameters());
-        if (parameters != null) {
-            url = url + '?' + parameters;
+        Method method = request.method();
+        if (method == Method.GET) {
+            String parameters = concatParameters(request.parameters());
+            if (parameters != null) {
+                url = url + '?' + parameters;
+            }
         }
         Request.Builder<?> builder = request.newBuilder().url(url).path(null);
-        if (request.method() == Method.POST) {
+        if (method == Method.POST) {
             RequestBody body = request.body();
             if (body != null) {
                 String contentType = body.contentType();
@@ -43,7 +46,7 @@ final class RequestProcessInterceptor implements Interceptor {
                 }
                 long contentLength = body.contentLength();
                 if (contentLength != -1L) {
-//                    builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength));
+                    builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength));
                     builder.removeHeader("Transfer-Encoding");
                 } else {
                     builder.setHeader("Transfer-Encoding", "chunked");
