@@ -11,7 +11,7 @@ import cc.colorcat.netbird2.ByteOutputStream;
  * Created by cxx on 16-12-15.
  * xx.ch@outlook.com
  */
-class MixBody extends RequestBody {
+final class MultipartBody extends RequestBody {
     private static final String MIX = "multipart/form-data; boundary=";
     private static final byte[] CRLF = {'\r', '\n'};
     private static final byte[] DASHDASH = {'-', '-'};
@@ -21,11 +21,11 @@ class MixBody extends RequestBody {
     private List<FileBody> fileBodies;
     private long contentLength = -1L;
 
-    public static MixBody create(FormBody formBody, List<FileBody> fileBodies) {
-        return new MixBody(formBody, fileBodies);
+    public static MultipartBody create(FormBody formBody, List<FileBody> fileBodies) {
+        return new MultipartBody(formBody, fileBodies);
     }
 
-    private MixBody(FormBody formBody, List<FileBody> fileBody) {
+    private MultipartBody(FormBody formBody, List<FileBody> fileBody) {
         this.formBody = formBody;
         this.fileBodies = fileBody;
     }

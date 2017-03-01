@@ -92,7 +92,7 @@ public class Request<T> {
         if (!params.isEmpty() && fileBodies == null) {
             return FormBody.create(params);
         }
-        return MixBody.create(FormBody.create(params), fileBodies);
+        return MultipartBody.create(FormBody.create(params), fileBodies);
     }
 
     public Object tag() {
