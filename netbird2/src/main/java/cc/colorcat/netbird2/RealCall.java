@@ -87,7 +87,6 @@ public final class RealCall implements Call {
         RealCall realCall = (RealCall) o;
 
         return request.equals(realCall.request);
-
     }
 
     @Override
@@ -130,15 +129,24 @@ public final class RealCall implements Call {
 
         @Override
         public void run() {
+            int code = Const.CODE_CONNECT_ERROR;
+            String msg = null;
             try {
                 if (RealCall.this.canceled) {
                     callback.onFailure(RealCall.this, new StateIOException(Const.MSG_CANCELED, Const.CODE_CANCELED));
                 } else {
                     Response response = getResponseWithInterceptorChain();
+                    code = response.code();
+                    msg = response.msg();
                     callback.onResponse(RealCall.this, response);
                 }
             } catch (IOException e) {
-                callback.onFailure(RealCall.this, e);
+                if (msg == null) {
+                    msg = Utils.nullElse(e.getMessage(), Const.MSG_CONNECT_ERROR);
+                } else {
+                    msg = Utils.formatMsg(msg, e);
+                }
+                callback.onFailure(RealCall.this, new StateIOException(msg, e, code));
             } finally {
                 netBird.dispatcher().finished(this);
                 Utils.close(RealCall.this.connection);
@@ -153,12 +161,19 @@ public final class RealCall implements Call {
             AsyncCall asyncCall = (AsyncCall) o;
 
             return RealCall.this.request.equals(asyncCall.request());
-
         }
 
         @Override
         public int hashCode() {
             return 31 * RealCall.this.request.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "AsyncCall{" +
+                    "request=" + RealCall.this.request +
+                    ", executed=" + RealCall.this.executed +
+                    '}';
         }
     }
 }

@@ -58,7 +58,7 @@ final class Dispatcher {
         }
     }
 
-    private void onDuplicateRequest(AsyncCall call) {
+    private static void onDuplicateRequest(AsyncCall call) {
         call.callback().onFailure(call.get(),
                 new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST));
     }

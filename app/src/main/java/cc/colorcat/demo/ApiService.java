@@ -78,18 +78,30 @@ public class ApiService {
         bird.cancelWaiting(tag);
     }
 
-    public static Object display(final ImageView view, String url) {
+    public static Object display(final ImageView view, final String url) {
         Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
                 .url(url)
                 .listener(new SimpleRequestListener<Bitmap>() {
                     @Override
+                    public void onStart() {
+                        LogUtils.i("NetBirdImage_start", view.toString() + " = " + url);
+                    }
+
+                    @Override
                     public void onSuccess(@NonNull Bitmap result) {
+                        LogUtils.i("NetBirdImage_success", view.toString() + " = " + url);
                         view.setImageBitmap(result);
                     }
 
                     @Override
                     public void onFailure(int code, @NonNull String msg) {
+                        LogUtils.i("NetBirdImage_fail", view.toString() + " = " + url);
                         LogUtils.e("NetBirdImage", code + " : " + msg);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        LogUtils.i("NetBirdImage_finish", view.toString() + " = " + url);
                     }
                 }).build();
         return call(req);

@@ -11,7 +11,10 @@ import cc.colorcat.netbird2.response.Response;
 
 public interface Callback {
 
-    void onResponse(Call call, Response response);
+    /**
+     * 如果此方法抛出了 {@link IOException} 将跳转至 {@link Callback#onFailure(Call, StateIOException)}
+     */
+    void onResponse(Call call, Response response) throws IOException;
 
-    void onFailure(Call call, IOException e);
+    void onFailure(Call call, StateIOException e);
 }
