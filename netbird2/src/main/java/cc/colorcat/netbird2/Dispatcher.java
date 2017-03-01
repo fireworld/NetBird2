@@ -56,7 +56,6 @@ final class Dispatcher {
                 onDuplicateRequest(call);
             }
         }
-//        logSize(2, "promoteCalls");
     }
 
     private void onDuplicateRequest(AsyncCall call) {
@@ -90,11 +89,6 @@ final class Dispatcher {
 
     void cancelAll() {
         waitingAsyncCalls.clear();
-//        Iterator<AsyncCall> iterator = waitingAsyncCalls.iterator();
-//        while (iterator.hasNext()) {
-//            iterator.next();
-//            iterator.remove();
-//        }
         for (AsyncCall call : runningAsyncCalls) {
             call.get().cancel();
         }
