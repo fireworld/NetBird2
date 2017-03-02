@@ -1,10 +1,11 @@
-package cc.colorcat.netbird2.util;
+package cc.colorcat.netbird2;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -20,30 +21,68 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
-
-import cc.colorcat.netbird2.Const;
 
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class Utils {
+final class Utils {
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
-    public static void postOnUi(Runnable runnable) {
-        HANDLER.post(runnable);
+    static void callStartOnUi(final Request.Listener<?> listener) {
+        if (listener != null) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                listener.onStart();
+            } else {
+                HANDLER.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onStart();
+                    }
+                });
+            }
+        }
     }
 
-    public static boolean isUiThread() {
-        return Looper.myLooper() == Looper.getMainLooper();
+    static void deliverDataOnUi(final Request.Listener listener, final NetworkData data) {
+        if (listener != null) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                deliverData(listener, data);
+            } else {
+                HANDLER.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        deliverData(listener, data);
+                    }
+                });
+            }
+        }
     }
 
-    public static String boundary() {
-        return "===" + UUID.randomUUID().toString() + "===";
+    private static  void deliverData(Request.Listener listener, NetworkData data) {
+        if (data.isSuccess) {
+            listener.onSuccess(data.data);
+        } else {
+            listener.onFailure(data.code, data.msg);
+        }
+        listener.onFinish();
     }
 
-    public static String smartEncode(String value) {
+    static void postProgress(final ProgressListener listener,
+                             final long finished, final long contentLength, final int percent) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            listener.onChanged(finished, contentLength, percent);
+        } else {
+            HANDLER.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onChanged(finished, contentLength, percent);
+                }
+            });
+        }
+    }
+
+    static String smartEncode(String value) {
         try {
             String decodedValue = decode(value);
             if (!value.equals(decodedValue)) {
@@ -71,48 +110,44 @@ public class Utils {
         }
     }
 
-    public static String checkedHttp(String url) {
+    static String checkedHttp(String url) {
         if (!url.startsWith("http")) {
             throw new IllegalArgumentException("Bad url, the scheme must be http or https");
         }
         return url;
     }
 
-    public static <T> T nonNull(T value, String msg) {
+    static <T> T nonNull(T value, String msg) {
         if (value == null) {
             throw new NullPointerException(msg);
         }
         return value;
     }
 
-    public static <T extends CharSequence> T nonEmpty(T txt, String msg) {
+    static <T extends CharSequence> T nonEmpty(T txt, String msg) {
         if (Utils.isEmpty(txt)) {
             throw new IllegalArgumentException(msg);
         }
         return txt;
     }
 
-    public static boolean isEmpty(CharSequence txt) {
+    private static boolean isEmpty(CharSequence txt) {
         return txt == null || txt.length() == 0;
     }
 
-    public static <T> T nullElse(T value, T other) {
+    static <T> T nullElse(T value, T other) {
         return value != null ? value : other;
     }
 
-    public static <T> List<T> immutableList(List<T> list) {
+    static <T> List<T> immutableList(List<T> list) {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
-    public static <T> List<T> safeImmutableList(List<T> list) {
-        return list != null ? Collections.unmodifiableList(new ArrayList<>(list)) : Collections.<T>emptyList();
-    }
-
-    public static String formatMsg(String responseMsg, Exception e) {
+    static String formatMsg(String responseMsg, Exception e) {
         return String.format(Locale.getDefault(), "Response Msg = %s, Exception Detail = %s", responseMsg, e);
     }
 
-    public static void checkHeader(String name, String value) {
+    static void checkHeader(String name, String value) {
         if (name == null) throw new NullPointerException("name == null");
         if (name.isEmpty()) throw new IllegalArgumentException("name is empty");
         for (int i = 0, length = name.length(); i < length; i++) {
@@ -132,17 +167,8 @@ public class Utils {
         }
     }
 
-    public static long quiteParse(String value, long defValue) {
-        if (value == null) return defValue;
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException ignore) {
-            return defValue;
-        }
-    }
-
     @Nullable
-    public static Charset parseCharset(String contentType) {
+    static Charset parseCharset(String contentType) {
         if (contentType != null) {
             String[] params = contentType.split(";");
             final int length = params.length;
@@ -172,7 +198,7 @@ public class Utils {
         }
     }
 
-    public static String justRead(Reader reader) throws IOException {
+    static String justRead(Reader reader) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader br = new BufferedReader(reader);
         char[] buffer = new char[1024];
@@ -182,7 +208,7 @@ public class Utils {
         return sb.toString();
     }
 
-    public static byte[] justRead(InputStream is) throws IOException {
+    static byte[] justRead(InputStream is) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -194,8 +220,10 @@ public class Utils {
     }
 
     public static void justDump(InputStream is, OutputStream os) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(is);
+        BufferedOutputStream bos = new BufferedOutputStream(os);
         byte[] buffer = new byte[2048];
-        for (int length = is.read(buffer); length != -1; length = is.read(buffer)) {
+        for (int length = bis.read(buffer); length != -1; length = bis.read(buffer)) {
             os.write(buffer, 0, length);
         }
     }

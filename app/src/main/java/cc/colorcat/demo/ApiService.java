@@ -10,18 +10,18 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import cc.colorcat.netbird2.BitmapParser;
+import cc.colorcat.netbird2.FileBody;
+import cc.colorcat.netbird2.Headers;
 import cc.colorcat.netbird2.InputWrapper;
 import cc.colorcat.netbird2.Interceptor;
+import cc.colorcat.netbird2.LoadListener;
+import cc.colorcat.netbird2.Method;
 import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.meta.Parameters;
-import cc.colorcat.netbird2.request.FileBody;
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.response.LoadListener;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.response.ResponseBody;
-import cc.colorcat.netbird2.util.LogUtils;
+import cc.colorcat.netbird2.Parameters;
+import cc.colorcat.netbird2.Request;
+import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.ResponseBody;
 
 
 /**
@@ -76,7 +76,7 @@ public class ApiService {
     }
 
     public static Object display(final ImageView view, final String url) {
-        Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
+        Request<Bitmap> req = new Request.Builder<>(BitmapParser.get())
                 .url(url)
                 .listener(new Request.SimpleListener<Bitmap>() {
                     @Override
@@ -179,7 +179,7 @@ public class ApiService {
         List<FileBody> fileBodies = req.files();
         for (int i = 0, size = fileBodies.size(); i < size; i++) {
             FileBody pack = fileBodies.get(i);
-            LogUtils.dd(TAG, "req pack --> " + pack.name + "--" + pack.contentType + "--" + pack.file.getAbsolutePath());
+            LogUtils.dd(TAG, "req pack --> " + pack.name() + "--" + pack.contentType() + "--" + pack.file().getAbsolutePath());
         }
     }
 

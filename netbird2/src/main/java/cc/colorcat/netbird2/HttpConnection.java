@@ -9,21 +9,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.RequestBody;
-import cc.colorcat.netbird2.response.LoadListener;
-import cc.colorcat.netbird2.response.RealResponseBody;
-import cc.colorcat.netbird2.response.ResponseBody;
-import cc.colorcat.netbird2.util.LogUtils;
-import cc.colorcat.netbird2.util.Utils;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public class HttpConnection implements Connection {
+public final class HttpConnection implements Connection {
     private boolean enableCache = false;
     private HttpURLConnection conn;
     private InputStream is;

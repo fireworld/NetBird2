@@ -8,9 +8,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.util.Utils;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -56,11 +53,11 @@ public final class NetBird implements Call.Factory {
         return executor;
     }
 
-    Dispatcher dispatcher() {
+    public Dispatcher dispatcher() {
         return dispatcher;
     }
 
-    Connection connection() {
+    public Connection connection() {
         return connection;
     }
 

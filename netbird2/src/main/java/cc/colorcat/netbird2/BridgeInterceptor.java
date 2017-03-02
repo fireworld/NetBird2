@@ -1,22 +1,15 @@
-package cc.colorcat.netbird2.request;
+package cc.colorcat.netbird2;
 
 import java.io.IOException;
-
-import cc.colorcat.netbird2.Interceptor;
-import cc.colorcat.netbird2.Version;
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.meta.Parameters;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 2017/2/24.
  * xx.ch@outlook.com
  */
-public final class BridgeInterceptor implements Interceptor {
+final class BridgeInterceptor implements Interceptor {
     private final String baseUrl;
 
-    public BridgeInterceptor(String baseUrl) {
+    BridgeInterceptor(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 

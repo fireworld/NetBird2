@@ -14,8 +14,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import cc.colorcat.netbird2.util.LogUtils;
-
 
 /**
  * Created by cxx on 16-4-19.

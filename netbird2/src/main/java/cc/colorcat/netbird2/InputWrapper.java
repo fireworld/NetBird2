@@ -9,14 +9,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import cc.colorcat.netbird2.util.Utils;
-
 
 /**
  * Created by cxx on 2016/12/12.
  * xx.ch@outlook.com
  */
-public class InputWrapper extends InputStream {
+public final class InputWrapper extends InputStream {
     private InputStream delegate;
     private ProgressListener listener;
     private final long contentLength;
@@ -79,24 +77,11 @@ public class InputWrapper extends InputStream {
             finished += read;
             currentPercent = (int) (finished * 100 / contentLength);
             if (currentPercent > lastPercent) {
-                updateProgress(finished, contentLength, currentPercent);
+                Utils.postProgress(listener, finished, contentLength, currentPercent);
                 lastPercent = currentPercent;
             }
         }
         return read;
-    }
-
-    private void updateProgress(final long finished, final long contentLength, final int percent) {
-        if (Utils.isUiThread()) {
-            listener.onChanged(finished, contentLength, percent);
-        } else {
-            Utils.postOnUi(new Runnable() {
-                @Override
-                public void run() {
-                    listener.onChanged(finished, contentLength, percent);
-                }
-            });
-        }
     }
 
     @Override

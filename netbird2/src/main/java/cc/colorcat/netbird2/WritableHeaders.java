@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.meta;
+package cc.colorcat.netbird2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.List;
  * Created by cxx on 2017/2/23.
  * xx.ch@outlook.com
  */
-public class WritableHeaders extends Headers {
+public final class WritableHeaders extends Headers {
 
     public static WritableHeaders create(int capacity) {
         return new WritableHeaders(new ArrayList<String>(capacity), new ArrayList<String>(capacity));
@@ -52,5 +52,25 @@ public class WritableHeaders extends Headers {
 
     public Headers newReadableHeaders() {
         return new Headers(new ArrayList<>(pair.names), new ArrayList<>(pair.values));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WritableHeaders headers = (WritableHeaders) o;
+
+        return pair.equals(headers.pair);
+    }
+
+    @Override
+    public int hashCode() {
+        return 17 * pair.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "WritableHeaders{" + pair.toString() + '}';
     }
 }

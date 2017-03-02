@@ -1,13 +1,9 @@
-package cc.colorcat.netbird2.parser;
+package cc.colorcat.netbird2;
 
 import android.support.annotation.NonNull;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-
-import cc.colorcat.netbird2.Const;
-import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.response.Response;
 
 /**
  * Created by cxx on 17-2-23.

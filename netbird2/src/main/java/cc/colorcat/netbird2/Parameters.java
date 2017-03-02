@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.meta;
+package cc.colorcat.netbird2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class Parameters {
 
     @Override
     public int hashCode() {
-        return pair.hashCode();
+        return 19 * pair.hashCode();
     }
 
     @Override

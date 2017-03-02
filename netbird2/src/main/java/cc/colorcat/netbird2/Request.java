@@ -1,24 +1,13 @@
-package cc.colorcat.netbird2.request;
+package cc.colorcat.netbird2;
 
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.meta.Parameters;
-import cc.colorcat.netbird2.meta.WritableHeaders;
-import cc.colorcat.netbird2.meta.WritableParameters;
-import cc.colorcat.netbird2.parser.Parser;
-import cc.colorcat.netbird2.response.LoadListener;
-import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-22.
@@ -113,47 +102,12 @@ public class Request<T> {
         return tag;
     }
 
-    public void onStart() {
-        if (listener != null) {
-            if (Utils.isUiThread()) {
-                listener.onStart();
-            } else {
-                Utils.postOnUi(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onStart();
-                    }
-                });
-            }
-        }
+    public Listener<? super T> listener() {
+        return listener;
     }
 
-    public NetworkData<? extends T> parse(@NonNull Response response) throws IOException {
-        return parser.parse(response);
-    }
-
-    public void deliver(@NonNull final NetworkData<? extends T> data) {
-        if (Utils.isUiThread()) {
-            realDeliver(data);
-        } else {
-            Utils.postOnUi(new Runnable() {
-                @Override
-                public void run() {
-                    realDeliver(data);
-                }
-            });
-        }
-    }
-
-    private void realDeliver(final NetworkData<? extends T> data) {
-        if (listener != null) {
-            if (data.isSuccess) {
-                listener.onSuccess(data.data);
-            } else {
-                listener.onFailure(data.code, data.msg);
-            }
-            listener.onFinish();
-        }
+    public Parser<? extends T> parser() {
+        return parser;
     }
 
     @Override

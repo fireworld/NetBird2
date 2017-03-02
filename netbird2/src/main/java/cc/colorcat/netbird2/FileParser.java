@@ -1,14 +1,10 @@
-package cc.colorcat.netbird2.parser;
+package cc.colorcat.netbird2;
 
 import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-23.
@@ -18,12 +14,14 @@ public final class FileParser implements Parser<File> {
     private File file;
 
     public static FileParser create(String savePath) {
-        File file = new File(Utils.nonEmpty(savePath, "savePath is empty"));
+        File file = new File(savePath);
         return create(file);
     }
 
     public static FileParser create(File file) {
-        Utils.nonNull(file, "file == null");
+        if (file == null) {
+            throw new NullPointerException("file == null");
+        }
         File parent = file.getParentFile();
         if (parent.exists() || parent.mkdirs()) {
             return new FileParser(file);

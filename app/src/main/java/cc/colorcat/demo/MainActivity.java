@@ -12,8 +12,8 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
+import cc.colorcat.netbird2.Method;
+import cc.colorcat.netbird2.Request;
 import okhttp3.OkHttpClient;
 
 

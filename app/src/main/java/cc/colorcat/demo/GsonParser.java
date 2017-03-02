@@ -8,12 +8,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.io.Reader;
 
-import cc.colorcat.netbird2.response.NetworkData;
-import cc.colorcat.netbird2.parser.Parser;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.util.Utils;
+import cc.colorcat.netbird2.NetworkData;
+import cc.colorcat.netbird2.Parser;
+import cc.colorcat.netbird2.Response;
 
 
 /**
@@ -29,22 +27,21 @@ public class GsonParser<T> implements Parser<T> {
         GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd").serializeNulls().create();
     }
 
-    public GsonParser(@NonNull TypeToken<T> token) {
-        this.token = Utils.nonNull(token, "token == null");
+    public GsonParser(TypeToken<T> token) {
+        if (token == null) {
+            throw new NullPointerException("token == null");
+        }
+        this.token = token;
     }
 
     @NonNull
     @Override
     public NetworkData<? extends T> parse(@NonNull Response data) throws IOException {
-        Reader reader = null;
         try {
-            reader = data.body().reader();
-            T t = GSON.fromJson(reader, token.getType());
+            T t = GSON.fromJson(data.body().string(), token.getType());
             return NetworkData.newSuccess(t);
         } catch (JsonParseException e) {
-            return NetworkData.newFailure(data.code(), Utils.formatMsg(data.msg(), e));
-        } finally {
-            Utils.close(reader);
+            return NetworkData.newFailure(data.code(), data.msg() + ", " + e.getMessage());
         }
     }
 }

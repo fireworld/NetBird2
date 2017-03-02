@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.meta;
+package cc.colorcat.netbird2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 2017/2/23.

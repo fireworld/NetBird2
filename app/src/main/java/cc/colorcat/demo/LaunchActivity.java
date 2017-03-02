@@ -18,13 +18,14 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.UploadListener;
-import cc.colorcat.netbird2.response.LoadListener;
-import cc.colorcat.netbird2.util.LogUtils;
+import cc.colorcat.netbird2.FileParser;
+import cc.colorcat.netbird2.LoadListener;
+import cc.colorcat.netbird2.Method;
+import cc.colorcat.netbird2.Request;
+import cc.colorcat.netbird2.StringParser;
+import cc.colorcat.netbird2.UploadListener;
 
-import static cc.colorcat.netbird2.request.Request.SimpleListener;
+import static cc.colorcat.netbird2.Request.SimpleListener;
 
 
 /**

@@ -1,13 +1,10 @@
-package cc.colorcat.netbird2.request;
+package cc.colorcat.netbird2;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import cc.colorcat.netbird2.InputWrapper;
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 16-12-15.
@@ -24,9 +21,9 @@ public final class FileBody extends RequestBody {
         return new FileBody(name, contentType, file, listener);
     }
 
-    public final String name;
-    public final File file;
-    public final String contentType;
+    final String name;
+    final File file;
+    final String contentType;
     private final UploadListener listener;
     private long contentLength = -1L;
 
@@ -70,6 +67,14 @@ public final class FileBody extends RequestBody {
         }
     }
 
+    public String name() {
+        return name;
+    }
+
+    public File file() {
+        return file;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -95,7 +100,7 @@ public final class FileBody extends RequestBody {
         return "FileBody{" +
                 "name='" + name + '\'' +
                 ", contentType='" + contentType + '\'' +
-                ", file=" + file +
+                ", file=" + file.getAbsolutePath() +
                 '}';
     }
 }

@@ -9,7 +9,7 @@ import java.nio.charset.Charset;
  * Created by cxx on 2016/12/19.
  * xx.ch@outlook.com
  */
-public class ByteOutputStream extends FilterOutputStream {
+public final class ByteOutputStream extends FilterOutputStream {
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
     private long written;

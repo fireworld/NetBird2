@@ -1,10 +1,7 @@
-package cc.colorcat.netbird2.response;
+package cc.colorcat.netbird2;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-
-import cc.colorcat.netbird2.InputWrapper;
-import cc.colorcat.netbird2.meta.Headers;
 
 /**
  * Created by cxx on 2017/2/24.

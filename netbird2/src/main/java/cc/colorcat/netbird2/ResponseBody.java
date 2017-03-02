@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.response;
+package cc.colorcat.netbird2;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-22.
@@ -47,7 +45,7 @@ public abstract class ResponseBody implements Closeable {
     }
 
     @Override
-    public void close() {
+    public final void close() {
         Utils.close(stream());
     }
 

@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import cc.colorcat.netbird2.util.LogUtils;
-
 /**
  * Created by cxx on 17-2-23.
  * xx.ch@outlook.com

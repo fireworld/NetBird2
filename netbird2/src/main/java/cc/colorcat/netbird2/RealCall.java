@@ -5,16 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import cc.colorcat.netbird2.request.BridgeInterceptor;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.util.Utils;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-public final class RealCall implements Call {
+final class RealCall implements Call {
     private final NetBird netBird;
     private final Request<?> request;
     private final Connection connection;
@@ -50,7 +45,7 @@ public final class RealCall implements Call {
     @Override
     public void enqueue(Callback callback) {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
-        request.onStart();
+        Utils.callStartOnUi(request.listener());
         netBird.dispatcher().enqueue(new AsyncCall(callback));
     }
 

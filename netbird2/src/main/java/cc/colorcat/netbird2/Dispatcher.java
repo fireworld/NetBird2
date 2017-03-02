@@ -8,13 +8,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 
 import cc.colorcat.netbird2.RealCall.AsyncCall;
-import cc.colorcat.netbird2.util.LogUtils;
 
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-final class Dispatcher {
+public final class Dispatcher {
     private static final String TAG = "DispatcherTAG";
     private ExecutorService executor;
     private int maxRunning;

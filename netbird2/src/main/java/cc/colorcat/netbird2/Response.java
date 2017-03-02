@@ -1,11 +1,6 @@
-package cc.colorcat.netbird2.response;
+package cc.colorcat.netbird2;
 
 import java.io.Closeable;
-
-import cc.colorcat.netbird2.Const;
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.meta.WritableHeaders;
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 17-2-22.

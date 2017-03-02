@@ -2,11 +2,14 @@ package cc.colorcat.netbird2;
 
 import java.io.IOException;
 
-import cc.colorcat.netbird2.meta.Headers;
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.response.Response;
-import cc.colorcat.netbird2.response.ResponseBody;
+import cc.colorcat.netbird2.Connection;
+import cc.colorcat.netbird2.Headers;
+import cc.colorcat.netbird2.Interceptor;
+import cc.colorcat.netbird2.Method;
+import cc.colorcat.netbird2.NetBird;
+import cc.colorcat.netbird2.Request;
+import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.ResponseBody;
 
 /**
  * Created by cxx on 17-2-22.

@@ -1,4 +1,4 @@
-package cc.colorcat.netbird2.request;
+package cc.colorcat.netbird2;
 
 import java.io.IOException;
 import java.io.OutputStream;

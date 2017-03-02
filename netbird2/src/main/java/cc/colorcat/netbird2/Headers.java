@@ -1,12 +1,10 @@
-package cc.colorcat.netbird2.meta;
+package cc.colorcat.netbird2;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import cc.colorcat.netbird2.util.Utils;
 
 /**
  * Created by cxx on 2017/2/23.
@@ -102,8 +100,7 @@ public class Headers {
     }
 
     public long contentLength() {
-        String contentLength = pair.value(CONTENT_LENGTH);
-        return Utils.quiteParse(contentLength, -1L);
+        return quiteParse(pair.value(CONTENT_LENGTH), -1L);
     }
 
     public Charset charset() {
@@ -146,11 +143,20 @@ public class Headers {
 
     @Override
     public int hashCode() {
-        return pair.hashCode();
+        return 13 * pair.hashCode();
     }
 
     @Override
     public String toString() {
         return "Headers{" + pair.toString() + '}';
+    }
+
+    private static long quiteParse(String value, long defValue) {
+        if (value == null) return defValue;
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ignore) {
+            return defValue;
+        }
     }
 }

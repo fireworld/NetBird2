@@ -1,6 +1,4 @@
-package cc.colorcat.netbird2.response;
-
-import cc.colorcat.netbird2.ProgressListener;
+package cc.colorcat.netbird2;
 
 /**
  * Created by cxx on 17-2-27.
