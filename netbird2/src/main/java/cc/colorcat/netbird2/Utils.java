@@ -59,7 +59,8 @@ final class Utils {
         }
     }
 
-    private static  void deliverData(Request.Listener listener, NetworkData data) {
+    @SuppressWarnings("unchecked")
+    private static void deliverData(Request.Listener listener, NetworkData data) {
         if (data.isSuccess) {
             listener.onSuccess(data.data);
         } else {
@@ -219,12 +220,12 @@ final class Utils {
         return bos.toByteArray();
     }
 
-    public static void justDump(InputStream is, OutputStream os) throws IOException {
+    static void justDump(InputStream is, OutputStream os) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         BufferedOutputStream bos = new BufferedOutputStream(os);
         byte[] buffer = new byte[2048];
         for (int length = bis.read(buffer); length != -1; length = bis.read(buffer)) {
-            os.write(buffer, 0, length);
+            bos.write(buffer, 0, length);
         }
     }
 
