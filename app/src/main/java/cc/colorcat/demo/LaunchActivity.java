@@ -20,10 +20,11 @@ import java.io.File;
 
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.request.UploadListener;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.util.LogUtils;
+
+import static cc.colorcat.netbird2.request.Request.SimpleListener;
 
 
 /**
@@ -136,7 +137,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.e("Download_WeChat", read + " : " + total + " : " + percent);
                     }
                 })
-                .listener(new SimpleRequestListener<File>() {
+                .listener(new SimpleListener<File>() {
                     @Override
                     public void onSuccess(@NonNull File result) {
                         showToast(result.getAbsolutePath());
@@ -147,14 +148,15 @@ public class LaunchActivity extends AppCompatActivity {
                     public void onFailure(int code, @NonNull String msg) {
                         LogUtils.e("Progress", code + " : " + msg);
                     }
-                }).build();
+                })
+                .build();
         ApiService.call(req);
     }
 
     private void doGet() {
         showToast("to doGet");
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleRequestListener<String>() {
+                .listener(new SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -164,7 +166,8 @@ public class LaunchActivity extends AppCompatActivity {
                     public void onFailure(int code, @NonNull String msg) {
                         showToast(code + " : " + msg);
                     }
-                }).url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
+                })
+                .url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
                 .addHeader("get_Header1", "HeaderValue1").addHeader("get_Header2", "HeaderValue2").method(Method.GET).build();
         ApiService.call(req);
     }
@@ -172,7 +175,7 @@ public class LaunchActivity extends AppCompatActivity {
     private void doPost() {
         showToast("to doPost");
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleRequestListener<String>() {
+                .listener(new SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -191,7 +194,7 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void uploadImage() {
         Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleRequestListener<String>() {
+                .listener(new SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         LogUtils.i("Upload", CryptoTool.decryptByDefault(result));
@@ -217,25 +220,27 @@ public class LaunchActivity extends AppCompatActivity {
         mTag = "DownloadFirefox";
         File down = getExternalCacheDir();
         File mFile = new File(down, "firefox.apk");
-        Request rq = new Request.Builder<>(FileParser.create(mFile)).tag(mTag).listener(new SimpleRequestListener<File>() {
-            @Override
-            public void onSuccess(@NonNull File result) {
-                String path = result.getAbsolutePath();
-                showToast("download success, the path is " + path);
-                LogUtils.i("Download_Firefox", "download success, the path is " + path);
-            }
+        Request rq = new Request.Builder<>(FileParser.create(mFile)).tag(mTag)
+                .listener(new SimpleListener<File>() {
+                    @Override
+                    public void onSuccess(@NonNull File result) {
+                        String path = result.getAbsolutePath();
+                        showToast("download success, the path is " + path);
+                        LogUtils.i("Download_Firefox", "download success, the path is " + path);
+                    }
 
-            @Override
-            public void onFailure(int code, @NonNull String msg) {
-                showToast("download failure, " + code + " : " + msg);
-                LogUtils.i("Download_Firefox", "download failure, " + code + " : " + msg);
-            }
-        }).loadListener(new LoadListener() {
-            @Override
-            public void onChanged(long read, long total, int percent) {
-                LogUtils.e("Download_Firefox", read + "/" + total + " " + read * 100 / total + "%" + " percent: " + percent);
-            }
-        }).url(FIREFOX).build();
+                    @Override
+                    public void onFailure(int code, @NonNull String msg) {
+                        showToast("download failure, " + code + " : " + msg);
+                        LogUtils.i("Download_Firefox", "download failure, " + code + " : " + msg);
+                    }
+                })
+                .loadListener(new LoadListener() {
+                    @Override
+                    public void onChanged(long read, long total, int percent) {
+                        LogUtils.e("Download_Firefox", read + "/" + total + " " + read * 100 / total + "%" + " percent: " + percent);
+                    }
+                }).url(FIREFOX).build();
         ApiService.call(rq);
     }
 

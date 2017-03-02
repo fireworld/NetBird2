@@ -34,9 +34,11 @@ public class Request<T> {
     private Parser<? extends T> parser;
     private List<FileBody> fileBodies;
     private String boundary;
-    private RequestListener<? super T> requestListener;
+    private Listener<? super T> listener;
+
     private LoadListener loadListener;
     private Object tag;
+    private boolean freeze = false;
 
     protected Request(Builder<T> builder) {
         this.params = builder.params.newReadableParameters();
@@ -47,13 +49,23 @@ public class Request<T> {
         this.parser = builder.parser;
         this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
         this.boundary = builder.boundary;
-        this.requestListener = builder.requestListener;
+        this.listener = builder.listener;
         this.loadListener = builder.loadListener;
         this.tag = builder.tag;
     }
 
     public Builder<T> newBuilder() {
+        if (freeze) throw new IllegalStateException("The request has been frozen, call isFreeze() to check.");
         return new Builder<>(this);
+    }
+
+    Request<T> freeze() {
+        freeze = true;
+        return this;
+    }
+
+    public boolean isFreeze() {
+        return freeze;
     }
 
     public String url() {
@@ -102,14 +114,14 @@ public class Request<T> {
     }
 
     public void onStart() {
-        if (requestListener != null) {
+        if (listener != null) {
             if (Utils.isUiThread()) {
-                requestListener.onStart();
+                listener.onStart();
             } else {
                 Utils.postOnUi(new Runnable() {
                     @Override
                     public void run() {
-                        requestListener.onStart();
+                        listener.onStart();
                     }
                 });
             }
@@ -134,13 +146,13 @@ public class Request<T> {
     }
 
     private void realDeliver(final NetworkData<? extends T> data) {
-        if (requestListener != null) {
+        if (listener != null) {
             if (data.isSuccess) {
-                requestListener.onSuccess(data.data);
+                listener.onSuccess(data.data);
             } else {
-                requestListener.onFailure(data.code, data.msg);
+                listener.onFailure(data.code, data.msg);
             }
-            requestListener.onFinish();
+            listener.onFinish();
         }
     }
 
@@ -182,9 +194,33 @@ public class Request<T> {
                 ", fileBodies=" + fileBodies +
                 ", parser=" + parser +
                 ", loadListener=" + loadListener +
-                ", requestListener=" + requestListener +
+                ", listener=" + listener +
                 ", tag=" + tag +
                 '}';
+    }
+
+
+    public interface Listener<R> {
+        void onStart();
+
+        void onSuccess(R result);
+
+        void onFailure(int code, String msg);
+
+        void onFinish();
+    }
+
+    public static abstract class SimpleListener<R> implements Listener<R> {
+
+        @Override
+        public void onStart() {
+
+        }
+
+        @Override
+        public void onFinish() {
+
+        }
     }
 
     public static class Builder<T> {
@@ -196,7 +232,7 @@ public class Request<T> {
         private Parser<? extends T> parser;
         private List<FileBody> fileBodies;
         private String boundary;
-        private RequestListener<? super T> requestListener;
+        private Listener<? super T> listener;
 
         private LoadListener loadListener;
 
@@ -211,7 +247,6 @@ public class Request<T> {
             this.parser = req.parser;
             this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
             this.boundary = req.boundary;
-            this.requestListener = req.requestListener;
             this.loadListener = req.loadListener;
             this.tag = req.tag;
         }
@@ -253,11 +288,8 @@ public class Request<T> {
             return this;
         }
 
-        /**
-         * @param listener 请求结果的回调，{@link RequestListener} 中的方法均在主线程执行
-         */
-        public Builder<T> listener(RequestListener<? super T> listener) {
-            this.requestListener = listener;
+        public Builder<T> listener(Request.Listener<? super T> listener) {
+            this.listener = listener;
             return this;
         }
 

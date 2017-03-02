@@ -18,7 +18,6 @@ import cc.colorcat.netbird2.meta.Parameters;
 import cc.colorcat.netbird2.request.FileBody;
 import cc.colorcat.netbird2.request.Method;
 import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.SimpleRequestListener;
 import cc.colorcat.netbird2.response.LoadListener;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.response.ResponseBody;
@@ -61,9 +60,6 @@ public class ApiService {
 
     public static Object call(Request<?> req) {
         NetBird netBird = bird;
-//        if (req.loadListener() != null) {
-//            netBird = netBird.newBuilder().addTailInterceptor(progressListener).build();
-//        }
         return netBird.sendRequest(req);
     }
 
@@ -82,7 +78,7 @@ public class ApiService {
     public static Object display(final ImageView view, final String url) {
         Request<Bitmap> req = new Request.Builder<>(BitmapParser.getParser())
                 .url(url)
-                .listener(new SimpleRequestListener<Bitmap>() {
+                .listener(new Request.SimpleListener<Bitmap>() {
                     @Override
                     public void onStart() {
 //                        LogUtils.i("NetBirdImage_start", view.toString() + " = " + url);
@@ -104,7 +100,8 @@ public class ApiService {
                     public void onFinish() {
                         LogUtils.i("NetBirdImage_finish", view.toString() + " = " + url);
                     }
-                }).build();
+                })
+                .build();
         return call(req);
     }
 
