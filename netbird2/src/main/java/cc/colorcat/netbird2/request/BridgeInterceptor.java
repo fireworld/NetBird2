@@ -1,12 +1,11 @@
-package cc.colorcat.netbird2;
+package cc.colorcat.netbird2.request;
 
 import java.io.IOException;
 
+import cc.colorcat.netbird2.Interceptor;
+import cc.colorcat.netbird2.Version;
 import cc.colorcat.netbird2.meta.Headers;
 import cc.colorcat.netbird2.meta.Parameters;
-import cc.colorcat.netbird2.request.Method;
-import cc.colorcat.netbird2.request.Request;
-import cc.colorcat.netbird2.request.RequestBody;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
 
@@ -14,10 +13,10 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 2017/2/24.
  * xx.ch@outlook.com
  */
-final class BridgeInterceptor implements Interceptor {
+public final class BridgeInterceptor implements Interceptor {
     private final String baseUrl;
 
-    BridgeInterceptor(String baseUrl) {
+    public BridgeInterceptor(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -56,7 +55,7 @@ final class BridgeInterceptor implements Interceptor {
         }
         builder.addHeaderIfNot("Connection", "Keep-Alive");
         builder.addHeaderIfNot("User-Agent", Version.userAgent());
-        return chain.proceed(builder.build());
+        return chain.proceed(builder.build().freeze());
     }
 
     private static String concatParameters(Parameters parameters) {

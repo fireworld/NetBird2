@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import cc.colorcat.netbird2.request.BridgeInterceptor;
 import cc.colorcat.netbird2.request.Request;
 import cc.colorcat.netbird2.response.Response;
 import cc.colorcat.netbird2.util.Utils;
@@ -20,7 +21,7 @@ public final class RealCall implements Call {
     private final AtomicBoolean executed;
     private boolean canceled = false;
 
-    public RealCall(NetBird netBird, Request<?> originalRequest) {
+    RealCall(NetBird netBird, Request<?> originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
