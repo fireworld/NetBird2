@@ -29,8 +29,17 @@ public abstract class ResponseBody implements Closeable {
         return charset != null ? new InputStreamReader(stream(), charset) : new InputStreamReader(stream());
     }
 
+    public final Reader reader(Charset defCharset) {
+        Charset charset = Utils.nullElse(charset(), defCharset);
+        return new InputStreamReader(stream(), charset);
+    }
+
     public final String string() throws IOException {
         return Utils.justRead(reader());
+    }
+
+    public final String string(Charset defCharset) throws IOException {
+        return Utils.justRead(reader(defCharset));
     }
 
     public final byte[] bytes() throws IOException {

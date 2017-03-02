@@ -14,10 +14,10 @@ import cc.colorcat.netbird2.util.Utils;
  * Created by cxx on 2017/2/24.
  * xx.ch@outlook.com
  */
-final class RequestProcessInterceptor implements Interceptor {
+final class BridgeInterceptor implements Interceptor {
     private final String baseUrl;
 
-    RequestProcessInterceptor(String baseUrl) {
+    BridgeInterceptor(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -26,9 +26,8 @@ final class RequestProcessInterceptor implements Interceptor {
         Request<?> request = chain.request();
         String url = Utils.nullElse(request.url(), baseUrl);
         String path = request.path();
-        if (path != null) {
-            url += path;
-        }
+        if (path != null) url += path;
+
         Method method = request.method();
         if (method == Method.GET) {
             String parameters = concatParameters(request.parameters());
@@ -37,6 +36,7 @@ final class RequestProcessInterceptor implements Interceptor {
             }
         }
         Request.Builder<?> builder = request.newBuilder().url(url).path(null);
+
         if (method == Method.POST) {
             RequestBody body = request.body();
             if (body != null) {

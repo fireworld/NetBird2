@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import cc.colorcat.netbird2.Const;
 
@@ -36,6 +37,10 @@ public class Utils {
 
     public static boolean isUiThread() {
         return Looper.myLooper() == Looper.getMainLooper();
+    }
+
+    public static String boundary() {
+        return "===" + UUID.randomUUID().toString() + "===";
     }
 
     public static String smartEncode(String value) {
