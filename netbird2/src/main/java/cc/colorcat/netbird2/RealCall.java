@@ -138,7 +138,7 @@ final class RealCall implements Call {
                 if (msg == null) {
                     msg = Utils.nullElse(e.getMessage(), Const.MSG_CONNECT_ERROR);
                 } else {
-                    msg = Utils.formatMsg(msg, e);
+                    msg = "Response msg = " + msg + ", Exception detail = " + e.toString();
                 }
                 callback.onFailure(RealCall.this, new StateIOException(msg, e, code));
             } finally {

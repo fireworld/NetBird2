@@ -144,10 +144,6 @@ final class Utils {
         return Collections.unmodifiableList(new ArrayList<>(list));
     }
 
-    static String formatMsg(String responseMsg, Exception e) {
-        return String.format(Locale.getDefault(), "Response Msg = %s, Exception Detail = %s", responseMsg, e);
-    }
-
     static void checkHeader(String name, String value) {
         if (name == null) throw new NullPointerException("name == null");
         if (name.isEmpty()) throw new IllegalArgumentException("name is empty");

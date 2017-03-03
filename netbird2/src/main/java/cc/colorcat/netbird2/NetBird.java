@@ -1,6 +1,7 @@
 package cc.colorcat.netbird2;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -102,6 +103,12 @@ public final class NetBird implements Call.Factory {
     public <T> Object sendRequest(Request<T> request) {
         newCall(request).enqueue(new RequestCallback());
         return request.tag();
+    }
+
+    public <T> T execute(Request<T> request) throws IOException {
+        Response response = newCall(request).execute();
+        NetworkData<? extends T> data = request.parser().parse(response);
+        return data.data;
     }
 
     public void cancelWaiting(Object tag) {
