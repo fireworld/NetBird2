@@ -1,5 +1,7 @@
 package cc.colorcat.netbird2;
 
+import android.util.Log;
+
 import org.junit.Test;
 
 import java.io.IOError;
@@ -50,6 +52,7 @@ public class ExampleUnitTest {
         netBird.newCall(getBuilder().build()).enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.e("test", response.body().string());
                 System.out.println("onResponse() " + "request = " + call.request() + "response = " + response);
                 System.out.println(response.body().string());
             }
