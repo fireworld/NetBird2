@@ -54,6 +54,7 @@ public class ApiService {
         bird = new NetBird.Builder(baseUrl)
 //                .addHeadInterceptor(new TestInterceptorA())
 //                .addHeadInterceptor(new TestInterceptorB())
+                .enableExceptionLog(BuildConfig.DEBUG)
                 .addTailInterceptor(new LogInterceptor())
                 .build();
     }

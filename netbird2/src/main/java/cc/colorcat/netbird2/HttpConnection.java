@@ -122,8 +122,8 @@ public final class HttpConnection implements Connection {
                         .invoke(null, cachePath, cacheSize);
                 enableCache = true;
             } catch (Exception e) {
-                LogUtils.e(e);
                 enableCache = false;
+                LogUtils.e(e);
             }
         }
     }

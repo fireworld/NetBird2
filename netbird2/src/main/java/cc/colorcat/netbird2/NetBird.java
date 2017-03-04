@@ -25,6 +25,7 @@ public final class NetBird implements Call.Factory {
     private final int maxRunning;
     private final int readTimeOut;
     private final int connectTimeOut;
+    private final boolean enableExceptionLog;
 
     private NetBird(Builder builder) {
         this.headInterceptors = Utils.immutableList(builder.headInterceptors);
@@ -37,9 +38,11 @@ public final class NetBird implements Call.Factory {
         this.maxRunning = builder.maxRunning;
         this.readTimeOut = builder.readTimeOut;
         this.connectTimeOut = builder.connectTimeOut;
-        this.dispatcher = builder.dispatcher != null ? builder.dispatcher : new Dispatcher();
+        this.dispatcher = builder.dispatcher;
         this.dispatcher.setExecutor(executor);
         this.dispatcher.setMaxRunning(maxRunning);
+        this.enableExceptionLog = builder.enableExceptionLog;
+        LogUtils.setLevel(enableExceptionLog ? LogUtils.VERBOSE : LogUtils.NOTHING);
     }
 
     public List<Interceptor> headInterceptors() {
@@ -54,7 +57,7 @@ public final class NetBird implements Call.Factory {
         return executor;
     }
 
-    public Dispatcher dispatcher() {
+    Dispatcher dispatcher() {
         return dispatcher;
     }
 
@@ -143,11 +146,14 @@ public final class NetBird implements Call.Factory {
         private int maxRunning = 6;
         private int readTimeOut = 10000;
         private int connectTimeOut = 10000;
+        private boolean enableExceptionLog;
 
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
             this.headInterceptors = new ArrayList<>(2);
             this.tailInterceptors = new ArrayList<>(2);
+            this.dispatcher = new Dispatcher();
+            this.enableExceptionLog = true;
         }
 
         private Builder(NetBird netBird) {
@@ -162,6 +168,7 @@ public final class NetBird implements Call.Factory {
             this.maxRunning = netBird.maxRunning;
             this.readTimeOut = netBird.readTimeOut;
             this.connectTimeOut = netBird.connectTimeOut;
+            this.enableExceptionLog = netBird.enableExceptionLog;
         }
 
         public Builder executor(ExecutorService executor) {
@@ -214,6 +221,11 @@ public final class NetBird implements Call.Factory {
                 throw new IllegalArgumentException("connectTimeOut <= 0");
             }
             this.connectTimeOut = milliseconds;
+            return this;
+        }
+
+        public Builder enableExceptionLog(boolean enabled) {
+            this.enableExceptionLog = enabled;
             return this;
         }
 

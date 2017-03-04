@@ -10,14 +10,13 @@ import java.lang.annotation.RetentionPolicy;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 class LogUtils {
-    private static final int VERBOSE = 1;
-    private static final int DEBUG = 2;
-    private static final int INFO = 3;
-    private static final int WARN = 4;
-    private static final int ERROR = 5;
-    private static final int NOTHING = 6;
+    static final int VERBOSE = 1;
+    static final int DEBUG = 2;
+    static final int INFO = 3;
+    static final int WARN = 4;
+    static final int ERROR = 5;
+    static final int NOTHING = 6;
     private static int level = VERBOSE;
 
     static void v(String tag, String msg) {
