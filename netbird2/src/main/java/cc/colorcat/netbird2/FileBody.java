@@ -55,12 +55,7 @@ public final class FileBody extends RequestBody {
         InputStream is = null;
         try {
             is = new FileInputStream(file);
-            if (listener != null) {
-                long contentLength = contentLength();
-                if (contentLength > 0) {
-                    is = InputWrapper.create(is, contentLength, listener);
-                }
-            }
+            is = ProgressInputStream.wrap(is, contentLength(), listener);
             Utils.justDump(is, os);
         } finally {
             Utils.close(is);

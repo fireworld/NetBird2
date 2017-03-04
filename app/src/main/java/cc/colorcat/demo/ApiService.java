@@ -13,7 +13,7 @@ import java.util.List;
 import cc.colorcat.netbird2.BitmapParser;
 import cc.colorcat.netbird2.FileBody;
 import cc.colorcat.netbird2.Headers;
-import cc.colorcat.netbird2.InputWrapper;
+import cc.colorcat.netbird2.ProgressInputStream;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.LoadListener;
 import cc.colorcat.netbird2.Method;
@@ -191,7 +191,7 @@ public class ApiService {
             InputStream is = body.stream();
             long contentLength = body.contentLength();
             if (contentLength != -1L) {
-                is = InputWrapper.create(is, contentLength, listener);
+                is = ProgressInputStream.wrap(is, contentLength, listener);
             }
             this.body = ResponseBody.create(is, contentLength, body.contentType(), body.charset());
         }

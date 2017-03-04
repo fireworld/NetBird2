@@ -14,7 +14,7 @@ import java.io.InputStream;
  * Created by cxx on 2016/12/12.
  * xx.ch@outlook.com
  */
-public final class InputWrapper extends InputStream {
+public final class ProgressInputStream extends InputStream {
     private InputStream delegate;
     private ProgressListener listener;
     private final long contentLength;
@@ -22,44 +22,33 @@ public final class InputWrapper extends InputStream {
     private int currentPercent;
     private int lastPercent = currentPercent;
 
-    public static InputWrapper create(@NonNull InputStream is) {
-        return create(is, -1, null);
-    }
-
     /**
      * @param is            数据读取的来源
      * @param contentLength is 所包含的数据总长度
      * @param listener      读取数据进度监听器
-     * @return InputWrapper
+     * @return ProgressInputStream
      */
-    public static InputWrapper create(@NonNull InputStream is, long contentLength, @Nullable ProgressListener listener) {
-        return new InputWrapper(is, contentLength, listener);
-    }
-
-    /**
-     * @param file 数据来源于此文件
-     * @return InputWrapper
-     * @throws RuntimeException 如果 file 不存在将抛出此异常
-     */
-    public static InputWrapper create(@NonNull File file) {
-        return create(file, null);
+    public static InputStream wrap(InputStream is, long contentLength, ProgressListener listener) {
+        if (is != null && contentLength > 0 && listener != null) {
+            return new ProgressInputStream(is, contentLength, listener);
+        }
+        return is;
     }
 
     /**
      * @param file     数据来源于此文件
      * @param listener 读取数据进度监听器
-     * @return InputWrapper
-     * @throws RuntimeException 如果 file 不存在将抛出此异常
+     * @return ProgressInputStream
      */
-    public static InputWrapper create(@NonNull File file, @Nullable ProgressListener listener) {
-        try {
-            return new InputWrapper(new FileInputStream(file), file.length(), listener);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+    public static InputStream wrap(File file, ProgressListener listener) throws FileNotFoundException {
+        InputStream is = new FileInputStream(file);
+        if (listener != null) {
+            is = new ProgressInputStream(is, file.length(), listener);
         }
+        return is;
     }
 
-    private InputWrapper(@NonNull InputStream is, long contentLength, ProgressListener listener) {
+    private ProgressInputStream(@NonNull InputStream is, long contentLength, ProgressListener listener) {
         this.delegate = Utils.nonNull(is, "is == null");
         this.contentLength = contentLength;
         this.listener = listener;
@@ -73,13 +62,11 @@ public final class InputWrapper extends InputStream {
     @Override
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
         int read = delegate.read(b, off, len);
-        if (listener != null && contentLength > 0) {
-            finished += read;
-            currentPercent = (int) (finished * 100 / contentLength);
-            if (currentPercent > lastPercent) {
-                Utils.postProgress(listener, finished, contentLength, currentPercent);
-                lastPercent = currentPercent;
-            }
+        finished += read;
+        currentPercent = (int) (finished * 100 / contentLength);
+        if (currentPercent > lastPercent) {
+            Utils.postProgress(listener, finished, contentLength, currentPercent);
+            lastPercent = currentPercent;
         }
         return read;
     }

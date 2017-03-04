@@ -15,13 +15,7 @@ public class RealResponseBody extends ResponseBody {
 
     public static RealResponseBody create(InputStream is, Headers headers, LoadListener listener) {
         if (is == null) return null;
-        InputStream data = is;
-        if (listener != null) {
-            long contentLength = headers.contentLength();
-            if (contentLength > 0) {
-                data = InputWrapper.create(data, contentLength, listener);
-            }
-        }
+        InputStream data = ProgressInputStream.wrap(is, headers.contentLength(), listener);
         return new RealResponseBody(data, headers);
     }
 

@@ -26,7 +26,7 @@ public final class FileParser implements Parser<File> {
         if (parent.exists() || parent.mkdirs()) {
             return new FileParser(file);
         }
-        throw new RuntimeException("can't create directory: " + parent.getAbsolutePath());
+        throw new RuntimeException("can't wrap directory: " + parent.getAbsolutePath());
     }
 
     private FileParser(File file) {
