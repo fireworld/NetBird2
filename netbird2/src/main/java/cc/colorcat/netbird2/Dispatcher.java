@@ -33,7 +33,7 @@ public final class Dispatcher {
     }
 
     boolean executed(RealCall call) {
-        return !runningSyncCalls.add(call);
+        return runningSyncCalls.add(call);
     }
 
     void enqueue(AsyncCall call) {

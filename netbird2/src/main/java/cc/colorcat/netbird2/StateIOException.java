@@ -28,4 +28,12 @@ public class StateIOException extends IOException {
     public int getState() {
         return state;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "{" +
+                "msg=" + getLocalizedMessage() +
+                "state=" + state +
+                '}';
+    }
 }

@@ -55,6 +55,16 @@ public class Response implements Closeable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Response{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", headers=" + headers +
+                ", body=" + body +
+                '}';
+    }
+
     public static class Builder {
         private int code;
         private String msg;

@@ -38,7 +38,6 @@ final class RealCall implements Call {
             return getResponseWithInterceptorChain();
         } finally {
             netBird.dispatcher().finished(this);
-            Utils.close(connection);
         }
     }
 
