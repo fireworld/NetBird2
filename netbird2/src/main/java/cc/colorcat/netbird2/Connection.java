@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public interface Connection extends Closeable, Cloneable {
 
-    void connect(NetBird netBird, Request<?> request) throws IOException;
+    void connect(NetBird netBird, Request request) throws IOException;
 
     int responseCode() throws IOException;
 

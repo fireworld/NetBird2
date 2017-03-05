@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
+import cc.colorcat.netbird2.MRequest;
 import cc.colorcat.netbird2.Method;
 import cc.colorcat.netbird2.Request;
 import okhttp3.OkHttpClient;
@@ -61,13 +62,13 @@ public class MainActivity extends Activity {
 
     private void initData() {
         TypeToken<Result<List<Course>>> token = new TypeToken<Result<List<Course>>>() {};
-        final Request<Result<List<Course>>> request = new Request.Builder<>(new GsonParser<>(token))
+        final MRequest<Result<List<Course>>> request = new MRequest.Builder<>(new GsonParser<>(token))
                 .url(HOST)
                 .path("/teacher")
                 .method(Method.GET)
                 .add("type", Integer.toString(4))
                 .add("num", Integer.toString(30))
-                .listener(new Request.SimpleListener<Result<List<Course>>>() {
+                .listener(new MRequest.SimpleListener<Result<List<Course>>>() {
                     @Override
                     public void onSuccess(@NonNull Result<List<Course>> result) {
                         mList.clear();

@@ -134,6 +134,11 @@ public class ExampleUnitTest {
     public void netBirdAsyncTest() {
         netBird.newCall(getBuilder().build()).enqueue(new Callback() {
             @Override
+            public void onStart() {
+
+            }
+
+            @Override
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("onResponse() " + "request = " + call.request() + "response = " + response);
                 System.out.println(response.body().string());
@@ -143,11 +148,41 @@ public class ExampleUnitTest {
             public void onFailure(Call call, StateIOException e) {
                 System.out.println("onFailure() " + "\nrequest = " + call.request() + "\n Exception = " + e);
             }
+
+            @Override
+            public void onFinish() {
+
+            }
         });
     }
 
-    private static Request.Builder<String> getBuilder() {
-        return new Request.Builder<>(StringParser.getUtf8())
+    @Test
+    public void netBirdAsyncTest2() {
+        netBird.sendRequest(getBuilder().listener(new MRequest.Listener<String>() {
+            @Override
+            public void onStart() {
+                System.out.println("onStart()");
+            }
+
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("onSuccess() " + result);
+            }
+
+            @Override
+            public void onFailure(int code, String msg) {
+                System.out.println("onFailure() " + code + ", " + msg);
+            }
+
+            @Override
+            public void onFinish() {
+                System.out.println("onFinish()");
+            }
+        }).build());
+    }
+
+    private static MRequest.Builder<String> getBuilder() {
+        return new MRequest.Builder<>(StringParser.getUtf8())
                 .method(Method.GET)
                 .path("/teacher")
                 .add("type", Integer.toString(4))

@@ -28,7 +28,7 @@ public final class HttpConnection implements Connection {
     }
 
     @Override
-    public void connect(NetBird netBird, Request<?> request) throws IOException {
+    public void connect(NetBird netBird, Request request) throws IOException {
         listener = request.loadListener();
         enableCache(netBird.cachePath(), netBird.cacheSize());
         String url = request.url();

@@ -25,7 +25,7 @@ final class ConnectInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Connection conn = chain.connection();
-        Request<?> req = chain.request();
+        Request req = chain.request();
         conn.connect(netBird, req);
         conn.writeHeaders(req.headers());
         if (req.method() == Method.POST) {

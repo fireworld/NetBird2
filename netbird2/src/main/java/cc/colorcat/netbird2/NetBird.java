@@ -93,7 +93,7 @@ public final class NetBird implements Call.Factory {
      * @throws NullPointerException 如果 request 为空会抛出此异常
      */
     @Override
-    public Call newCall(Request<?> request) {
+    public Call newCall(Request request) {
         return new RealCall(this, request);
     }
 
@@ -103,12 +103,12 @@ public final class NetBird implements Call.Factory {
      * @see NetBird#cancelWaiting(Object)
      * @see NetBird#cancelAll(Object)
      */
-    public <T> Object sendRequest(Request<T> request) {
-        newCall(request).enqueue(new RequestCallback());
+    public <T> Object sendRequest(MRequest<T> request) {
+        newCall(request).enqueue(new MCallback<>(request.parser(), request.listener()));
         return request.tag();
     }
 
-    public <T> T execute(Request<T> request) throws IOException {
+    public <T> T execute(MRequest<T> request) throws IOException {
         Response response = newCall(request).execute();
         NetworkData<? extends T> data = request.parser().parse(response);
         return data.data;

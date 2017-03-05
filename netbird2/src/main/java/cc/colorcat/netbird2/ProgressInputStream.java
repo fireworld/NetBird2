@@ -65,7 +65,7 @@ public final class ProgressInputStream extends InputStream {
         finished += read;
         currentPercent = (int) (finished * 100 / contentLength);
         if (currentPercent > lastPercent) {
-            Utils.postProgress(listener, finished, contentLength, currentPercent);
+            HandlerUtils.postProgress(listener, finished, contentLength, currentPercent);
             lastPercent = currentPercent;
         }
         return read;

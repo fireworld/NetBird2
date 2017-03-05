@@ -7,7 +7,7 @@ import java.io.IOException;
  * xx.ch@outlook.com
  */
 public interface Call extends Cloneable {
-    Request<?> request();
+    Request request();
 
     Response execute() throws IOException;
 
@@ -25,6 +25,6 @@ public interface Call extends Cloneable {
     boolean isCanceled();
 
     interface Factory {
-        Call newCall(Request<?> request);
+        Call newCall(Request request);
     }
 }

@@ -20,12 +20,11 @@ import java.io.File;
 
 import cc.colorcat.netbird2.FileParser;
 import cc.colorcat.netbird2.LoadListener;
+import cc.colorcat.netbird2.MRequest;
 import cc.colorcat.netbird2.Method;
 import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.StringParser;
 import cc.colorcat.netbird2.UploadListener;
-
-import static cc.colorcat.netbird2.Request.SimpleListener;
 
 
 /**
@@ -105,7 +104,7 @@ public class LaunchActivity extends AppCompatActivity {
                     doPost();
                     break;
                 case R.id.btn_test:
-                    Request<String> req = new Request.Builder<>(StringParser.getUtf8())
+                    MRequest<String> req = new MRequest.Builder<>(StringParser.getUtf8())
                             .url("http://sdfsdf.com")
                             .build();
                     ApiService.call(req);
@@ -129,7 +128,7 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void downloadTest() {
         File path = new File(getExternalCacheDir(), "test.apk");
-        Request<File> req = new Request.Builder<>(FileParser.create(path))
+        MRequest<File> req = new MRequest.Builder<>(FileParser.create(path))
                 .url("http://dldir1.qq.com/weixin/android/weixin653android980.apk")
                 .method(Method.GET)
                 .loadListener(new LoadListener() {
@@ -138,7 +137,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.e("Download_WeChat", read + " : " + total + " : " + percent);
                     }
                 })
-                .listener(new SimpleListener<File>() {
+                .listener(new MRequest.SimpleListener<File>() {
                     @Override
                     public void onSuccess(@NonNull File result) {
                         showToast(result.getAbsolutePath());
@@ -156,8 +155,8 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void doGet() {
         showToast("to doGet");
-        Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleListener<String>() {
+        MRequest<String> req = new MRequest.Builder<>(StringParser.getUtf8())
+                .listener(new MRequest.SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -175,8 +174,8 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void doPost() {
         showToast("to doPost");
-        Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleListener<String>() {
+        MRequest<String> req = new MRequest.Builder<>(StringParser.getUtf8())
+                .listener(new MRequest.SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         showToast(result);
@@ -194,8 +193,8 @@ public class LaunchActivity extends AppCompatActivity {
     }
 
     private void uploadImage() {
-        Request<String> req = new Request.Builder<>(StringParser.getUtf8())
-                .listener(new SimpleListener<String>() {
+        MRequest<String> req = new MRequest.Builder<>(StringParser.getUtf8())
+                .listener(new MRequest.SimpleListener<String>() {
                     @Override
                     public void onSuccess(@NonNull String result) {
                         LogUtils.i("Upload", CryptoTool.decryptByDefault(result));
@@ -221,8 +220,8 @@ public class LaunchActivity extends AppCompatActivity {
         mTag = "DownloadFirefox";
         File down = getExternalCacheDir();
         File mFile = new File(down, "firefox.apk");
-        Request rq = new Request.Builder<>(FileParser.create(mFile)).tag(mTag)
-                .listener(new SimpleListener<File>() {
+        MRequest rq = new MRequest.Builder<>(FileParser.create(mFile)).tag(mTag)
+                .listener(new MRequest.SimpleListener<File>() {
                     @Override
                     public void onSuccess(@NonNull File result) {
                         String path = result.getAbsolutePath();

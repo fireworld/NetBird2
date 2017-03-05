@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 final class RealCall implements Call {
     private final NetBird netBird;
-    private final Request<?> request;
+    private final Request request;
     private final Connection connection;
     private final AtomicBoolean executed;
     private boolean canceled = false;
 
-    RealCall(NetBird netBird, Request<?> originalRequest) {
+    RealCall(NetBird netBird, Request originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
@@ -24,7 +24,7 @@ final class RealCall implements Call {
     }
 
     @Override
-    public Request<?> request() {
+    public Request request() {
         return request;
     }
 
@@ -44,7 +44,8 @@ final class RealCall implements Call {
     @Override
     public void enqueue(Callback callback) {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
-        Utils.callStartOnUi(request.listener());
+//        Utils.callStartOnUi(request.listener());
+        callback.onStart();
         netBird.dispatcher().enqueue(new AsyncCall(callback));
     }
 
@@ -108,7 +109,7 @@ final class RealCall implements Call {
             this.callback = callback;
         }
 
-        Request<?> request() {
+        Request request() {
             return RealCall.this.request;
         }
 
@@ -142,6 +143,7 @@ final class RealCall implements Call {
                 callback.onFailure(RealCall.this, new StateIOException(msg, e, code));
             } finally {
                 netBird.dispatcher().finished(this);
+                callback.onFinish();
                 Utils.close(RealCall.this.connection);
             }
         }

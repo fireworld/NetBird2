@@ -15,7 +15,7 @@ final class BridgeInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request<?> request = chain.request();
+        Request request = chain.request();
         String url = Utils.nullElse(request.url(), baseUrl);
         String path = request.path();
         if (path != null) url += path;
@@ -27,7 +27,7 @@ final class BridgeInterceptor implements Interceptor {
                 url = url + '?' + parameters;
             }
         }
-        Request.Builder<?> builder = request.newBuilder().url(url).path(null);
+        Request.Builder builder = request.newBuilder().url(url).path(null);
 
         if (method == Method.POST) {
             RequestBody body = request.body();

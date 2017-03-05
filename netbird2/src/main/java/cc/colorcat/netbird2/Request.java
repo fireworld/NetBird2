@@ -14,46 +14,53 @@ import java.util.List;
  * xx.ch@outlook.com
  */
 @SuppressWarnings("unused")
-public class Request<T> {
-    private Parameters params;
-    private Headers headers;
-    private String url;
-    private String path;
+public class Request {
+    private final Parameters params;
+    private final Headers headers;
+    private final String url;
+    private final String path;
     private Method method;
-    private Parser<? extends T> parser;
-    private List<FileBody> fileBodies;
-    private String boundary;
-    private Listener<? super T> listener;
+    //    private Parser<? extends T> parser;
+    private final List<FileBody> fileBodies;
+    private final String boundary;
+//    private Listener<? super T> listener;
 
     private LoadListener loadListener;
     private Object tag;
     private boolean freeze = false;
 
-    protected Request(Builder<T> builder) {
+    protected Request(Builder builder) {
         this.params = builder.params.newReadableParameters();
         this.headers = builder.headers.newReadableHeaders();
         this.url = builder.url;
         this.path = builder.path;
+//        this.parser = builder.parser;
+        if (builder.fileBodies != null) {
+            this.fileBodies = Utils.immutableList(builder.fileBodies);
+            builder.method(Method.POST);
+        } else {
+            this.fileBodies = null;
+        }
         this.method = builder.method;
-        this.parser = builder.parser;
-        this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
+//        this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
         this.boundary = builder.boundary;
-        this.listener = builder.listener;
+//        this.listener = builder.listener;
         this.loadListener = builder.loadListener;
         this.tag = builder.tag;
     }
 
-    public Builder<T> newBuilder() {
-        if (freeze) throw new IllegalStateException("The request has been frozen, call isFreeze() to check.");
-        return new Builder<>(this);
+    public Builder newBuilder() {
+        if (freeze)
+            throw new IllegalStateException("The request has been frozen, call isFreeze() to check.");
+        return new Builder(this);
     }
 
-    Request<T> freeze() {
+    final Request freeze() {
         freeze = true;
         return this;
     }
 
-    public boolean isFreeze() {
+    public final boolean isFreeze() {
         return freeze;
     }
 
@@ -102,20 +109,20 @@ public class Request<T> {
         return tag;
     }
 
-    public Listener<? super T> listener() {
-        return listener;
-    }
+//    public Listener<? super T> listener() {
+//        return listener;
+//    }
 
-    public Parser<? extends T> parser() {
-        return parser;
-    }
+//    public Parser<? extends T> parser() {
+//        return parser;
+//    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Request<?> request = (Request<?>) o;
+        Request request = (Request) o;
 
         if (url != null ? !url.equals(request.url) : request.url != null) return false;
         if (path != null ? !path.equals(request.path) : request.path != null) return false;
@@ -146,77 +153,86 @@ public class Request<T> {
                 ", params=" + params +
                 ", headers=" + headers +
                 ", fileBodies=" + fileBodies +
-                ", parser=" + parser +
+//                ", parser=" + parser +
                 ", loadListener=" + loadListener +
-                ", listener=" + listener +
+//                ", listener=" + listener +
                 ", tag=" + tag +
                 '}';
     }
 
 
-    public interface Listener<R> {
-        void onStart();
+//    public interface Listener<R> {
+//        void onStart();
+//
+//        void onSuccess(R result);
+//
+//        void onFailure(int code, String msg);
+//
+//        void onFinish();
+//    }
+//
+//    public static abstract class SimpleListener<R> implements Listener<R> {
+//
+//        @Override
+//        public void onStart() {
+//
+//        }
+//
+//        @Override
+//        public void onFinish() {
+//
+//        }
+//    }
 
-        void onSuccess(R result);
-
-        void onFailure(int code, String msg);
-
-        void onFinish();
-    }
-
-    public static abstract class SimpleListener<R> implements Listener<R> {
-
-        @Override
-        public void onStart() {
-
-        }
-
-        @Override
-        public void onFinish() {
-
-        }
-    }
-
-    public static class Builder<T> {
+    public static class Builder {
         private WritableParameters params;
         private WritableHeaders headers;
         private String url;
         private String path;
         private Method method;
-        private Parser<? extends T> parser;
+        //        private Parser<? extends T> parser;
         private List<FileBody> fileBodies;
         private String boundary;
-        private Listener<? super T> listener;
+//        private Listener<? super T> listener;
 
         private LoadListener loadListener;
 
         private Object tag;
 
-        protected Builder(Request<T> req) {
+        protected Builder(Request req) {
             this.params = req.params.newWritableParameters();
             this.headers = req.headers.newWritableHeaders();
             this.url = req.url;
             this.path = req.path;
             this.method = req.method;
-            this.parser = req.parser;
+//            this.parser = req.parser;
             this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
             this.boundary = req.boundary;
+//            this.listener = req.listener;
             this.loadListener = req.loadListener;
             this.tag = req.tag;
         }
 
-        /**
-         * @param parser 数据解析，将 {@link Response} 解析为目标数据
-         */
-        public Builder(@NonNull Parser<? extends T> parser) {
-            this.parser = Utils.nonNull(parser, "parser == null");
+        public Builder() {
             this.params = WritableParameters.create(4);
             this.headers = WritableHeaders.create(2);
             this.method = Method.GET;
             this.boundary = "==" + System.currentTimeMillis() + "==";
+            this.tag = this.boundary;
         }
 
-        public Builder<T> tag(Object tag) {
+//        /**
+//         * @param parser 数据解析，将 {@link Response} 解析为目标数据
+//         */
+//        public Builder(@NonNull Parser<? extends T> parser) {
+//            this.parser = Utils.nonNull(parser, "parser == null");
+//            this.params = WritableParameters.create(4);
+//            this.headers = WritableHeaders.create(2);
+//            this.method = Method.GET;
+//            this.boundary = "==" + System.currentTimeMillis() + "==";
+//        }
+
+        public Builder tag(Object tag) {
             this.tag = tag;
             return this;
         }
@@ -224,7 +240,7 @@ public class Request<T> {
         /**
          * @param url 请求的 http/https 地址，如果没有设置则使用构建 NetBird 时的 baseUrl
          */
-        public Builder<T> url(String url) {
+        public Builder url(String url) {
             this.url = Utils.checkedHttp(url);
             return this;
         }
@@ -232,25 +248,25 @@ public class Request<T> {
         /**
          * @param path 请求的路径
          */
-        public Builder<T> path(String path) {
+        public Builder path(String path) {
             this.path = path;
             return this;
         }
 
-        public Builder<T> method(Method method) {
+        public Builder  method(Method method) {
             this.method = method;
             return this;
         }
 
-        public Builder<T> listener(Request.Listener<? super T> listener) {
-            this.listener = listener;
-            return this;
-        }
+//        public Builder<T> listener(Request.Listener<? super T> listener) {
+//            this.listener = listener;
+//            return this;
+//        }
 
         /**
          * @param listener 下载进度监听器，服务器必须返回数据的长度才有效
          */
-        public Builder<T> loadListener(LoadListener listener) {
+        public Builder loadListener(LoadListener listener) {
             loadListener = listener;
             return this;
         }
@@ -262,7 +278,7 @@ public class Request<T> {
          * @param value 请求参数的值
          * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
          */
-        public Builder<T> add(String name, String value) {
+        public Builder add(String name, String value) {
             Utils.nonEmpty(name, "name is null/empty");
             Utils.nonEmpty(value, "value is null/empty");
             params.add(name, value);
@@ -277,7 +293,7 @@ public class Request<T> {
          * @param value 请求参数的值
          * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
          */
-        public Builder<T> set(String name, String value) {
+        public Builder set(String name, String value) {
             Utils.nonEmpty(name, "name is null/empty");
             Utils.nonEmpty(value, "value is null/empty");
             params.set(name, value);
@@ -291,7 +307,7 @@ public class Request<T> {
          * @param value 请求参数的值
          * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
          */
-        public Builder<T> addIfNot(String name, String value) {
+        public Builder addIfNot(String name, String value) {
             Utils.nonEmpty(name, "name is null/empty");
             Utils.nonEmpty(value, "value is null/empty");
             params.addIfNot(name, value);
@@ -304,7 +320,7 @@ public class Request<T> {
          * @param name 需要清除的参数的名称
          * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
          */
-        public Builder<T> remove(String name) {
+        public Builder remove(String name) {
             Utils.nonEmpty(name, "name is null/empty");
             params.removeAll(name);
             return this;
@@ -337,12 +353,12 @@ public class Request<T> {
         /**
          * 清除所有已添加的请求参数
          */
-        public Builder<T> clear() {
+        public Builder clear() {
             params.clear();
             return this;
         }
 
-        public Builder<T> addFile(String name, String contentType, File file) {
+        public Builder addFile(String name, String contentType, File file) {
             return addFile(name, contentType, file, null);
         }
 
@@ -354,7 +370,7 @@ public class Request<T> {
          * @param file        文件全路径
          * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
          */
-        public Builder<T> addFile(String name, String contentType, File file, UploadListener listener) {
+        public Builder addFile(String name, String contentType, File file, UploadListener listener) {
             if (fileBodies == null) {
                 fileBodies = new ArrayList<>(2);
             }
@@ -362,7 +378,7 @@ public class Request<T> {
             return this;
         }
 
-        public Builder<T> clearFile() {
+        public Builder clearFile() {
             if (fileBodies != null) {
                 fileBodies.clear();
             }
@@ -377,7 +393,7 @@ public class Request<T> {
          * @throws NullPointerException     如果 name/value 为 null, 将抛出此异常
          * @throws IllegalArgumentException 如果 name/value 不符合 Header 规范要求将抛出此异常
          */
-        public Builder<T> addHeader(String name, String value) {
+        public Builder addHeader(String name, String value) {
             Utils.checkHeader(name, value);
             headers.add(name, value);
             return this;
@@ -391,7 +407,7 @@ public class Request<T> {
          * @throws NullPointerException     如果 name/value 为 null, 将抛出此异常
          * @throws IllegalArgumentException 如果 name/value 不符合 Header 规范要求将抛出此异常
          */
-        public Builder<T> setHeader(String name, String value) {
+        public Builder setHeader(String name, String value) {
             Utils.checkHeader(name, value);
             headers.set(name, value);
             return this;
@@ -405,13 +421,13 @@ public class Request<T> {
          * @throws NullPointerException     如果 name/value 为 null, 将抛出此异常
          * @throws IllegalArgumentException 如果 name/value 不符合 Header 规范要求将抛出此异常
          */
-        public Builder<T> addHeaderIfNot(String name, String value) {
+        public Builder addHeaderIfNot(String name, String value) {
             Utils.checkHeader(name, value);
             headers.addIfNot(name, value);
             return this;
         }
 
-        public Builder<T> removeHeader(String name) {
+        public Builder removeHeader(String name) {
             headers.removeAll(name);
             return this;
         }
@@ -453,16 +469,13 @@ public class Request<T> {
         /**
          * 清除所有已添加的 Header 参数
          */
-        public Builder<T> clearHeaders() {
+        public Builder clearHeaders() {
             headers.clear();
             return this;
         }
 
-        @CallSuper
-        public Request<T> build() {
-            if (fileBodies != null) method = Method.POST;
-            if (tag == null) tag = boundary;
-            return new Request<>(this);
+        public Request build() {
+            return new Request(this);
         }
     }
 }

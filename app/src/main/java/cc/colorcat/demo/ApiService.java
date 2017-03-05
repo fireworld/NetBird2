@@ -13,6 +13,7 @@ import java.util.List;
 import cc.colorcat.netbird2.BitmapParser;
 import cc.colorcat.netbird2.FileBody;
 import cc.colorcat.netbird2.Headers;
+import cc.colorcat.netbird2.MRequest;
 import cc.colorcat.netbird2.ProgressInputStream;
 import cc.colorcat.netbird2.Interceptor;
 import cc.colorcat.netbird2.LoadListener;
@@ -59,7 +60,7 @@ public class ApiService {
                 .build();
     }
 
-    public static Object call(Request<?> req) {
+    public static Object call(MRequest<?> req) {
         NetBird netBird = bird;
         return netBird.sendRequest(req);
     }
@@ -77,9 +78,9 @@ public class ApiService {
     }
 
     public static Object display(final ImageView view, final String url) {
-        Request<Bitmap> req = new Request.Builder<>(BitmapParser.get())
+        MRequest<Bitmap> req = new MRequest.Builder<>(BitmapParser.get())
                 .url(url)
-                .listener(new Request.SimpleListener<Bitmap>() {
+                .listener(new MRequest.SimpleListener<Bitmap>() {
                     @Override
                     public void onStart() {
 //                        LogUtils.i("NetBirdImage_start", view.toString() + " = " + url);
@@ -109,7 +110,7 @@ public class ApiService {
     private static class TestInterceptorA implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request<?> req = chain.request().newBuilder()
+            Request req = chain.request().newBuilder()
                     .add("TestA_K1", "TestA_V1")
                     .add("TestA_K2", "TestA_V2")
                     .addIfNot("TestA_K1", "TestA_V1111")
@@ -123,7 +124,7 @@ public class ApiService {
     private static class TestInterceptorB implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request<?> req = chain.request().newBuilder()
+            Request req = chain.request().newBuilder()
                     .add("TestB_K1", "TestB_V1")
                     .add("TestB_K2", "TestB_V2")
                     .addIfNot("TestB_K1", "TestB_V1111")
@@ -137,7 +138,7 @@ public class ApiService {
     private static class LogInterceptor implements Interceptor {
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request<?> req = chain.request();
+            Request req = chain.request();
             if (LogUtils.isDebug) {
                 Method m = req.method();
                 LogUtils.ii(TAG, "---------------------------------------- " + m.name() + " -----------------------------------------");
@@ -176,7 +177,7 @@ public class ApiService {
         }
     }
 
-    private static void logFiles(Request<?> req) {
+    private static void logFiles(Request req) {
         List<FileBody> fileBodies = req.files();
         for (int i = 0, size = fileBodies.size(); i < size; i++) {
             FileBody pack = fileBodies.get(i);
