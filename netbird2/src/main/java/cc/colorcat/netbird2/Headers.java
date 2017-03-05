@@ -148,7 +148,7 @@ public class Headers {
 
     @Override
     public String toString() {
-        return "Headers{" + pair.toString() + '}';
+        return getClass().getSimpleName() + "{" + pair.toString() + '}';
     }
 
     private static long quiteParse(String value, long defValue) {

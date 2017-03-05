@@ -67,6 +67,6 @@ public class Parameters {
 
     @Override
     public String toString() {
-        return "Parameters{" + pair.toString() + '}';
+        return getClass().getSimpleName() + "{" + pair.toString() + '}';
     }
 }

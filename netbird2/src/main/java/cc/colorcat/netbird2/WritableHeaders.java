@@ -68,9 +68,4 @@ public final class WritableHeaders extends Headers {
     public int hashCode() {
         return 17 * pair.hashCode();
     }
-
-    @Override
-    public String toString() {
-        return "WritableHeaders{" + pair.toString() + '}';
-    }
 }

@@ -103,7 +103,7 @@ public final class NetBird implements Call.Factory {
      * @see NetBird#cancelWaiting(Object)
      * @see NetBird#cancelAll(Object)
      */
-    public <T> Object sendRequest(MRequest<T> request) {
+    public <T> Object send(MRequest<T> request) {
         newCall(request).enqueue(new MCallback<>(request.parser(), request.listener()));
         return request.tag();
     }

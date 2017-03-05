@@ -1,6 +1,5 @@
 package cc.colorcat.netbird2;
 
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,43 +14,38 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class Request {
-    private final Parameters params;
-    private final Headers headers;
     private final String url;
     private final String path;
-    private Method method;
-    //    private Parser<? extends T> parser;
+    private final Parameters params;
+    private final Headers headers;
     private final List<FileBody> fileBodies;
+    private Method method;
     private final String boundary;
-//    private Listener<? super T> listener;
-
     private LoadListener loadListener;
     private Object tag;
-    private boolean freeze = false;
+    boolean freeze = false;
 
     protected Request(Builder builder) {
-        this.params = builder.params.newReadableParameters();
-        this.headers = builder.headers.newReadableHeaders();
         this.url = builder.url;
         this.path = builder.path;
-//        this.parser = builder.parser;
-        if (builder.fileBodies != null) {
+        this.params = builder.params.newReadableParameters();
+        this.headers = builder.headers.newReadableHeaders();
+        if (builder.fileBodies != null && !builder.fileBodies.isEmpty()) {
             this.fileBodies = Utils.immutableList(builder.fileBodies);
             builder.method(Method.POST);
         } else {
             this.fileBodies = null;
         }
         this.method = builder.method;
-//        this.fileBodies = builder.fileBodies != null ? Utils.immutableList(builder.fileBodies) : null;
         this.boundary = builder.boundary;
-//        this.listener = builder.listener;
         this.loadListener = builder.loadListener;
         this.tag = builder.tag;
     }
 
     public Builder newBuilder() {
-        if (freeze)
+        if (freeze) {
             throw new IllegalStateException("The request has been frozen, call isFreeze() to check.");
+        }
         return new Builder(this);
     }
 
@@ -64,35 +58,35 @@ public class Request {
         return freeze;
     }
 
-    public String url() {
+    public final String url() {
         return url;
     }
 
-    public String path() {
+    public final String path() {
         return path;
     }
 
-    public Method method() {
+    public final Method method() {
         return method;
     }
 
-    public Parameters parameters() {
+    public final Parameters parameters() {
         return params;
     }
 
-    public Headers headers() {
+    public final Headers headers() {
         return headers;
     }
 
-    public List<FileBody> files() {
+    public final List<FileBody> files() {
         return Utils.nullElse(fileBodies, Collections.<FileBody>emptyList());
     }
 
-    public LoadListener loadListener() {
+    public final LoadListener loadListener() {
         return loadListener;
     }
 
-    public RequestBody body() {
+    public final RequestBody body() {
         if (params.isEmpty() && fileBodies == null) {
             return null;
         }
@@ -105,17 +99,9 @@ public class Request {
         return MultipartBody.create(FormBody.create(params), fileBodies, boundary);
     }
 
-    public Object tag() {
+    public final Object tag() {
         return tag;
     }
-
-//    public Listener<? super T> listener() {
-//        return listener;
-//    }
-
-//    public Parser<? extends T> parser() {
-//        return parser;
-//    }
 
     @Override
     public boolean equals(Object o) {
@@ -146,69 +132,38 @@ public class Request {
 
     @Override
     public String toString() {
-        return "Request{" +
+        return getClass().getSimpleName() + "{" +
                 "url='" + url + '\'' +
                 ", path='" + path + '\'' +
                 ", method=" + method +
                 ", params=" + params +
                 ", headers=" + headers +
                 ", fileBodies=" + fileBodies +
-//                ", parser=" + parser +
                 ", loadListener=" + loadListener +
-//                ", listener=" + listener +
                 ", tag=" + tag +
                 '}';
     }
 
 
-//    public interface Listener<R> {
-//        void onStart();
-//
-//        void onSuccess(R result);
-//
-//        void onFailure(int code, String msg);
-//
-//        void onFinish();
-//    }
-//
-//    public static abstract class SimpleListener<R> implements Listener<R> {
-//
-//        @Override
-//        public void onStart() {
-//
-//        }
-//
-//        @Override
-//        public void onFinish() {
-//
-//        }
-//    }
-
     public static class Builder {
-        private WritableParameters params;
-        private WritableHeaders headers;
         private String url;
         private String path;
-        private Method method;
-        //        private Parser<? extends T> parser;
+        private WritableParameters params;
+        private WritableHeaders headers;
         private List<FileBody> fileBodies;
+        private Method method;
         private String boundary;
-//        private Listener<? super T> listener;
-
         private LoadListener loadListener;
-
         private Object tag;
 
         protected Builder(Request req) {
-            this.params = req.params.newWritableParameters();
-            this.headers = req.headers.newWritableHeaders();
             this.url = req.url;
             this.path = req.path;
-            this.method = req.method;
-//            this.parser = req.parser;
+            this.params = req.params.newWritableParameters();
+            this.headers = req.headers.newWritableHeaders();
             this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
+            this.method = req.method;
             this.boundary = req.boundary;
-//            this.listener = req.listener;
             this.loadListener = req.loadListener;
             this.tag = req.tag;
         }
@@ -220,17 +175,6 @@ public class Request {
             this.boundary = "==" + System.currentTimeMillis() + "==";
             this.tag = this.boundary;
         }
-
-//        /**
-//         * @param parser 数据解析，将 {@link Response} 解析为目标数据
-//         */
-//        public Builder(@NonNull Parser<? extends T> parser) {
-//            this.parser = Utils.nonNull(parser, "parser == null");
-//            this.params = WritableParameters.create(4);
-//            this.headers = WritableHeaders.create(2);
-//            this.method = Method.GET;
-//            this.boundary = "==" + System.currentTimeMillis() + "==";
-//        }
 
         public Builder tag(Object tag) {
             this.tag = tag;
@@ -253,15 +197,10 @@ public class Request {
             return this;
         }
 
-        public Builder  method(Method method) {
+        public Builder method(Method method) {
             this.method = method;
             return this;
         }
-
-//        public Builder<T> listener(Request.Listener<? super T> listener) {
-//            this.listener = listener;
-//            return this;
-//        }
 
         /**
          * @param listener 下载进度监听器，服务器必须返回数据的长度才有效
@@ -329,14 +268,14 @@ public class Request {
         /**
          * @return 返回所有请求参数的名称，不可修改，顺序与 {@link Builder#values()} 一一对应。
          */
-        public List<String> names() {
+        public final List<String> names() {
             return params.names();
         }
 
         /**
          * @return 返回所有请求参数的值，不可修改，顺序与 {@link Builder#names()} 一一对应。
          */
-        public List<String> values() {
+        public final List<String> values() {
             return params.values();
         }
 
@@ -345,7 +284,7 @@ public class Request {
          * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
          */
         @Nullable
-        public String value(String name) {
+        public final String value(String name) {
             Utils.nonEmpty(name, "name is null/empty");
             return params.value(name);
         }
@@ -372,7 +311,7 @@ public class Request {
          */
         public Builder addFile(String name, String contentType, File file, UploadListener listener) {
             if (fileBodies == null) {
-                fileBodies = new ArrayList<>(2);
+                fileBodies = new ArrayList<>(1);
             }
             fileBodies.add(FileBody.create(name, contentType, file, listener));
             return this;
@@ -435,14 +374,14 @@ public class Request {
         /**
          * @return 返回所有已添加的 Header 的名称，顺序与 {@link Builder#headerValues()} 一一对应
          */
-        public List<String> headerNames() {
+        public final List<String> headerNames() {
             return headers.names();
         }
 
         /**
          * @return 返回所有已添加的 Header 的值，顺序与 {@link Builder#headerNames()} 一一对应
          */
-        public List<String> headerValues() {
+        public final List<String> headerValues() {
             return headers.values();
         }
 
@@ -451,7 +390,7 @@ public class Request {
          * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
          */
         @Nullable
-        public String headerValue(String name) {
+        public final String headerValue(String name) {
             Utils.nonEmpty(name, "name is null/empty");
             return headers.value(name);
         }
@@ -461,7 +400,7 @@ public class Request {
          * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
          */
         @NonNull
-        public List<String> headerValues(String name) {
+        public final List<String> headerValues(String name) {
             Utils.nonEmpty(name, "name is null/empty");
             return headers.values(name);
         }

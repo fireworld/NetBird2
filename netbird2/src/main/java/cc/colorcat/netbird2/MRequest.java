@@ -1,10 +1,6 @@
 package cc.colorcat.netbird2;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import java.io.File;
-import java.util.List;
 
 /**
  * Created by cxx on 17-3-4.
@@ -26,6 +22,14 @@ public class MRequest<T> extends Request {
 
     public Parser<? extends T> parser() {
         return parser;
+    }
+
+    @Override
+    public Builder<T> newBuilder() {
+        if (freeze) {
+            throw new IllegalStateException("The request has been frozen, call isFreeze() to check.");
+        }
+        return new Builder<>(this);
     }
 
     public interface Listener<R> {
@@ -98,7 +102,7 @@ public class MRequest<T> extends Request {
 
         @Override
         public Builder<T> loadListener(LoadListener listener) {
-            super.loadListener(listener);
+            super.loadListener(MLoadListener.wrap(listener));
             return this;
         }
 
@@ -127,22 +131,6 @@ public class MRequest<T> extends Request {
         }
 
         @Override
-        public List<String> names() {
-            return super.names();
-        }
-
-        @Override
-        public List<String> values() {
-            return super.values();
-        }
-
-        @Nullable
-        @Override
-        public String value(String name) {
-            return super.value(name);
-        }
-
-        @Override
         public Builder<T> clear() {
             super.clear();
             return this;
@@ -156,7 +144,7 @@ public class MRequest<T> extends Request {
 
         @Override
         public Builder<T> addFile(String name, String contentType, File file, UploadListener listener) {
-            super.addFile(name, contentType, file, listener);
+            super.addFile(name, contentType, file, MUploadListener.wrap(listener));
             return this;
         }
 
@@ -188,28 +176,6 @@ public class MRequest<T> extends Request {
         public Builder<T> removeHeader(String name) {
             super.removeHeader(name);
             return this;
-        }
-
-        @Override
-        public List<String> headerNames() {
-            return super.headerNames();
-        }
-
-        @Override
-        public List<String> headerValues() {
-            return super.headerValues();
-        }
-
-        @Nullable
-        @Override
-        public String headerValue(String name) {
-            return super.headerValue(name);
-        }
-
-        @NonNull
-        @Override
-        public List<String> headerValues(String name) {
-            return super.headerValues(name);
         }
 
         @Override

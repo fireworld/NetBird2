@@ -50,14 +50,14 @@ final class HandlerUtils {
     }
 
     static void postProgress(final ProgressListener listener,
-                             final long finished, final long contentLength, final int percent) {
+                             final long finished, final long total, final int percent) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            listener.onChanged(finished, contentLength, percent);
+            listener.onChanged(finished, total, percent);
         } else {
             HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    listener.onChanged(finished, contentLength, percent);
+                    listener.onChanged(finished, total, percent);
                 }
             });
         }

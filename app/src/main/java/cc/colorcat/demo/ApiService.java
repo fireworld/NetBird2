@@ -62,7 +62,7 @@ public class ApiService {
 
     public static Object call(MRequest<?> req) {
         NetBird netBird = bird;
-        return netBird.sendRequest(req);
+        return netBird.send(req);
     }
 
     public static void cancel(Object tag) {

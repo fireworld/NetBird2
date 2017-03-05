@@ -1,17 +1,12 @@
 package cc.colorcat.netbird2;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.junit.Test;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -34,12 +29,7 @@ public class ExampleUnitTest {
 
     @Test
     public void genericTest() {
-        Set<String> set = new HashSet<>();
-        for (int i = 0; i < 100000; i++) {
-            String s = UUID.randomUUID().toString();
-            System.out.println(s);
-            assertEquals(set.add(s), true);
-        }
+
     }
 
     private static NetBird netBird = new NetBird.Builder("http://www.imooc.com/api")
@@ -135,7 +125,7 @@ public class ExampleUnitTest {
         netBird.newCall(getBuilder().build()).enqueue(new Callback() {
             @Override
             public void onStart() {
-
+                System.out.println("onStart()");
             }
 
             @Override
@@ -151,14 +141,14 @@ public class ExampleUnitTest {
 
             @Override
             public void onFinish() {
-
+                System.out.println("onFinish()");
             }
         });
     }
 
     @Test
     public void netBirdAsyncTest2() {
-        netBird.sendRequest(getBuilder().listener(new MRequest.Listener<String>() {
+        netBird.send(getBuilder().listener(new MRequest.Listener<String>() {
             @Override
             public void onStart() {
                 System.out.println("onStart()");
