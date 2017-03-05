@@ -14,13 +14,14 @@ final class RealCall implements Call {
     private final Request request;
     private final Connection connection;
     private final AtomicBoolean executed;
-    private boolean canceled = false;
+    private AtomicBoolean canceled;
 
     RealCall(NetBird netBird, Request originalRequest) {
         this.netBird = netBird;
         this.request = originalRequest;
         this.connection = netBird.connection().clone();
         this.executed = new AtomicBoolean(false);
+        this.canceled = new AtomicBoolean(false);
     }
 
     @Override
@@ -63,13 +64,13 @@ final class RealCall implements Call {
 
     @Override
     public void cancel() {
-        canceled = true;
+        canceled.set(true);
         connection.cancel();
     }
 
     @Override
     public boolean isCanceled() {
-        return canceled;
+        return canceled.get();
     }
 
     @Override
@@ -125,7 +126,7 @@ final class RealCall implements Call {
             int code = Const.CODE_CONNECT_ERROR;
             String msg = null;
             try {
-                if (RealCall.this.canceled) {
+                if (RealCall.this.canceled.get()) {
                     callback.onFailure(RealCall.this, new StateIOException(Const.MSG_CANCELED, Const.CODE_CANCELED));
                 } else {
                     Response response = getResponseWithInterceptorChain();
