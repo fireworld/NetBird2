@@ -44,7 +44,6 @@ final class RealCall implements Call {
     @Override
     public void enqueue(Callback callback) {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
-//        Utils.callStartOnUi(request.listener());
         callback.onStart();
         netBird.dispatcher().enqueue(new AsyncCall(callback));
     }
@@ -142,8 +141,8 @@ final class RealCall implements Call {
                 }
                 callback.onFailure(RealCall.this, new StateIOException(msg, e, code));
             } finally {
-                netBird.dispatcher().finished(this);
                 callback.onFinish();
+                netBird.dispatcher().finished(this);
                 Utils.close(RealCall.this.connection);
             }
         }
