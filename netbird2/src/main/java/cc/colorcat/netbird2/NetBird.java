@@ -110,7 +110,10 @@ public final class NetBird implements Call.Factory {
 
     public <T> T execute(MRequest<T> request) throws IOException {
         Response response = newCall(request).execute();
-        return request.parser().parse(response).data;
+        if (response.code() == 200 && response.body() != null) {
+            return request.parser().parse(response).data;
+        }
+        return null;
     }
 
     public void cancelWaiting(Object tag) {
