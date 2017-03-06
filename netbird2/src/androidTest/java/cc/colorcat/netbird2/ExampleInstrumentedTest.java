@@ -128,7 +128,7 @@ public class ExampleInstrumentedTest {
         netBird.newCall(getBuilder().build()).enqueue(new Callback() {
             @Override
             public void onStart() {
-
+                System.out.println("onStart()");
             }
 
             @Override
@@ -144,7 +144,7 @@ public class ExampleInstrumentedTest {
 
             @Override
             public void onFinish() {
-
+                System.out.println("onFinish()");
             }
         });
     }
