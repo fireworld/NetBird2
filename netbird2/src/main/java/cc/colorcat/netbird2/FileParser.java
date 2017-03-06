@@ -13,6 +13,12 @@ import java.io.IOException;
 public final class FileParser implements Parser<File> {
     private File file;
 
+    /**
+     * Constructs a new {@link FileParser} using the specified path.
+     *
+     * @param savePath the path to be used for save the file.
+     * @throws NullPointerException if {@code savePath} is {@code null}.
+     */
     public static FileParser create(String savePath) {
         File file = new File(savePath);
         return create(file);
@@ -26,7 +32,7 @@ public final class FileParser implements Parser<File> {
         if (parent.exists() || parent.mkdirs()) {
             return new FileParser(file);
         }
-        throw new RuntimeException("can't wrap directory: " + parent.getAbsolutePath());
+        throw new RuntimeException("Can't create directory, " + parent.getAbsolutePath());
     }
 
     private FileParser(File file) {

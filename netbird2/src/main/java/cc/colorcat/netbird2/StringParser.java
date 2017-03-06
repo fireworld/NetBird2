@@ -11,9 +11,21 @@ import java.nio.charset.Charset;
  */
 public final class StringParser implements Parser<String> {
     private static transient StringParser utf8;
+    private static transient StringParser instance;
 
     public static StringParser create(@NonNull String charset) {
         return new StringParser(Charset.forName(charset));
+    }
+
+    public static StringParser get() {
+        if (instance == null) {
+            synchronized (StringParser.class) {
+                if (instance == null) {
+                    instance = new StringParser(null);
+                }
+            }
+        }
+        return instance;
     }
 
     public static StringParser getUtf8() {
@@ -27,7 +39,7 @@ public final class StringParser implements Parser<String> {
         return utf8;
     }
 
-    private Charset charset;
+    private final Charset charset;
 
     private StringParser(Charset charset) {
         this.charset = charset;
@@ -36,6 +48,12 @@ public final class StringParser implements Parser<String> {
     @NonNull
     @Override
     public NetworkData<? extends String> parse(@NonNull Response data) throws IOException {
-        return NetworkData.newSuccess(data.body().string(charset));
+        NetworkData<? extends String> networkData;
+        if (charset != null) {
+            networkData = NetworkData.newSuccess(data.body().string(charset));
+        } else {
+            networkData = NetworkData.newSuccess(data.body().string());
+        }
+        return networkData;
     }
 }
