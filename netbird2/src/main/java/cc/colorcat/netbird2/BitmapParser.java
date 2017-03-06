@@ -19,7 +19,9 @@ public final class BitmapParser implements Parser<Bitmap> {
     public static BitmapParser get() {
         if (parser == null) {
             synchronized (BitmapParser.class) {
-                parser = new BitmapParser();
+                if (parser == null) {
+                    parser = new BitmapParser();
+                }
             }
         }
         return parser;
