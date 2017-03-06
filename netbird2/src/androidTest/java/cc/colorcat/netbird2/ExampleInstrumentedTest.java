@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -128,6 +127,11 @@ public class ExampleInstrumentedTest {
     public void netBirdAsyncTest() {
         netBird.newCall(getBuilder().build()).enqueue(new Callback() {
             @Override
+            public void onStart() {
+
+            }
+
+            @Override
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("onResponse() " + "request = " + call.request() + "response = " + response);
                 System.out.println(response.body().string());
@@ -137,11 +141,16 @@ public class ExampleInstrumentedTest {
             public void onFailure(Call call, StateIOException e) {
                 System.out.println("onFailure() " + "\nrequest = " + call.request() + "\n Exception = " + e);
             }
+
+            @Override
+            public void onFinish() {
+
+            }
         });
     }
 
-    private static Request.Builder<String> getBuilder() {
-        return new Request.Builder<>(StringParser.getUtf8())
+    private static MRequest.Builder<String> getBuilder() {
+        return new MRequest.Builder<>(StringParser.getUtf8())
                 .method(Method.GET)
                 .path("/teacher")
                 .add("type", Integer.toString(4))
