@@ -163,6 +163,7 @@ final class Utils {
         for (int length = bis.read(buffer); length != -1; length = bis.read(buffer)) {
             bos.write(buffer, 0, length);
         }
+        bos.flush();
     }
 
     private Utils() {

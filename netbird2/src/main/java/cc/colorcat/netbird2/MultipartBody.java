@@ -112,6 +112,7 @@ final class MultipartBody extends RequestBody {
         bos.writeUtf8(boundary);
         bos.write(DASHDASH);
         bos.write(CRLF);
+        bos.flush();
 
         if (countBytes) {
             byteCount += bos.size();

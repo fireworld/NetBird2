@@ -68,6 +68,7 @@ final class FormBody extends RequestBody {
             bos.writeByte('=');
             bos.writeUtf8(namesAndValues.value(i));
         }
+        bos.flush();
 
         if (countBytes) {
             byteCount = bos.size();
