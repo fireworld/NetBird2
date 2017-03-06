@@ -24,6 +24,7 @@ import java.util.Locale;
  * xx.ch@outlook.com
  */
 final class Utils {
+
     static String smartEncode(String value) {
         try {
             String decodedValue = decode(value);
@@ -125,7 +126,7 @@ final class Utils {
         return null;
     }
 
-    public static void close(Closeable os) {
+    static void close(Closeable os) {
         if (os != null) {
             try {
                 os.close();
