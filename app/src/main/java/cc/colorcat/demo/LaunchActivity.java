@@ -22,7 +22,6 @@ import cc.colorcat.netbird2.FileParser;
 import cc.colorcat.netbird2.LoadListener;
 import cc.colorcat.netbird2.MRequest;
 import cc.colorcat.netbird2.Method;
-import cc.colorcat.netbird2.Request;
 import cc.colorcat.netbird2.StringParser;
 import cc.colorcat.netbird2.UploadListener;
 
@@ -68,6 +67,7 @@ public class LaunchActivity extends AppCompatActivity {
         findViewById(R.id.btn_test).setOnClickListener(mClick);
         findViewById(R.id.btn_download_test).setOnClickListener(mClick);
         findViewById(R.id.btn_test_proxy).setOnClickListener(mClick);
+        findViewById(R.id.btn_to_demo).setOnClickListener(mClick);
 
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (result != PackageManager.PERMISSION_GRANTED) {
@@ -107,10 +107,13 @@ public class LaunchActivity extends AppCompatActivity {
                     MRequest<String> req = new MRequest.Builder<>(StringParser.getUtf8())
                             .url("http://sdfsdf.com")
                             .build();
-                    ApiService.call(req);
+                    ApiService.send(req);
                     break;
                 case R.id.btn_test_proxy:
                     testProxy();
+                    break;
+                case R.id.btn_to_demo:
+                    startActivity(new Intent(LaunchActivity.this, DemoActivity.class));
                     break;
                 default:
                     break;
@@ -150,7 +153,7 @@ public class LaunchActivity extends AppCompatActivity {
                     }
                 })
                 .build();
-        ApiService.call(req);
+        ApiService.send(req);
     }
 
     private void doGet() {
@@ -169,7 +172,7 @@ public class LaunchActivity extends AppCompatActivity {
                 })
                 .url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
                 .addHeader("get_Header1", "HeaderValue1").addHeader("get_Header2", "HeaderValue2").method(Method.GET).build();
-        ApiService.call(req);
+        ApiService.send(req);
     }
 
     private void doPost() {
@@ -189,7 +192,7 @@ public class LaunchActivity extends AppCompatActivity {
                 .url(HOST_LOCAL).path(PATH_LOCAL).add("name", "cxx").add("pwd", "123456").add("zh", "中文测试")
                 .addHeader("post_Header1", "HeaderValue1").addHeader("post_Header2", "HeaderValue2")
                 .method(Method.POST).build();
-        ApiService.call(req);
+        ApiService.send(req);
     }
 
     private void uploadImage() {
@@ -213,7 +216,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.e("Upload", written + "/" + total + " " + written * 100 / total + "%" + " percent: " + percent);
                     }
                 }).method(Method.POST).build();
-        ApiService.call(req);
+        ApiService.send(req);
     }
 
     private void download() {
@@ -241,7 +244,7 @@ public class LaunchActivity extends AppCompatActivity {
                         LogUtils.e("Download_Firefox", read + "/" + total + " " + read * 100 / total + "%" + " percent: " + percent);
                     }
                 }).url(FIREFOX).build();
-        ApiService.call(rq);
+        ApiService.send(rq);
     }
 
     private void showToast(String msg) {

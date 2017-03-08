@@ -14,7 +14,6 @@ import java.util.List;
 
 import cc.colorcat.netbird2.MRequest;
 import cc.colorcat.netbird2.Method;
-import cc.colorcat.netbird2.Request;
 import okhttp3.OkHttpClient;
 
 
@@ -82,6 +81,6 @@ public class MainActivity extends Activity {
                     }
                 })
                 .build();
-        ApiService.call(request);
+        ApiService.send(request);
     }
 }

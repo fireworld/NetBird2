@@ -60,7 +60,7 @@ public class ApiService {
                 .build();
     }
 
-    public static Object call(MRequest<?> req) {
+    public static Object send(MRequest<?> req) {
         NetBird netBird = bird;
         return netBird.send(req);
     }
@@ -104,7 +104,7 @@ public class ApiService {
                     }
                 })
                 .build();
-        return call(req);
+        return send(req);
     }
 
     private static class TestInterceptorA implements Interceptor {

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -52,7 +53,8 @@ public final class BitmapParser implements Parser<Bitmap> {
         NetworkData<? extends Bitmap> networkData;
         Bitmap bitmap;
         if (reqWidth > 0 && reqHeight > 0) {
-            bitmap = decodeStream(data.body().stream(), reqWidth, reqHeight);
+            byte[] bytes = data.body().bytes();
+            bitmap = decodeStream(new ByteArrayInputStream(bytes), reqWidth, reqHeight);
         } else {
             bitmap = BitmapFactory.decodeStream(data.body().stream());
         }
