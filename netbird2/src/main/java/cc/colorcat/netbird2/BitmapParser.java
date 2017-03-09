@@ -74,7 +74,7 @@ public final class BitmapParser implements Parser<Bitmap> {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(bis, null, options);
-        if (!options.mCancel && options.outWidth != -1 && options.outHeight != -1) {
+        if (options.outWidth != -1 && options.outHeight != -1) {
             options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
             options.inJustDecodeBounds = false;
             bis.reset();
