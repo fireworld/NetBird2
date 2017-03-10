@@ -10,8 +10,8 @@ import java.nio.charset.Charset;
  * xx.ch@outlook.com
  */
 public final class StringParser implements Parser<String> {
-    private static transient StringParser utf8;
-    private static transient StringParser instance;
+    private static volatile StringParser utf8;
+    private static volatile StringParser instance;
 
     public static StringParser create(@NonNull String charset) {
         return new StringParser(Charset.forName(charset));

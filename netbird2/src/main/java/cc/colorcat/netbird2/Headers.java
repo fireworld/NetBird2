@@ -13,7 +13,7 @@ import java.util.Set;
 public class Headers {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_LENGTH = "Content-Length";
-    private static transient Headers emptyHeaders;
+    private static volatile Headers emptyHeaders;
 
     public static Headers emptyHeaders() {
         if (emptyHeaders == null) {

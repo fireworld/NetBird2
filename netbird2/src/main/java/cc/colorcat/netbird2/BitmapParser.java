@@ -15,7 +15,7 @@ import java.io.InputStream;
  * xx.ch@outlook.com
  */
 public final class BitmapParser implements Parser<Bitmap> {
-    private static transient BitmapParser parser;
+    private static volatile BitmapParser parser;
 
     public static BitmapParser get() {
         if (parser == null) {
