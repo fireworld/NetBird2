@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,9 @@ public final class HttpConnection implements Connection {
     public void connect(NetBird netBird, Request request) throws IOException {
         listener = request.loadListener();
         enableCache(netBird.cachePath(), netBird.cacheSize());
-        String url = request.url();
-        conn = (HttpURLConnection) new URL(url).openConnection();
+        URL url = new URL(request.url());
+        Proxy proxy = netBird.proxy();
+        conn = (HttpURLConnection) (proxy == null ? url.openConnection() : url.openConnection(proxy));
         conn.setConnectTimeout(netBird.connectTimeOut());
         conn.setReadTimeout(netBird.readTimeOut());
         conn.setDoInput(true);

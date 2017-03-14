@@ -2,6 +2,7 @@ package cc.colorcat.netbird2;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +20,7 @@ public final class NetBird implements Call.Factory {
     private final ExecutorService executor;
     private final Dispatcher dispatcher;
     private final Connection connection;
+    private final Proxy proxy;
     private final String baseUrl;
     private final long cacheSize;
     private final File cachePath;
@@ -32,6 +34,7 @@ public final class NetBird implements Call.Factory {
         this.tailInterceptors = Utils.immutableList(builder.tailInterceptors);
         this.executor = builder.executor;
         this.connection = builder.connection;
+        this.proxy = builder.proxy;
         this.baseUrl = builder.baseUrl;
         this.cacheSize = builder.cacheSize;
         this.cachePath = builder.cachePath;
@@ -63,6 +66,10 @@ public final class NetBird implements Call.Factory {
 
     public Connection connection() {
         return connection;
+    }
+
+    Proxy proxy() {
+        return proxy;
     }
 
     public String baseUrl() {
@@ -142,6 +149,7 @@ public final class NetBird implements Call.Factory {
         private ExecutorService executor;
         private Dispatcher dispatcher;
         private Connection connection;
+        private Proxy proxy;
         private String baseUrl;
         private long cacheSize;
         private File cachePath;
@@ -165,6 +173,7 @@ public final class NetBird implements Call.Factory {
             this.executor = netBird.executor;
             this.dispatcher = netBird.dispatcher;
             this.connection = netBird.connection;
+            this.proxy = netBird.proxy;
             this.cacheSize = netBird.cacheSize;
             this.cachePath = netBird.cachePath;
             this.maxRunning = netBird.maxRunning;
