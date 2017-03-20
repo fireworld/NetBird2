@@ -6,7 +6,6 @@ import java.io.Closeable;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class Response implements Closeable {
     private final int code;
     private final String msg;
