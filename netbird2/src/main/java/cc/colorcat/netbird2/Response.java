@@ -117,6 +117,11 @@ public class Response implements Closeable {
             return this;
         }
 
+        public Builder removeHeader(String name) {
+            headers.removeAll(name);
+            return this;
+        }
+
         public Builder body(ResponseBody body) {
             this.body = body;
             return this;
