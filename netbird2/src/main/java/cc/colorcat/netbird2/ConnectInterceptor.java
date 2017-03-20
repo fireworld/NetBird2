@@ -2,15 +2,6 @@ package cc.colorcat.netbird2;
 
 import java.io.IOException;
 
-import cc.colorcat.netbird2.Connection;
-import cc.colorcat.netbird2.Headers;
-import cc.colorcat.netbird2.Interceptor;
-import cc.colorcat.netbird2.Method;
-import cc.colorcat.netbird2.NetBird;
-import cc.colorcat.netbird2.Request;
-import cc.colorcat.netbird2.Response;
-import cc.colorcat.netbird2.ResponseBody;
-
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -33,7 +24,7 @@ final class ConnectInterceptor implements Interceptor {
         }
         int code = conn.responseCode();
         String msg = conn.responseMsg();
-        Headers headers = null;
+        Headers headers = Headers.emptyHeaders();
         ResponseBody body = null;
         if (code == 200) {
             headers = conn.responseHeaders();
