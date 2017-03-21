@@ -6,7 +6,6 @@ import java.io.Closeable;
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
  */
-
 public class Response implements Closeable {
     private final int code;
     private final String msg;
@@ -114,6 +113,11 @@ public class Response implements Closeable {
         public Builder addHeaderIfNot(String name, String value) {
             Utils.checkHeader(name, value);
             headers.addIfNot(name, value);
+            return this;
+        }
+
+        public Builder removeHeader(String name) {
+            headers.removeAll(name);
             return this;
         }
 
