@@ -32,6 +32,7 @@ public class ExampleUnitTest {
 
     }
 
+    // http://www.imooc.com/api
     private static NetBird netBird = new NetBird.Builder("http://www.imooc.com/api")
             .executor(new ExecutorService() {
                 @Override
@@ -110,7 +111,15 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdSyncTest() throws Exception {
-        System.out.println(netBird.execute(getBuilder().build()));
+        String result = netBird.newCall(getBuilder().build()).execute().body().string();
+        System.out.println(result);
+    }
+
+    private static class Upload implements UploadListener {
+        @Override
+        public void onChanged(long written, long total, int percent) {
+            System.out.println("written = " + written + ", total = " + total + ", percent = " + percent);
+        }
     }
 
     @Test

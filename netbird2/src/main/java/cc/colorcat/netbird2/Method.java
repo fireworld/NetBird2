@@ -5,5 +5,17 @@ package cc.colorcat.netbird2;
  * xx.ch@outlook.com
  */
 public enum Method {
-    GET, POST
+    GET, POST, PUT, PATCH, DELETE;
+
+    public boolean requiresRequestBody() {
+        switch (this) {
+            case POST:
+            case PUT:
+            case PATCH:
+            case DELETE:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

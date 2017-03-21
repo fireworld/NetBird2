@@ -40,7 +40,7 @@ public final class HttpConnection implements Connection {
         conn.setDoInput(true);
         Method method = request.method();
         conn.setRequestMethod(method.name());
-        conn.setDoOutput(method == Method.POST);
+        conn.setDoOutput(method.requiresRequestBody());
         conn.setUseCaches(enableCache);
     }
 
