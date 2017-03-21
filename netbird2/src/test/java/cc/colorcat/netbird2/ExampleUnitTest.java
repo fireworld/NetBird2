@@ -111,8 +111,13 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdSyncTest() throws Exception {
-        String result = netBird.newCall(getBuilder().build()).execute().body().string();
-        System.out.println(result);
+        Response response = netBird.newCall(getBuilder().build()).execute();
+        ResponseBody body = response.body();
+        Headers headers = response.headers();
+        if (body != null) {
+            System.out.println("body: " + body.string());
+        }
+        System.out.println("Headers: " + headers);
     }
 
     private static class Upload implements UploadListener {

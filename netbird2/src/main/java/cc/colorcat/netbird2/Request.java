@@ -189,6 +189,10 @@ public class Request {
             return this;
         }
 
+        public String url() {
+            return url;
+        }
+
         /**
          * @param path 请求的路径
          */
@@ -197,9 +201,17 @@ public class Request {
             return this;
         }
 
+        public String path() {
+            return path;
+        }
+
         public Builder method(Method method) {
             this.method = method;
             return this;
+        }
+
+        public Method method() {
+            return method;
         }
 
         /**

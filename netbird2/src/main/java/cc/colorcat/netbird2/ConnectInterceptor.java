@@ -19,7 +19,7 @@ final class ConnectInterceptor implements Interceptor {
         Request req = chain.request();
         conn.connect(netBird, req);
         conn.writeHeaders(req.headers());
-        if (req.method().requiresRequestBody()) {
+        if (req.method().needBody()) {
             conn.writeBody(req.body());
         }
         int code = conn.responseCode();

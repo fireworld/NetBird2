@@ -1,6 +1,7 @@
 package cc.colorcat.netbird2;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by cxx on 2017/2/24.
@@ -16,48 +17,44 @@ final class BridgeInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        String url = Utils.nullElse(request.url(), baseUrl);
-        String path = request.path();
+        Request.Builder builder = request.newBuilder();
+        String url = Utils.nullElse(builder.url(), baseUrl);
+        String path = builder.path();
         if (path != null) url += path;
 
-        Method method = request.method();
-        if (method == Method.GET) {
-            String parameters = concatParameters(request.parameters());
+        RequestBody body;
+        if (!builder.method().needBody()) {
+            String parameters = concatParameters(builder.names(), builder.values());
             if (parameters != null) {
                 url = url + '?' + parameters;
             }
-        }
-        Request.Builder builder = request.newBuilder().url(url).path(null);
-
-        if (method == Method.POST) {
-            RequestBody body = request.body();
-            if (body != null) {
-                String contentType = body.contentType();
-                if (contentType != null) {
-                    builder.setHeader(Headers.CONTENT_TYPE, contentType);
-                }
-                long contentLength = body.contentLength();
-                if (contentLength != -1L) {
-                    builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength));
-                    builder.removeHeader("Transfer-Encoding");
-                } else {
-                    builder.setHeader("Transfer-Encoding", "chunked");
-                    builder.removeHeader(Headers.CONTENT_LENGTH);
-                }
+        } else if ((body = request.body()) != null) {
+            String contentType = body.contentType();
+            if (contentType != null) {
+                builder.setHeader(Headers.CONTENT_TYPE, contentType);
+            }
+            long contentLength = body.contentLength();
+            if (contentLength != -1L) {
+                builder.setHeader(Headers.CONTENT_LENGTH, Long.toString(contentLength))
+                        .removeHeader("Transfer-Encoding");
+            } else {
+                builder.setHeader("Transfer-Encoding", "chunked")
+                        .removeHeader(Headers.CONTENT_LENGTH);
             }
         }
-        builder.addHeaderIfNot("Connection", "Keep-Alive");
-        builder.addHeaderIfNot("User-Agent", Version.userAgent());
+        builder.url(url).path(null)
+                .addHeaderIfNot("Connection", "Keep-Alive")
+                .addHeaderIfNot("User-Agent", Version.userAgent());
         return chain.proceed(builder.build().freeze());
     }
 
-    private static String concatParameters(Parameters parameters) {
-        if (parameters.isEmpty()) return null;
+    private static String concatParameters(List<String> names, List<String> values) {
+        if (names.isEmpty()) return null;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0, size = parameters.size(); i < size; i++) {
+        for (int i = 0, size = names.size(); i < size; ++i) {
             if (i > 0) sb.append('&');
-            String encodedName = Utils.smartEncode(parameters.name(i));
-            String encodedValue = Utils.smartEncode(parameters.value(i));
+            String encodedName = Utils.smartEncode(names.get(i));
+            String encodedValue = Utils.smartEncode(values.get(i));
             sb.append(encodedName).append('=').append(encodedValue);
         }
         return sb.toString();
