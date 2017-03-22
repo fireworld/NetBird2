@@ -10,6 +10,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -21,6 +24,8 @@ public final class NetBird implements Call.Factory {
     private final Dispatcher dispatcher;
     private final Connection connection;
     private final Proxy proxy;
+    private final SSLSocketFactory sslSocketFactory;
+    private final HostnameVerifier hostnameVerifier;
     private final String baseUrl;
     private final long cacheSize;
     private final File cachePath;
@@ -35,6 +40,8 @@ public final class NetBird implements Call.Factory {
         this.executor = builder.executor;
         this.connection = builder.connection;
         this.proxy = builder.proxy;
+        this.sslSocketFactory = builder.sslSocketFactory;
+        this.hostnameVerifier = builder.hostnameVerifier;
         this.baseUrl = builder.baseUrl;
         this.cacheSize = builder.cacheSize;
         this.cachePath = builder.cachePath;
@@ -70,6 +77,14 @@ public final class NetBird implements Call.Factory {
 
     Proxy proxy() {
         return proxy;
+    }
+
+    SSLSocketFactory sslSocketFactory() {
+        return sslSocketFactory;
+    }
+
+    HostnameVerifier hostnameVerifier() {
+        return hostnameVerifier;
     }
 
     public String baseUrl() {
@@ -150,6 +165,8 @@ public final class NetBird implements Call.Factory {
         private Dispatcher dispatcher;
         private Connection connection;
         private Proxy proxy;
+        private SSLSocketFactory sslSocketFactory;
+        private HostnameVerifier hostnameVerifier;
         private String baseUrl;
         private long cacheSize;
         private File cachePath;
@@ -174,6 +191,8 @@ public final class NetBird implements Call.Factory {
             this.dispatcher = netBird.dispatcher;
             this.connection = netBird.connection;
             this.proxy = netBird.proxy;
+            this.sslSocketFactory = netBird.sslSocketFactory;
+            this.hostnameVerifier = netBird.hostnameVerifier;
             this.cacheSize = netBird.cacheSize;
             this.cachePath = netBird.cachePath;
             this.maxRunning = netBird.maxRunning;
@@ -189,6 +208,16 @@ public final class NetBird implements Call.Factory {
 
         public Builder connection(Connection connection) {
             this.connection = Utils.nonNull(connection, "connection == null");
+            return this;
+        }
+
+        public Builder sslSocketFactory(SSLSocketFactory sslSocketFactory) {
+            this.sslSocketFactory = sslSocketFactory;
+            return this;
+        }
+
+        public Builder hostnameVerifier(HostnameVerifier hostnameVerifier) {
+            this.hostnameVerifier = hostnameVerifier;
             return this;
         }
 

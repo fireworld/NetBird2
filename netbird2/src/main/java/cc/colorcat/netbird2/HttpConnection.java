@@ -10,6 +10,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * Created by cxx on 17-2-22.
  * xx.ch@outlook.com
@@ -42,6 +46,17 @@ public final class HttpConnection implements Connection {
         conn.setRequestMethod(method.name());
         conn.setDoOutput(method.needBody());
         conn.setUseCaches(enableCache);
+        if (conn instanceof HttpsURLConnection) {
+            HttpsURLConnection connection = (HttpsURLConnection) conn;
+            SSLSocketFactory factory = netBird.sslSocketFactory();
+            if (factory != null) {
+                connection.setSSLSocketFactory(factory);
+            }
+            HostnameVerifier verifier = netBird.hostnameVerifier();
+            if (verifier != null) {
+                connection.setHostnameVerifier(verifier);
+            }
+        }
     }
 
     @Override
