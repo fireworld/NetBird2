@@ -33,7 +33,7 @@ import okio.BufferedSink;
  */
 public class OkHttpConnection implements Connection {
     private OkHttpClient client;
-    private boolean configured = false;
+    private volatile boolean configured = false;
     private okhttp3.Request.Builder builder;
     private String method;
     private Call call;
