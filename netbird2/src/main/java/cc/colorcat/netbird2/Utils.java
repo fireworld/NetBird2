@@ -126,10 +126,10 @@ final class Utils {
         return null;
     }
 
-    static void close(Closeable os) {
-        if (os != null) {
+    static void close(Closeable cs) {
+        if (cs != null) {
             try {
-                os.close();
+                cs.close();
             } catch (IOException e) {
                 LogUtils.e(e);
             }

@@ -28,12 +28,11 @@ final class ConnectInterceptor implements Interceptor {
             }
             conn.writeBody(req.body());
         }
+        Headers headers = Utils.nullElse(conn.responseHeaders(), Headers.emptyHeaders());
         int code = conn.responseCode();
         String msg = conn.responseMsg();
-        Headers headers = Headers.emptyHeaders();
         ResponseBody body = null;
         if (code == 200) {
-            headers = conn.responseHeaders();
             body = conn.responseBody(headers);
         }
         return new Response.Builder().code(code).msg(msg).headers(headers).body(body).build();

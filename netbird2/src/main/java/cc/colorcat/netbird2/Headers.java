@@ -30,6 +30,7 @@ public class Headers {
         if (namesAndValues == null) {
             throw new NullPointerException("namesAndValues == null");
         }
+        if (namesAndValues.isEmpty()) return Headers.emptyHeaders();
         int size = namesAndValues.size();
         List<String> names = new ArrayList<>(size);
         List<String> values = new ArrayList<>(size);
@@ -54,6 +55,7 @@ public class Headers {
         if (names.size() != values.size()) {
             throw new IllegalArgumentException("names.size() != values.size()");
         }
+        if (names.isEmpty()) return Headers.emptyHeaders();
         return new Headers(new ArrayList<>(names), new ArrayList<>(values));
     }
 

@@ -110,7 +110,7 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdSyncTest() throws Exception {
-        Response response = netBird.newCall(getBuilder().build()).execute();
+        Response response = netBird.newCall(new Request.Builder().url("http://www.google.com").build()).execute();
         ResponseBody body = response.body();
         Headers headers = response.headers();
         if (body != null) {
@@ -135,7 +135,7 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdAsyncTest() {
-        netBird.newCall(getBuilder().build()).enqueue(new Callback() {
+        netBird.newCall(new Request.Builder().url("https://www.baidu.com").build()).enqueue(new Callback() {
             @Override
             public void onStart() {
                 System.out.println("onStart()");
@@ -144,7 +144,9 @@ public class ExampleUnitTest {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 System.out.println("onResponse() " + "request = " + call.request() + "response = " + response);
-                System.out.println(response.body().string());
+                if (response.body() != null) {
+                    System.out.println(response.body().string());
+                }
             }
 
             @Override
