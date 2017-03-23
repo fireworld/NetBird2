@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,12 +29,7 @@ public class Request {
         this.path = builder.path;
         this.params = builder.params.newReadableParameters();
         this.headers = builder.headers.newReadableHeaders();
-        if (builder.fileBodies != null && !builder.fileBodies.isEmpty()) {
-            this.fileBodies = Utils.immutableList(builder.fileBodies);
-            builder.method(Method.POST);
-        } else {
-            this.fileBodies = null;
-        }
+        this.fileBodies = Utils.immutableList(builder.fileBodies);
         this.method = builder.method;
         this.boundary = builder.boundary;
         this.loadListener = builder.loadListener;
@@ -79,7 +73,7 @@ public class Request {
     }
 
     public final List<FileBody> files() {
-        return Utils.nullElse(fileBodies, Collections.<FileBody>emptyList());
+        return fileBodies;
     }
 
     public final LoadListener loadListener() {
@@ -87,13 +81,13 @@ public class Request {
     }
 
     public final RequestBody body() {
-        if (params.isEmpty() && fileBodies == null) {
+        if (params.isEmpty() && fileBodies.isEmpty()) {
             return null;
         }
-        if (params.isEmpty() && fileBodies != null && fileBodies.size() == 1) {
+        if (params.isEmpty() && fileBodies.size() == 1) {
             return fileBodies.get(0);
         }
-        if (!params.isEmpty() && fileBodies == null) {
+        if (!params.isEmpty() && fileBodies.isEmpty()) {
             return FormBody.create(params);
         }
         return MultipartBody.create(FormBody.create(params), fileBodies, boundary);
@@ -115,7 +109,7 @@ public class Request {
         if (method != request.method) return false;
         if (!params.equals(request.params)) return false;
         if (!headers.equals(request.headers)) return false;
-        return fileBodies != null ? fileBodies.equals(request.fileBodies) : request.fileBodies == null;
+        return fileBodies.equals(request.fileBodies);
 
     }
 
@@ -126,7 +120,7 @@ public class Request {
         result = 31 * result + method.hashCode();
         result = 31 * result + params.hashCode();
         result = 31 * result + headers.hashCode();
-        result = 31 * result + (fileBodies != null ? fileBodies.hashCode() : 0);
+        result = 31 * result + fileBodies.hashCode();
         return result;
     }
 
@@ -161,7 +155,7 @@ public class Request {
             this.path = req.path;
             this.params = req.params.newWritableParameters();
             this.headers = req.headers.newWritableHeaders();
-            this.fileBodies = req.fileBodies != null ? new ArrayList<>(req.fileBodies) : null;
+            this.fileBodies = new ArrayList<>(req.fileBodies);
             this.method = req.method;
             this.boundary = req.boundary;
             this.loadListener = req.loadListener;
@@ -171,6 +165,7 @@ public class Request {
         public Builder() {
             this.params = WritableParameters.create(4);
             this.headers = WritableHeaders.create(2);
+            this.fileBodies = new ArrayList<>(1);
             this.method = Method.GET;
             this.boundary = "==" + System.currentTimeMillis() + "==";
             this.tag = this.boundary;
@@ -322,17 +317,12 @@ public class Request {
          * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
          */
         public Builder addFile(String name, String contentType, File file, UploadListener listener) {
-            if (fileBodies == null) {
-                fileBodies = new ArrayList<>(1);
-            }
             fileBodies.add(FileBody.create(name, contentType, file, listener));
             return this;
         }
 
         public Builder clearFile() {
-            if (fileBodies != null) {
-                fileBodies.clear();
-            }
+            fileBodies.clear();
             return this;
         }
 

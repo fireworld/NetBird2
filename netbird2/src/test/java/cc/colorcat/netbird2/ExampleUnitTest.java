@@ -29,7 +29,6 @@ public class ExampleUnitTest {
 
     @Test
     public void genericTest() {
-
     }
 
     // http://www.imooc.com/api
