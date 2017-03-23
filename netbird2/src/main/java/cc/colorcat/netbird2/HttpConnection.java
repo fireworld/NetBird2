@@ -60,16 +60,6 @@ public final class HttpConnection implements Connection {
     }
 
     @Override
-    public int responseCode() throws IOException {
-        return conn.getResponseCode();
-    }
-
-    @Override
-    public String responseMsg() throws IOException {
-        return conn.getResponseMessage();
-    }
-
-    @Override
     public void writeHeaders(Headers headers) throws IOException {
         for (int i = 0, size = headers.size(); i < size; i++) {
             String name = headers.name(i);
@@ -94,10 +84,13 @@ public final class HttpConnection implements Connection {
     }
 
     @Override
-    public void cancel() {
-        if (conn != null) {
-            conn.disconnect();
-        }
+    public int responseCode() throws IOException {
+        return conn.getResponseCode();
+    }
+
+    @Override
+    public String responseMsg() throws IOException {
+        return conn.getResponseMessage();
     }
 
     @Override
@@ -123,6 +116,13 @@ public final class HttpConnection implements Connection {
     @Override
     public void close() throws IOException {
         Utils.close(is);
+        if (conn != null) {
+            conn.disconnect();
+        }
+    }
+
+    @Override
+    public void cancel() {
         if (conn != null) {
             conn.disconnect();
         }

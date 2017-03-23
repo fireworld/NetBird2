@@ -32,8 +32,8 @@ import okio.BufferedSink;
  * xx.ch@outlook.com
  */
 public class OkHttpConnection implements Connection {
-    private boolean initialized = false;
     private OkHttpClient client;
+    private boolean configured = false;
     private okhttp3.Request.Builder builder;
     private String method;
     private Call call;
@@ -45,56 +45,17 @@ public class OkHttpConnection implements Connection {
         client = new OkHttpClient.Builder().build();
     }
 
-    private OkHttpConnection(OkHttpClient client, boolean initialized) {
+    private OkHttpConnection(OkHttpClient client, boolean configured) {
         this.client = client;
-        this.initialized = initialized;
+        this.configured = configured;
     }
 
     @Override
     public void connect(NetBird netBird, Request request) throws IOException {
         listener = request.loadListener();
-        if (!initialized) configOkHttpClient(netBird);
+        if (!configured) configClient(netBird);
         builder = new okhttp3.Request.Builder().url(request.url()).tag(request.tag());
         method = request.method().name();
-    }
-
-    private synchronized void configOkHttpClient(NetBird netBird) {
-        if (initialized) return;
-        int connectTimeOut = netBird.connectTimeOut();
-        int readTimeOut = netBird.readTimeOut();
-        OkHttpClient.Builder builder = client.newBuilder()
-                .connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeOut, TimeUnit.MILLISECONDS)
-                .writeTimeout(readTimeOut, TimeUnit.MILLISECONDS);
-        Proxy proxy = netBird.proxy();
-        if (proxy != null) {
-            builder.proxy(proxy);
-        }
-        SSLSocketFactory factory = netBird.sslSocketFactory();
-        if (factory != null) {
-            builder.sslSocketFactory(factory, Platform.get().trustManager(factory));
-        }
-        HostnameVerifier verifier = netBird.hostnameVerifier();
-        if (verifier != null) {
-            builder.hostnameVerifier(verifier);
-        }
-        File cacheDir = netBird.cachePath();
-        long cacheSize = netBird.cacheSize();
-        if (cacheSize > 0L) {
-            builder.cache(new Cache(cacheDir, cacheSize));
-        }
-        client = builder.build();
-        initialized = true;
-    }
-
-    @Override
-    public int responseCode() throws IOException {
-        return execute().code();
-    }
-
-    @Override
-    public String responseMsg() throws IOException {
-        return execute().message();
     }
 
     @Override
@@ -126,10 +87,13 @@ public class OkHttpConnection implements Connection {
     }
 
     @Override
-    public void cancel() {
-        if (call != null) {
-            call.cancel();
-        }
+    public int responseCode() throws IOException {
+        return execute().code();
+    }
+
+    @Override
+    public String responseMsg() throws IOException {
+        return execute().message();
     }
 
     @Override
@@ -149,22 +113,58 @@ public class OkHttpConnection implements Connection {
         return RealResponseBody.create(is, headers, listener);
     }
 
-    private Response execute() throws IOException {
-        if (response == null) {
-            call = client.newCall(builder.build());
-            response = call.execute();
-        }
-        return response;
-    }
-
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Connection clone() {
-        return new OkHttpConnection(client, initialized);
+        return new OkHttpConnection(client, configured);
     }
 
     @Override
     public void close() throws IOException {
         IoUtils.close(is, response);
+    }
+
+    @Override
+    public void cancel() {
+        if (call != null) {
+            call.cancel();
+        }
+    }
+
+    private synchronized void configClient(NetBird netBird) {
+        if (configured) return;
+        int connectTimeOut = netBird.connectTimeOut();
+        int readTimeOut = netBird.readTimeOut();
+        OkHttpClient.Builder builder = client.newBuilder()
+                .connectTimeout(connectTimeOut, TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeOut, TimeUnit.MILLISECONDS)
+                .writeTimeout(readTimeOut, TimeUnit.MILLISECONDS);
+        Proxy proxy = netBird.proxy();
+        if (proxy != null) {
+            builder.proxy(proxy);
+        }
+        SSLSocketFactory factory = netBird.sslSocketFactory();
+        if (factory != null) {
+            builder.sslSocketFactory(factory, Platform.get().trustManager(factory));
+        }
+        HostnameVerifier verifier = netBird.hostnameVerifier();
+        if (verifier != null) {
+            builder.hostnameVerifier(verifier);
+        }
+        File cacheDir = netBird.cachePath();
+        long cacheSize = netBird.cacheSize();
+        if (cacheSize > 0L) {
+            builder.cache(new Cache(cacheDir, cacheSize));
+        }
+        client = builder.build();
+        configured = true;
+    }
+
+    private Response execute() throws IOException {
+        if (call == null) {
+            call = client.newCall(builder.build());
+            response = call.execute();
+        }
+        return response;
     }
 }
