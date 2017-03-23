@@ -14,7 +14,7 @@ import cc.colorcat.netbird2.RealCall.AsyncCall;
  * xx.ch@outlook.com
  */
 public final class Dispatcher {
-    private static final String TAG = "DispatcherTAG";
+//    private static final String TAG = "DispatcherTAG";
     private ExecutorService executor;
     private int maxRunning;
     private final Queue<AsyncCall> waitingAsyncCalls = new ConcurrentLinkedQueue<>();
@@ -42,7 +42,7 @@ public final class Dispatcher {
         } else {
             onDuplicateRequest(call);
         }
-        logSize(2, "enqueue");
+//        logSize(2, "enqueue");
     }
 
     private synchronized void promoteCalls() {
@@ -58,8 +58,10 @@ public final class Dispatcher {
     }
 
     private static void onDuplicateRequest(AsyncCall call) {
-        call.callback().onFailure(call.get(),
+        Callback callback = call.callback();
+        callback.onFailure(call.get(),
                 new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST));
+        callback.onFinish();
     }
 
     void cancelWaiting(Object tag) {
@@ -98,36 +100,36 @@ public final class Dispatcher {
 
     void finished(RealCall call) {
         runningSyncCalls.remove(call);
-        logSize(3, "finished RealCall");
+//        logSize(3, "finished RealCall");
     }
 
     void finished(AsyncCall call) {
         runningAsyncCalls.remove(call);
         promoteCalls();
-        logSize(4, "finished AsyncCall");
+//        logSize(4, "finished AsyncCall");
     }
 
-    private void logSize(int level, String mark) {
-        String msg = mark + ": " + "waiting = " + waitingAsyncCalls.size() + ", running = " + runningAsyncCalls.size();
-        switch (level) {
-            case 1:
-                LogUtils.v(TAG, msg);
-                break;
-            case 2:
-                LogUtils.d(TAG, msg);
-                break;
-            case 3:
-                LogUtils.i(TAG, msg);
-                break;
-            case 4:
-                LogUtils.w(TAG, msg);
-                break;
-            case 5:
-                LogUtils.e(TAG, msg);
-                break;
-            default:
-                LogUtils.ii(TAG, msg);
-
-        }
-    }
+//    private void logSize(int level, String mark) {
+//        String msg = mark + ": " + "waiting = " + waitingAsyncCalls.size() + ", running = " + runningAsyncCalls.size();
+//        switch (level) {
+//            case 1:
+//                LogUtils.v(TAG, msg);
+//                break;
+//            case 2:
+//                LogUtils.d(TAG, msg);
+//                break;
+//            case 3:
+//                LogUtils.i(TAG, msg);
+//                break;
+//            case 4:
+//                LogUtils.w(TAG, msg);
+//                break;
+//            case 5:
+//                LogUtils.e(TAG, msg);
+//                break;
+//            default:
+//                LogUtils.ii(TAG, msg);
+//
+//        }
+//    }
 }

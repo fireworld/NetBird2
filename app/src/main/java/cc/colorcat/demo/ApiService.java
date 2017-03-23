@@ -83,24 +83,24 @@ public class ApiService {
                 .listener(new MRequest.SimpleListener<Bitmap>() {
                     @Override
                     public void onStart() {
-//                        LogUtils.i("NetBirdImage_start", view.toString() + " = " + url);
+                        LogUtils.i("NetBirdImage_start", url);
                     }
 
                     @Override
                     public void onSuccess(@NonNull Bitmap result) {
-//                        LogUtils.i("NetBirdImage_success", view.toString() + " = " + url);
+                        LogUtils.i("NetBirdImage_success", url);
                         view.setImageBitmap(result);
                     }
 
                     @Override
                     public void onFailure(int code, @NonNull String msg) {
 //                        LogUtils.i("NetBirdImage_fail", view.toString() + " = " + url);
-                        LogUtils.e("NetBirdImage", code + ", " + msg);
+                        LogUtils.e("NetBirdImage_fail", code + ", " + msg);
                     }
 
                     @Override
                     public void onFinish() {
-                        LogUtils.i("NetBirdImage_finish", view.toString() + " = " + url);
+                        LogUtils.i("NetBirdImage_finish", url);
                     }
                 })
                 .build();
