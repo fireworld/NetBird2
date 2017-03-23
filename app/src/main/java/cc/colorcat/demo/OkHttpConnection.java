@@ -66,24 +66,8 @@ public class OkHttpConnection implements Connection {
     }
 
     @Override
-    public void writeBody(final RequestBody body) throws IOException {
-        builder.method(method, new okhttp3.RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return MediaType.parse(body.contentType());
-            }
-
-            @Override
-            public long contentLength() throws IOException {
-                return body.contentLength();
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                body.writeTo(sink.outputStream());
-                sink.flush();
-            }
-        });
+    public void writeBody(RequestBody body) throws IOException {
+        builder.method(method, new OkRequestBody(body));
     }
 
     @Override
@@ -166,5 +150,34 @@ public class OkHttpConnection implements Connection {
             response = call.execute();
         }
         return response;
+    }
+
+
+    private static class OkRequestBody extends okhttp3.RequestBody {
+        private RequestBody body;
+        private MediaType type;
+
+        private OkRequestBody(RequestBody body) {
+            this.body = body;
+        }
+
+        @Override
+        public MediaType contentType() {
+            if (type == null) {
+                type = MediaType.parse(body.contentType());
+            }
+            return type;
+        }
+
+        @Override
+        public long contentLength() throws IOException {
+            return body.contentLength();
+        }
+
+        @Override
+        public void writeTo(BufferedSink sink) throws IOException {
+            body.writeTo(sink.outputStream());
+            sink.flush();
+        }
     }
 }
