@@ -75,15 +75,15 @@ public final class NetBird implements Call.Factory {
         return connection;
     }
 
-    Proxy proxy() {
+    public Proxy proxy() {
         return proxy;
     }
 
-    SSLSocketFactory sslSocketFactory() {
+    public SSLSocketFactory sslSocketFactory() {
         return sslSocketFactory;
     }
 
-    HostnameVerifier hostnameVerifier() {
+    public HostnameVerifier hostnameVerifier() {
         return hostnameVerifier;
     }
 
@@ -177,6 +177,7 @@ public final class NetBird implements Call.Factory {
 
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
+            this.cacheSize = -1L;
             this.headInterceptors = new ArrayList<>(2);
             this.tailInterceptors = new ArrayList<>(2);
             this.dispatcher = new Dispatcher();
@@ -232,11 +233,20 @@ public final class NetBird implements Call.Factory {
         }
 
         public Builder cache(File cachePath, long cacheSize) {
+            if (cachePath == null || !cachePath.exists()) {
+                throw new IllegalArgumentException("cachePath non existent");
+            }
             if (cacheSize <= 0L) {
                 throw new IllegalArgumentException("cacheSize <= 0");
             }
             this.cachePath = cachePath;
             this.cacheSize = cacheSize;
+            return this;
+        }
+
+        public Builder disableCache() {
+            this.cachePath = null;
+            this.cacheSize = -1L;
             return this;
         }
 

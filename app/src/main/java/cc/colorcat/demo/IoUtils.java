@@ -28,7 +28,7 @@ public class IoUtils {
         }
     }
 
-    private static void close(Closeable c1, Closeable c2) {
+    public static void close(Closeable c1, Closeable c2) {
         close(c1);
         close(c2);
     }

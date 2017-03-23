@@ -57,6 +57,7 @@ public class ApiService {
 //                .addHeadInterceptor(new TestInterceptorB())
                 .enableExceptionLog(BuildConfig.DEBUG)
                 .addTailInterceptor(new LogInterceptor())
+                .connection(new OkHttpConnection())
                 .build();
     }
 
