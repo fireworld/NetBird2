@@ -80,17 +80,15 @@ public final class HttpConnection implements Connection {
 
     @Override
     public void writeBody(RequestBody body) throws IOException {
-        if (body != null) {
-            long contentLength = body.contentLength();
-            if (contentLength > 0) {
-                OutputStream os = null;
-                try {
-                    os = conn.getOutputStream();
-                    body.writeTo(os);
-                    os.flush();
-                } finally {
-                    Utils.close(os);
-                }
+        long contentLength = body.contentLength();
+        if (contentLength > 0) {
+            OutputStream os = null;
+            try {
+                os = conn.getOutputStream();
+                body.writeTo(os);
+                os.flush();
+            } finally {
+                Utils.close(os);
             }
         }
     }

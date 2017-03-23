@@ -19,7 +19,13 @@ final class ConnectInterceptor implements Interceptor {
         Request req = chain.request();
         conn.connect(netBird, req);
         conn.writeHeaders(req.headers());
-        if (req.method().needBody()) {
+        Method method = req.method();
+        if (method.needBody()) {
+            RequestBody body = req.body();
+            if (body == null) {
+                throw new IllegalArgumentException("method " + method.name()
+                        + " must have a request body, but parameters, files are all empty.");
+            }
             conn.writeBody(req.body());
         }
         int code = conn.responseCode();

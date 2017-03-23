@@ -18,10 +18,11 @@ public class Request {
     private final Parameters params;
     private final Headers headers;
     private final List<FileBody> fileBodies;
-    private Method method;
+    private final Method method;
     private final String boundary;
-    private LoadListener loadListener;
-    private Object tag;
+    private final LoadListener loadListener;
+    private final Object tag;
+    private RequestBody body;
     boolean freeze = false;
 
     protected Request(Builder builder) {
@@ -30,6 +31,7 @@ public class Request {
         this.params = builder.params.newReadableParameters();
         this.headers = builder.headers.newReadableHeaders();
         this.fileBodies = Utils.immutableList(builder.fileBodies);
+        this.body = null;
         this.method = builder.method;
         this.boundary = builder.boundary;
         this.loadListener = builder.loadListener;
@@ -81,6 +83,13 @@ public class Request {
     }
 
     public final RequestBody body() {
+        if (body == null) {
+            body = parseBody();
+        }
+        return body;
+    }
+
+    private RequestBody parseBody() {
         if (params.isEmpty() && fileBodies.isEmpty()) {
             return null;
         }
