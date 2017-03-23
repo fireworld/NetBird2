@@ -24,7 +24,7 @@ final class ConnectInterceptor implements Interceptor {
             RequestBody body = req.body();
             if (body == null) {
                 throw new IllegalArgumentException("method " + method.name()
-                        + " must have a request body, but parameters, files are all empty.");
+                        + " must have a request body, but parameters and files are all empty.");
             }
             conn.writeBody(req.body());
         }
