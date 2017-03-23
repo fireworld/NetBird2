@@ -164,7 +164,7 @@ public class Request {
 
         public Builder() {
             this.params = WritableParameters.create(4);
-            this.headers = WritableHeaders.create(2);
+            this.headers = WritableHeaders.create(4);
             this.fileBodies = new ArrayList<>(1);
             this.method = Method.GET;
             this.boundary = "==" + System.currentTimeMillis() + "==";
