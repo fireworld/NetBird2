@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 
 import org.junit.Test;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -13,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -119,6 +122,24 @@ public class ExampleUnitTest {
         System.out.println("Headers: " + headers);
     }
 
+    public static final String FIREFOX = "http://download.firefox.com.cn/releases/mobile/45.0/zh-CN/Firefox-Android-45.0.apk";
+
+    @Test
+    public void downloadTest() throws Exception {
+        Request request = new Request.Builder()
+                .url(FIREFOX)
+                .addHeader("Accept-Encoding", "gzip")
+                .loadListener(new LoadListener() {
+                    @Override
+                    public void onChanged(long read, long total, int percent) {
+                        System.out.printf("read = %d, total = %d, percent = %d\n", read, total, percent);
+                    }
+                }).build();
+        Response response = netBird.newCall(request).execute();
+        System.out.println(response);
+        Utils.justDump(response.body().stream(), new FileOutputStream("/home/cxx/音乐/firefox.apk"));
+    }
+
     private static class Upload implements UploadListener {
         @Override
         public void onChanged(long written, long total, int percent) {
@@ -128,9 +149,11 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdSyncTest2() throws IOException {
-        Response response = netBird.newCall(getBuilder().build()).execute();
+        Response response = netBird.newCall(getBuilder().addHeader("Accept-Encoding", "gzip").build()).execute();
         System.out.println(response);
-        System.out.println(response.body().string());
+        InputStream is = new GZIPInputStream(response.body().stream());
+        ResponseBody body = RealResponseBody.create(is, response.headers());
+        System.out.println(response.newBuilder().body(body).build().body().string());
     }
 
     @Test
