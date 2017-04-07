@@ -52,11 +52,12 @@ final class RealCall implements Call {
     private Response getResponseWithInterceptorChain() throws IOException {
         List<Interceptor> head = netBird.headInterceptors();
         List<Interceptor> tail = netBird.tailInterceptors();
-        int size = head.size() + tail.size() + 2;
+        int size = head.size() + tail.size() + 3;
         List<Interceptor> interceptors = new ArrayList<>(size);
         interceptors.addAll(head);
         interceptors.add(new BridgeInterceptor(netBird.baseUrl()));
         interceptors.addAll(tail);
+        interceptors.add(new GzipInterceptor(netBird.enabledGzip()));
         interceptors.add(new ConnectInterceptor(netBird));
         Interceptor.Chain chain = new RealInterceptorChain(interceptors, 0, request, connection);
         return chain.proceed(request);

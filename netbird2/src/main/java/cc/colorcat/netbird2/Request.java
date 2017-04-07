@@ -50,6 +50,11 @@ public class Request {
         return this;
     }
 
+    final Request unfreeze() {
+        freeze = false;
+        return this;
+    }
+
     public final boolean isFreeze() {
         return freeze;
     }

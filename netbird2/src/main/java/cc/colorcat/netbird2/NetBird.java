@@ -32,7 +32,8 @@ public final class NetBird implements Call.Factory {
     private final int maxRunning;
     private final int readTimeOut;
     private final int connectTimeOut;
-    private final boolean enableExceptionLog;
+    private final boolean enabledExceptionLog;
+    private final boolean enabledGzip;
 
     private NetBird(Builder builder) {
         this.headInterceptors = Utils.immutableList(builder.headInterceptors);
@@ -51,8 +52,9 @@ public final class NetBird implements Call.Factory {
         this.dispatcher = builder.dispatcher;
         this.dispatcher.setExecutor(executor);
         this.dispatcher.setMaxRunning(maxRunning);
-        this.enableExceptionLog = builder.enableExceptionLog;
-        LogUtils.setLevel(enableExceptionLog ? LogUtils.VERBOSE : LogUtils.NOTHING);
+        this.enabledExceptionLog = builder.enabledExceptionLog;
+        this.enabledGzip = builder.enabledGzip;
+        LogUtils.setLevel(enabledExceptionLog ? LogUtils.VERBOSE : LogUtils.NOTHING);
     }
 
     public List<Interceptor> headInterceptors() {
@@ -109,6 +111,10 @@ public final class NetBird implements Call.Factory {
 
     public int connectTimeOut() {
         return connectTimeOut;
+    }
+
+    public boolean enabledGzip() {
+        return enabledGzip;
     }
 
     /**
@@ -173,7 +179,8 @@ public final class NetBird implements Call.Factory {
         private int maxRunning = 6;
         private int readTimeOut = 10000;
         private int connectTimeOut = 10000;
-        private boolean enableExceptionLog;
+        private boolean enabledExceptionLog;
+        private boolean enabledGzip;
 
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
@@ -181,7 +188,8 @@ public final class NetBird implements Call.Factory {
             this.headInterceptors = new ArrayList<>(2);
             this.tailInterceptors = new ArrayList<>(2);
             this.dispatcher = new Dispatcher();
-            this.enableExceptionLog = true;
+            this.enabledExceptionLog = true;
+            this.enabledGzip = false;
         }
 
         private Builder(NetBird netBird) {
@@ -199,7 +207,8 @@ public final class NetBird implements Call.Factory {
             this.maxRunning = netBird.maxRunning;
             this.readTimeOut = netBird.readTimeOut;
             this.connectTimeOut = netBird.connectTimeOut;
-            this.enableExceptionLog = netBird.enableExceptionLog;
+            this.enabledExceptionLog = netBird.enabledExceptionLog;
+            this.enabledGzip = netBird.enabledGzip;
         }
 
         public Builder executor(ExecutorService executor) {
@@ -275,7 +284,12 @@ public final class NetBird implements Call.Factory {
         }
 
         public Builder enableExceptionLog(boolean enabled) {
-            this.enableExceptionLog = enabled;
+            this.enabledExceptionLog = enabled;
+            return this;
+        }
+
+        public Builder enableGzip(boolean enabled) {
+            this.enabledGzip = enabled;
             return this;
         }
 
