@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -15,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -109,6 +107,8 @@ public class ExampleUnitTest {
                     command.run();
                 }
             })
+            .enableExceptionLog(true)
+            .enableGzip(true)
             .build();
 
     @Test
@@ -149,11 +149,12 @@ public class ExampleUnitTest {
 
     @Test
     public void netBirdSyncTest2() throws IOException {
-        Response response = netBird.newCall(getBuilder().addHeader("Accept-Encoding", "gzip").build()).execute();
+        Response response = netBird.newCall(getBuilder().build()).execute();
         System.out.println(response);
-        InputStream is = new GZIPInputStream(response.body().stream());
-        ResponseBody body = RealResponseBody.create(is, response.headers());
-        System.out.println(response.newBuilder().body(body).build().body().string());
+        System.out.println(response.body().string());
+//        InputStream is = new GZIPInputStream(response.body().stream());
+//        ResponseBody body = RealResponseBody.create(is, response.headers());
+//        System.out.println(response.newBuilder().body(body).build().body().string());
     }
 
     @Test
