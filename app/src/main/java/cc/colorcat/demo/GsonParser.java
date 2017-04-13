@@ -12,6 +12,7 @@ import java.io.IOException;
 import cc.colorcat.netbird2.NetworkData;
 import cc.colorcat.netbird2.Parser;
 import cc.colorcat.netbird2.Response;
+import cc.colorcat.netbird2.StateIOException;
 
 
 /**
@@ -41,7 +42,7 @@ public class GsonParser<T> implements Parser<T> {
             T t = GSON.fromJson(data.body().string(), token.getType());
             return NetworkData.newSuccess(t);
         } catch (JsonParseException e) {
-            return NetworkData.newFailure(data.code(), data.msg() + ", " + e.getMessage());
+            throw new StateIOException(data.msg(), e, data.code());
         }
     }
 }
