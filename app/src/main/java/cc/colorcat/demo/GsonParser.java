@@ -19,7 +19,6 @@ import cc.colorcat.netbird2.StateIOException;
  * Created by cxx on 16-11-1.
  * xx.ch@outlook.com
  */
-
 public class GsonParser<T> implements Parser<T> {
     private static final Gson GSON;
     private TypeToken<T> token;
