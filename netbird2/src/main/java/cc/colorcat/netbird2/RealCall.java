@@ -33,7 +33,7 @@ final class RealCall implements Call {
     public Response execute() throws IOException {
         if (executed.getAndSet(true)) throw new IllegalStateException("Already Executed");
         if (!netBird.dispatcher().executed(this)) {
-            throw new StateIOException(Const.MSG_DUPLICATE_REQUEST, Const.CODE_DUPLICATE_REQUEST);
+            throw new StateIOException(HttpStatus.MSG_DUPLICATE_REQUEST, HttpStatus.CODE_DUPLICATE_REQUEST);
         }
         try {
             return getResponseWithInterceptorChain();
@@ -124,11 +124,11 @@ final class RealCall implements Call {
 
         @Override
         public void run() {
-            int code = Const.CODE_CONNECT_ERROR;
+            int code = HttpStatus.CODE_CONNECT_ERROR;
             String msg = null;
             try {
                 if (RealCall.this.canceled.get()) {
-                    callback.onFailure(RealCall.this, new StateIOException(Const.MSG_CANCELED, Const.CODE_CANCELED));
+                    callback.onFailure(RealCall.this, new StateIOException(HttpStatus.MSG_CANCELED, HttpStatus.CODE_CANCELED));
                 } else {
                     Response response = getResponseWithInterceptorChain();
                     code = response.code();
@@ -137,7 +137,7 @@ final class RealCall implements Call {
                 }
             } catch (IOException e) {
                 if (msg == null) {
-                    msg = Utils.nullElse(e.getMessage(), Const.MSG_CONNECT_ERROR);
+                    msg = Utils.nullElse(e.getMessage(), HttpStatus.MSG_CONNECT_ERROR);
                 } else {
                     msg = "Response msg = " + msg + ", Exception detail = " + e.toString();
                 }

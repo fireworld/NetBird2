@@ -24,6 +24,7 @@ import java.util.Locale;
  * xx.ch@outlook.com
  */
 final class Utils {
+    public static final String UTF8 = "UTF-8";
 
     static String smartEncode(String value) {
         try {
@@ -39,7 +40,7 @@ final class Utils {
 
     private static String encode(String value) {
         try {
-            return URLEncoder.encode(value, Const.UTF8);
+            return URLEncoder.encode(value, Utils.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +48,7 @@ final class Utils {
 
     private static String decode(String value) {
         try {
-            return URLDecoder.decode(value, Const.UTF8);
+            return URLDecoder.decode(value, Utils.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

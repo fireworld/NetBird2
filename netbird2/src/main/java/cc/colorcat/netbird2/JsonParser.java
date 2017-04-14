@@ -35,7 +35,7 @@ public final class JsonParser implements Parser<JSONObject> {
         if (utf8 == null) {
             synchronized (JsonParser.class) {
                 if (utf8 == null) {
-                    utf8 = new JsonParser(Charset.forName(Const.UTF8));
+                    utf8 = new JsonParser(Charset.forName(Utils.UTF8));
                 }
             }
         }

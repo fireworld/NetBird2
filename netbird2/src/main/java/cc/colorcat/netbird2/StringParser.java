@@ -32,7 +32,7 @@ public final class StringParser implements Parser<String> {
         if (utf8 == null) {
             synchronized (StringParser.class) {
                 if (utf8 == null) {
-                    utf8 = new StringParser(Charset.forName(Const.UTF8));
+                    utf8 = new StringParser(Charset.forName(Utils.UTF8));
                 }
             }
         }

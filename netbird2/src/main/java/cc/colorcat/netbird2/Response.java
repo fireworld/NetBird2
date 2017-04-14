@@ -72,8 +72,8 @@ public class Response implements Closeable {
 
         public Builder() {
             headers = WritableHeaders.create(16);
-            code = Const.CODE_CONNECT_ERROR;
-            msg = Const.MSG_CONNECT_ERROR;
+            code = HttpStatus.CODE_CONNECT_ERROR;
+            msg = HttpStatus.MSG_CONNECT_ERROR;
         }
 
         private Builder(Response response) {
