@@ -1,7 +1,6 @@
 package cc.colorcat.netbird2;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +10,8 @@ import java.io.InputStream;
 
 
 /**
+ * 包装 {@link InputStream} 以显示流的读取进度。
+ * <p>
  * Created by cxx on 2016/12/12.
  * xx.ch@outlook.com
  */

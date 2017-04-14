@@ -15,6 +15,7 @@ public interface Parser<T> {
      * 将 {@link Response} 解析为目标数据
      * 如果解析的数据不为空调用 {@link NetworkData#newSuccess(T)} 并返回
      * 否则调用 {@link NetworkData#newFailure(int, String)} 并返回
+     * 或抛出 {@link IOException} / {@link StateIOException}
      *
      * @see BitmapParser
      * @see FileParser

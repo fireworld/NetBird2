@@ -185,13 +185,21 @@ public class Request {
             this.tag = this.boundary;
         }
 
+        /**
+         * @param tag 请求的标记，可借此取消一个请求，如果没有配置将生成默认的 tag
+         * @throws NullPointerException 如果 tag 为空将抛出此异常
+         * @see NetBird#cancelWaiting(Object)
+         * @see NetBird#cancelAll(Object)
+         */
         public Builder tag(Object tag) {
-            this.tag = tag;
+            this.tag = Utils.nonNull(tag, "tag == null");
             return this;
         }
 
         /**
-         * @param url 请求的 http/https 地址，如果没有设置则使用构建 NetBird 时的 baseUrl
+         * @param url 请求的 http/https 地址，如果未配置则使用构建 NetBird 时的 baseUrl
+         * @throws IllegalArgumentException 如果 url 为空或不是以 "http" / "https" 开始将抛出此异常
+         * @see NetBird#baseUrl()
          */
         public Builder url(String url) {
             this.url = Utils.checkedHttp(url);
@@ -214,6 +222,9 @@ public class Request {
             return path;
         }
 
+        /**
+         * @param method 请求方式，目前支持 GET, HEAD, TRACE, OPTIONS, POST, PUT, DELETE
+         */
         public Builder method(Method method) {
             this.method = method;
             return this;
@@ -318,6 +329,14 @@ public class Request {
             return this;
         }
 
+        /**
+         * 添加一个需要上传的文件
+         *
+         * @param name        参数名
+         * @param contentType 文件类型，如 "image/jpeg"
+         * @param file        文件全路径
+         * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
+         */
         public Builder addFile(String name, String contentType, File file) {
             return addFile(name, contentType, file, null);
         }
@@ -326,7 +345,7 @@ public class Request {
          * 添加需要上传的文件
          *
          * @param name        参数名
-         * @param contentType 文件类型，如 image/png
+         * @param contentType 文件类型，如 "image/jpeg"
          * @param file        文件全路径
          * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
          */
@@ -335,6 +354,9 @@ public class Request {
             return this;
         }
 
+        /**
+         * 清除所有已添加准备上传的文件
+         */
         public Builder clearFile() {
             fileBodies.clear();
             return this;
@@ -382,6 +404,11 @@ public class Request {
             return this;
         }
 
+        /**
+         * 清除所有名称为 name 的 Header 参数对
+         *
+         * @param name 需要清除的 Header 参数对的名称
+         */
         public Builder removeHeader(String name) {
             headers.removeAll(name);
             return this;
