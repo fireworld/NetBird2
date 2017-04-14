@@ -6,7 +6,6 @@ import java.io.IOException;
  * Created by cxx on 17-3-1.
  * xx.ch@outlook.com
  */
-
 public class StateIOException extends IOException {
     private final int state;
 
