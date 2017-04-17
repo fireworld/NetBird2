@@ -57,10 +57,18 @@ public final class NetBird implements Call.Factory {
         LogUtils.setLevel(enabledExceptionLog ? LogUtils.VERBOSE : LogUtils.NOTHING);
     }
 
+    /**
+     * @return unmodifiable list
+     * @see NetBird.Builder#addHeadInterceptor(Interceptor)
+     */
     public List<Interceptor> headInterceptors() {
         return headInterceptors;
     }
 
+    /**
+     * @return unmodifiable list
+     * @see NetBird.Builder#addTailInterceptor(Interceptor)
+     */
     public List<Interceptor> tailInterceptors() {
         return tailInterceptors;
     }
@@ -182,6 +190,11 @@ public final class NetBird implements Call.Factory {
         private boolean enabledExceptionLog;
         private boolean enabledGzip;
 
+        /**
+         * @param baseUrl 默认的 url, 如果 {@link Request} 中的 url 为空将使用此代替之。
+         * @throws NullPointerException     如果 baseUrl 为 {@code null} 将抛出此异常
+         * @throws IllegalArgumentException 如果 baseUrl 不是以 "http" 开始将抛出此异常
+         */
         public Builder(String baseUrl) {
             this.baseUrl = Utils.checkedHttp(baseUrl);
             this.cacheSize = -1L;
@@ -211,11 +224,22 @@ public final class NetBird implements Call.Factory {
             this.enabledGzip = netBird.enabledGzip;
         }
 
+        /**
+         * 配置 {@link ExecutorService}，一般可忽略，此时将自动构建。
+         *
+         * @param executor 异步请求均由 executor 发送
+         * @throws NullPointerException 如果 executor 为 {@code null}，将抛出此异常
+         */
         public Builder executor(ExecutorService executor) {
             this.executor = Utils.nonNull(executor, "executor == null");
             return this;
         }
 
+        /**
+         * 配置 {@link Connection}，一般可忽略，此时将使用 {@link java.net.HttpURLConnection} 实现的 {@link Connection}
+         *
+         * @throws NullPointerException 如果 connection 为 {@code null}，将抛出此异常
+         */
         public Builder connection(Connection connection) {
             this.connection = Utils.nonNull(connection, "connection == null");
             return this;
@@ -231,16 +255,35 @@ public final class NetBird implements Call.Factory {
             return this;
         }
 
+        /**
+         * 在此添加的 {@link Interceptor} 可对 {@link Request} 重建修改
+         * 此时 {@link Request} 未冻结
+         *
+         * @see Request#isFreeze()
+         */
         public Builder addHeadInterceptor(Interceptor interceptor) {
             headInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
             return this;
         }
 
+        /**
+         * 在此添加的 {@link Interceptor} 不可对 {@link Request} 重建修改
+         * 此时 {@link Request} 已冻结，可在此添加日志打印模块
+         *
+         * @see Request#isFreeze()
+         */
         public Builder addTailInterceptor(Interceptor interceptor) {
             tailInterceptors.add(Utils.nonNull(interceptor, "interceptor == null"));
             return this;
         }
 
+        /**
+         * 启用缓存
+         *
+         * @param cachePath 缓存路径
+         * @param cacheSize 缓存大小，单位: bytes
+         * @throws IllegalArgumentException 如果 cachePath 为空/不存在，或 cacheSize 小于/等于 0，均将抛出此异常
+         */
         public Builder cache(File cachePath, long cacheSize) {
             if (cachePath == null || !cachePath.exists()) {
                 throw new IllegalArgumentException("cachePath non existent");
@@ -259,6 +302,11 @@ public final class NetBird implements Call.Factory {
             return this;
         }
 
+        /**
+         * 配置最大请求数，即正在执行的 {@link Request} 数量的限制
+         *
+         * @param maxRunning 正在执行的 {@link Request} 的数量不会超过此限制
+         */
         public Builder maxRunning(int maxRunning) {
             if (maxRunning < 1) {
                 throw new IllegalArgumentException("maxRunning < 1");
@@ -267,6 +315,9 @@ public final class NetBird implements Call.Factory {
             return this;
         }
 
+        /**
+         * @param milliseconds 网络读取超时限制
+         */
         public Builder readTimeOut(int milliseconds) {
             if (milliseconds <= 0) {
                 throw new IllegalArgumentException("readTimeOut <= 0");
@@ -275,6 +326,9 @@ public final class NetBird implements Call.Factory {
             return this;
         }
 
+        /**
+         * @param milliseconds 网络连接超时限制
+         */
         public Builder connectTimeOut(int milliseconds) {
             if (milliseconds <= 0) {
                 throw new IllegalArgumentException("connectTimeOut <= 0");
@@ -283,11 +337,17 @@ public final class NetBird implements Call.Factory {
             return this;
         }
 
+        /**
+         * @param enabled 是否启用异常日志
+         */
         public Builder enableExceptionLog(boolean enabled) {
             this.enabledExceptionLog = enabled;
             return this;
         }
 
+        /**
+         * @param enabled 是否启用 gzip 压缩
+         */
         public Builder enableGzip(boolean enabled) {
             this.enabledGzip = enabled;
             return this;
