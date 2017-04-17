@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * 将用户创建的 {@link Request} 或其子类转化为标准的 {@link Request}
+ * <p>
  * Created by cxx on 2017/2/24.
  * xx.ch@outlook.com
  */

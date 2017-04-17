@@ -11,12 +11,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * 将 {@link Response} 解析为 {@link NetworkData<Bitmap>}
  * Created by cxx on 17-2-23.
  * xx.ch@outlook.com
  */
 public final class BitmapParser implements Parser<Bitmap> {
     private static volatile BitmapParser parser;
 
+    /**
+     * 获取默认的 {@link Bitmap} 解析器，解析的 {@link Bitmap} 为原始大小
+     */
     public static BitmapParser get() {
         if (parser == null) {
             synchronized (BitmapParser.class) {
@@ -28,6 +32,13 @@ public final class BitmapParser implements Parser<Bitmap> {
         return parser;
     }
 
+    /**
+     * 创建一个新的解析器
+     *
+     * @param reqWidth  解析后的 {@link Bitmap} 的宽度小于或等于此参数的值
+     * @param reqHeight 解析后的 {@link Bitmap} 的高度小于或等于此参数的值
+     * @throws IllegalArgumentException 如果 reqWidth / reqHeight 小于 1 将抛出此异常
+     */
     public static BitmapParser create(int reqWidth, int reqHeight) {
         if (reqWidth < 1 || reqHeight < 1) {
             throw new IllegalArgumentException("reqWidth and reqHeight must be greater than 0");
