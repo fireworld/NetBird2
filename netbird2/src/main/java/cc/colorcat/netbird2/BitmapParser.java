@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * 将 {@link Response} 解析为 {@link NetworkData<Bitmap>}
+ * parse {@link Response} into {@link NetworkData<Bitmap>}
+ * <p>
  * Created by cxx on 17-2-23.
  * xx.ch@outlook.com
  */
