@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * parse {@link Response} into {@link NetworkData<Bitmap>}
+ * Parse the {@link Response} into {@link NetworkData<Bitmap>}.
  * <p>
  * Created by cxx on 17-2-23.
  * xx.ch@outlook.com
@@ -20,7 +20,7 @@ public final class BitmapParser implements Parser<Bitmap> {
     private static volatile BitmapParser parser;
 
     /**
-     * 获取默认的 {@link Bitmap} 解析器，解析的 {@link Bitmap} 为原始大小
+     * Gets the default {@link BitmapParser}
      */
     public static BitmapParser get() {
         if (parser == null) {
