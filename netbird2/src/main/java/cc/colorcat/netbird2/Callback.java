@@ -3,10 +3,11 @@ package cc.colorcat.netbird2;
 import java.io.IOException;
 
 /**
+ * AsyncCallBack
+ * <p>
  * Created by cxx on 17-2-28.
  * xx.ch@outlook.com
  */
-
 public interface Callback {
 
     void onStart();
