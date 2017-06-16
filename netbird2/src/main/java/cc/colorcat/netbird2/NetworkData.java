@@ -15,7 +15,7 @@ public final class NetworkData<T> {
     }
 
     public static <R> NetworkData<? extends R> newFailure(int code, String msg) {
-        return new NetworkData<>(code, Utils.nonEmpty(msg, "msg is empty"), null);
+        return new NetworkData<>(code, Utils.nonNull(msg, "msg == null"), null);
     }
 
     private NetworkData(int code, String msg, T data) {
