@@ -136,6 +136,7 @@ final class RealCall implements Call {
                     callback.onResponse(RealCall.this, response);
                 }
             } catch (IOException e) {
+                LogUtils.e(e);
                 if (msg == null) {
                     msg = Utils.nullElse(e.getMessage(), HttpStatus.MSG_CONNECT_ERROR);
                 } else {
