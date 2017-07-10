@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,8 +22,8 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-def sdkVersion = 25
-def sdkVersionName = "25.0.0"
+def sdkVersion = 26
+def sdkVersionName = "26.0.0"
 
 rootProject.ext {
     compileSdkVersion = sdkVersion
@@ -33,7 +33,7 @@ rootProject.ext {
     versionCode = 1
     versionName = "1.0"
 
-    supportAppcompat = "com.android.support:appcompat-v7:${sdkVersionName}"
+    supportAppcompat = "com.android.support:appcompat-v7:26.+"
     junit = 'junit:junit:4.12'
     okhttp = 'com.squareup.okhttp3:okhttp:3.6.0'
     gson = 'com.google.code.gson:gson:2.8.0'
