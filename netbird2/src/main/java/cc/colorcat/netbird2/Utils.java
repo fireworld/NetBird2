@@ -55,7 +55,7 @@ final class Utils {
     }
 
     static String checkedHttp(String url) {
-        if (!url.startsWith("http")) {
+        if (url == null || !url.toLowerCase().matches("^(http)(s)?://(\\S)+")) {
             throw new IllegalArgumentException("Bad url, the scheme must be http or https");
         }
         return url;
