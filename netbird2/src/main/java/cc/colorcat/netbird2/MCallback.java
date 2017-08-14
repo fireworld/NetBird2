@@ -24,7 +24,7 @@ final class MCallback<T> implements Callback {
     @Override
     public void onResponse(Call call, Response response) throws IOException {
         int code = response.code();
-        String msg = response.msg();
+        String msg = Utils.nullElse(response.msg(), "");
         if (code == 200 && response.body() != null) {
             data = parser.parse(response);
         }

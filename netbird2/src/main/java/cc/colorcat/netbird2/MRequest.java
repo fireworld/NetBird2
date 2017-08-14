@@ -68,7 +68,7 @@ public class MRequest<T> extends Request {
 
         public Builder(Parser<? extends T> parser) {
             super();
-            this.parser = parser;
+            this.parser = Utils.nonNull(parser, "parser == null");
         }
 
         @Override

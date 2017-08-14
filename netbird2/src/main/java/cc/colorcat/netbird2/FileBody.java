@@ -16,8 +16,8 @@ public final class FileBody extends RequestBody {
         if (file == null || !file.exists()) {
             throw new IllegalArgumentException("file is not exists");
         }
-        Utils.nonEmpty(name, "name is empty");
-        Utils.nonEmpty(contentType, "contentType is empty");
+        Utils.nonNull(name, "name == null");
+        Utils.nonNull(contentType, "contentType == null");
         return new FileBody(name, contentType, file, listener);
     }
 

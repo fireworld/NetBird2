@@ -198,7 +198,7 @@ public class Request {
 
         /**
          * @param url 请求的 http/https 地址，如果未配置则使用构建 NetBird 时的 baseUrl
-         * @throws IllegalArgumentException 如果 url 为空或不是以 "http" / "https" 开始将抛出此异常
+         * @throws IllegalArgumentException 如果 url 为空或不是 "http/https" 协议将抛出此异常
          * @see NetBird#baseUrl()
          */
         public Builder url(String url) {
@@ -224,9 +224,10 @@ public class Request {
 
         /**
          * @param method 请求方式，目前支持 GET, HEAD, TRACE, OPTIONS, POST, PUT, DELETE
+         * @throws NullPointerException 如果 method 为 null 将抛出此异常
          */
         public Builder method(Method method) {
-            this.method = method;
+            this.method = Utils.nonNull(method, "method == null");
             return this;
         }
 
@@ -247,11 +248,11 @@ public class Request {
          *
          * @param name  请求参数的名称
          * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
+         * @throws NullPointerException 如果 name/value 为 null 将抛出此异常
          */
         public Builder add(String name, String value) {
-            Utils.nonEmpty(name, "name is null/empty");
-            Utils.nonEmpty(value, "value is null/empty");
+            Utils.nonNull(name, "name == null");
+            Utils.nonNull(value, "value == null");
             params.add(name, value);
             return this;
         }
@@ -262,11 +263,11 @@ public class Request {
          *
          * @param name  请求参数的名称
          * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
+         * @throws NullPointerException 如果 name/value 为 null 将抛出此异常
          */
         public Builder set(String name, String value) {
-            Utils.nonEmpty(name, "name is null/empty");
-            Utils.nonEmpty(value, "value is null/empty");
+            Utils.nonNull(name, "name == null");
+            Utils.nonNull(value, "value == null");
             params.set(name, value);
             return this;
         }
@@ -276,11 +277,11 @@ public class Request {
          *
          * @param name  请求参数的名称
          * @param value 请求参数的值
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
+         * @throws NullPointerException 如果 name/value 为 null 将抛出此异常
          */
         public Builder addIfNot(String name, String value) {
-            Utils.nonEmpty(name, "name is null/empty");
-            Utils.nonEmpty(value, "value is null/empty");
+            Utils.nonNull(name, "name == null");
+            Utils.nonNull(value, "value == null");
             params.addIfNot(name, value);
             return this;
         }
@@ -289,10 +290,10 @@ public class Request {
          * 除清所有名称为 name 的参数对
          *
          * @param name 需要清除的参数的名称
-         * @throws IllegalArgumentException 如果 name/value 为 null 或空字符串将抛出此异常
+         * @throws NullPointerException 如果 name 为 null 将抛出此异常
          */
         public Builder remove(String name) {
-            Utils.nonEmpty(name, "name is null/empty");
+            Utils.nonNull(name, "name == null");
             params.removeAll(name);
             return this;
         }
@@ -313,12 +314,21 @@ public class Request {
 
         /**
          * @return 返回添加的与 name 对应的 value, 如果存在多个则返回先添加的，如果没有则返回 null
-         * @throws IllegalArgumentException 如果 name 为 null或空字符串将抛出此异常
+         * @throws NullPointerException 如果 name 为 null 将抛出此异常
          */
         @Nullable
         public final String value(String name) {
-            Utils.nonEmpty(name, "name is null/empty");
+            Utils.nonNull(name, "name == null");
             return params.value(name);
+        }
+
+        /**
+         * @return 返回所有添加的与 name 对应的 value
+         * @throws NullPointerException 如果 name 为 null 将抛出此异常
+         */
+        public final List<String> values(String name) {
+            Utils.nonNull(name, "name == null");
+            return params.values(name);
         }
 
         /**
@@ -335,7 +345,8 @@ public class Request {
          * @param name        参数名
          * @param contentType 文件类型，如 "image/jpeg"
          * @param file        文件全路径
-         * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
+         * @throws IllegalArgumentException 如果 file 为 null 或不存在，将抛出此异常。
+         * @throws NullPointerException     如果 name/contentType 为 null 将抛出此异常。
          */
         public Builder addFile(String name, String contentType, File file) {
             return addFile(name, contentType, file, null);
@@ -347,7 +358,8 @@ public class Request {
          * @param name        参数名
          * @param contentType 文件类型，如 "image/jpeg"
          * @param file        文件全路径
-         * @throws IllegalArgumentException 如果 name/contentType 为 null 或空字符串，或 file 为 null 或不存在，均将抛出此异常。
+         * @throws IllegalArgumentException 如果 file 为 null 或不存在，将抛出此异常。
+         * @throws NullPointerException     如果 name/contentType 为 null 将抛出此异常。
          */
         public Builder addFile(String name, String contentType, File file, UploadListener listener) {
             fileBodies.add(FileBody.create(name, contentType, file, listener));
