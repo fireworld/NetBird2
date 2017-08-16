@@ -34,6 +34,10 @@ public class Parameters {
         return pair.value(name);
     }
 
+    public List<String> values(String name) {
+        return pair.values(name);
+    }
+
     public int size() {
         return pair.size();
     }
