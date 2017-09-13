@@ -1,5 +1,7 @@
 package cc.colorcat.netbird2;
 
+import android.net.http.HttpResponseCache;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +21,7 @@ import javax.net.ssl.SSLSocketFactory;
  * xx.ch@outlook.com
  */
 public final class HttpConnection implements Connection {
-    private boolean enableCache = false;
+    private boolean cacheEnabled = false;
     private HttpURLConnection conn;
     private InputStream is;
     private LoadListener listener;
@@ -28,8 +30,8 @@ public final class HttpConnection implements Connection {
 
     }
 
-    private HttpConnection(boolean enableCache) {
-        this.enableCache = enableCache;
+    private HttpConnection(boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
     }
 
     @Override
@@ -45,7 +47,7 @@ public final class HttpConnection implements Connection {
         Method method = request.method();
         conn.setRequestMethod(method.name());
         conn.setDoOutput(method.needBody());
-        conn.setUseCaches(enableCache);
+        conn.setUseCaches(cacheEnabled);
         if (conn instanceof HttpsURLConnection) {
             HttpsURLConnection connection = (HttpsURLConnection) conn;
             SSLSocketFactory factory = netBird.sslSocketFactory();
@@ -110,7 +112,7 @@ public final class HttpConnection implements Connection {
     @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     public Connection clone() {
-        return new HttpConnection(enableCache);
+        return new HttpConnection(cacheEnabled);
     }
 
     @Override
@@ -129,15 +131,26 @@ public final class HttpConnection implements Connection {
     }
 
     private void enableCache(File path, long cacheSize) {
-        if (!enableCache && cacheSize > 0) {
+        if (cacheSize > 0 && path != null && !cacheEnabled) {
             try {
-                File cachePath = new File(path, "NetBird");
-                Class.forName("android.net.http.HttpResponseCache")
-                        .getMethod("install", File.class, long.class)
-                        .invoke(null, cachePath, cacheSize);
-                enableCache = true;
+                HttpResponseCache cache = HttpResponseCache.getInstalled();
+                if (cache == null) {
+                    File cachePath = new File(path, "NetBird");
+                    cache = HttpResponseCache.install(cachePath, cacheSize);
+                }
+                cacheEnabled = (cache != null);
             } catch (Exception e) {
-                enableCache = false;
+                cacheEnabled = false;
+                LogUtils.e(e);
+            }
+        } else if (cacheEnabled) {
+            cacheEnabled = false;
+            try {
+                HttpResponseCache cache = HttpResponseCache.getInstalled();
+                if (cache != null) {
+                    cache.close();
+                }
+            } catch (Exception e) {
                 LogUtils.e(e);
             }
         }
