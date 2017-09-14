@@ -131,17 +131,21 @@ public final class HttpConnection implements Connection {
     }
 
     private void enableCache(File path, long cacheSize) {
-        if (cacheSize > 0 && path != null && !cacheEnabled) {
-            try {
-                HttpResponseCache cache = HttpResponseCache.getInstalled();
-                if (cache == null) {
-                    File cachePath = new File(path, "NetBird");
-                    cache = HttpResponseCache.install(cachePath, cacheSize);
+        if (cacheSize > 0 && path != null) {
+            if (!cacheEnabled) {
+                try {
+                    HttpResponseCache cache = HttpResponseCache.getInstalled();
+                    if (cache == null) {
+                        File cachePath = new File(path, "NetBird");
+                        if (cachePath.exists() || cachePath.mkdirs()) {
+                            cache = HttpResponseCache.install(cachePath, cacheSize);
+                        }
+                    }
+                    cacheEnabled = (cache != null);
+                } catch (Exception e) {
+                    cacheEnabled = false;
+                    LogUtils.e(e);
                 }
-                cacheEnabled = (cache != null);
-            } catch (Exception e) {
-                cacheEnabled = false;
-                LogUtils.e(e);
             }
         } else if (cacheEnabled) {
             cacheEnabled = false;
