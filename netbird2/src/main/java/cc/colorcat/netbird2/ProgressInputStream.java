@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,8 +16,7 @@ import java.io.InputStream;
  * Created by cxx on 2016/12/12.
  * xx.ch@outlook.com
  */
-public final class ProgressInputStream extends InputStream {
-    private InputStream delegate;
+public final class ProgressInputStream extends FilterInputStream {
     private ProgressListener listener;
     private final long contentLength;
     private long finished = 0;
@@ -50,60 +50,35 @@ public final class ProgressInputStream extends InputStream {
     }
 
     private ProgressInputStream(@NonNull InputStream is, long contentLength, ProgressListener listener) {
-        this.delegate = Utils.nonNull(is, "is == null");
+        super(is);
         this.contentLength = contentLength;
         this.listener = listener;
     }
 
     @Override
     public int read(@NonNull byte[] b) throws IOException {
-        return read(b, 0, b.length);
+        return this.read(b, 0, b.length);
     }
 
     @Override
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
-        int read = delegate.read(b, off, len);
-        finished += read;
-        currentPercent = (int) (finished * 100 / contentLength);
-        if (currentPercent > lastPercent) {
-            HandlerUtils.postProgress(listener, finished, contentLength, currentPercent);
-            lastPercent = currentPercent;
-        }
-        return read;
-    }
-
-    @Override
-    public long skip(long n) throws IOException {
-        return delegate.skip(n);
-    }
-
-    @Override
-    public int available() throws IOException {
-        return delegate.available();
-    }
-
-    @Override
-    public void close() throws IOException {
-        delegate.close();
-    }
-
-    @Override
-    public void mark(int readLimit) {
-        delegate.mark(readLimit);
-    }
-
-    @Override
-    public void reset() throws IOException {
-        delegate.reset();
-    }
-
-    @Override
-    public boolean markSupported() {
-        return delegate.markSupported();
+        return updateProgress(in.read(b, off, len));
     }
 
     @Override
     public int read() throws IOException {
-        return delegate.read();
+        return updateProgress(in.read());
+    }
+
+    private int updateProgress(final int read) {
+        if (read != -1) {
+            finished += read;
+            currentPercent = (int) (finished * 100 / contentLength);
+            if (currentPercent > lastPercent) {
+                HandlerUtils.postProgress(listener, finished, contentLength, currentPercent);
+                lastPercent = currentPercent;
+            }
+        }
+        return read;
     }
 }
