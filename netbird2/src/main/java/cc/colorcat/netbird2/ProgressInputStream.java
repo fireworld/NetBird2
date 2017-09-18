@@ -62,23 +62,28 @@ public final class ProgressInputStream extends FilterInputStream {
 
     @Override
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
-        return updateProgress(in.read(b, off, len));
+        int count = in.read(b, off, len);
+        if (count != -1) {
+            updateProgress(count);
+        }
+        return count;
     }
 
     @Override
     public int read() throws IOException {
-        return updateProgress(in.read());
+        int nextByte = in.read();
+        if (nextByte != -1) {
+            updateProgress(1);
+        }
+        return nextByte;
     }
 
-    private int updateProgress(final int read) {
-        if (read != -1) {
-            finished += read;
-            currentPercent = (int) (finished * 100 / contentLength);
-            if (currentPercent > lastPercent) {
-                HandlerUtils.postProgress(listener, finished, contentLength, currentPercent);
-                lastPercent = currentPercent;
-            }
+    private void updateProgress(final int readCount) {
+        finished += readCount;
+        currentPercent = (int) (finished * 100 / contentLength);
+        if (currentPercent > lastPercent) {
+            HandlerUtils.postProgress(listener, finished, contentLength, currentPercent);
+            lastPercent = currentPercent;
         }
-        return read;
     }
 }
