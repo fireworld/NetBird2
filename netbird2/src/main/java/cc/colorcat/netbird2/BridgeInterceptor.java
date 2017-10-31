@@ -29,6 +29,7 @@ final class BridgeInterceptor implements Interceptor {
             String parameters = concatParameters(builder.names(), builder.values());
             if (parameters != null) {
                 url = url + '?' + parameters;
+                builder.clear();
             }
         } else if ((body = request.body()) != null) {
             String contentType = body.contentType();
