@@ -4,7 +4,6 @@ package cc.colorcat.demo;
  * Created by cxx on 16-11-1.
  * xx.ch@outlook.com
  */
-
 public class Result<T> {
 
     /**
