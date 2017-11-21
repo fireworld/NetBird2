@@ -27,7 +27,7 @@ import cc.colorcat.netbird2.UploadListener;
 
 
 /**
- * Created by mic on 16-2-29.
+ * Created by cxx on 16-2-29.
  * xx.ch@outlook.com
  */
 public class LaunchActivity extends AppCompatActivity {
